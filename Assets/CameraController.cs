@@ -20,6 +20,13 @@ public class CameraController : MonoBehaviour
         transform.position += velocity;
     }
 
+    public void MoveCamera(Vector3 vel)
+    {
+        Vector3 velocity = new Vector3(vel.x, 0, vel.y) * 0.02f;
+
+        transform.position += velocity;
+    }
+
 
     private float defaultY; //Use this to clamp zooming? Idk
     [SerializeField] private float speed; 
