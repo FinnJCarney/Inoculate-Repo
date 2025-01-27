@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de640fe3d0db1804a85f9fc8f5cadab6, type: 3}
-  m_Name: URP-HighFidelity-Renderer
+  m_Name: URP_ForCamera
   m_EditorClassIdentifier: 
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7,
@@ -109,12 +109,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d26b8cda2614cfd49b62617c9c17c63c, type: 3}
   m_Name: CRTRendererFeature
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   shader: {fileID: 4800000, guid: 6f2fcdc189458914eb8a323f19e3a27b, type: 3}
   injectionPoint: 600
   preset: 6
   pixelResolutionX: 1280
-  pixelResolutionY: 720
+  pixelResolutionY: 960
   screenBend: 8.8
   screenOverscan: 0.18
   vignetteSize: 6.01

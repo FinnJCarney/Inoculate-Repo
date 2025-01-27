@@ -45,8 +45,8 @@ public class NodeManager : MonoBehaviour
                     newLineObj.transform.parent = this.transform;
                     var newLineR = newLineObj.GetComponent<LineRenderer>();
                     newLineR.positionCount = 2;
-                    newLineR.SetPosition(0, node.transform.position);
-                    newLineR.SetPosition(1, connectedNode.transform.position);
+                    newLineR.SetPosition(0, node.transform.position - (Vector3.up * 0.1f));
+                    newLineR.SetPosition(1, connectedNode.transform.position - (Vector3.up * 0.1f));
 
                     List<Node> connectedNodes = new List<Node>();
                     connectedNodes.Add(node);

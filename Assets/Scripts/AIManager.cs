@@ -18,7 +18,7 @@ public class AIManager : MonoBehaviour
         if(timer < 0f)
         {
             ActionManager.aM.PerformAIAction(numOfActionsPerTurn);
-            timer = roundTimer;
+            timer = roundTimer * (Random.Range(0.5f, 1.5f));
         }
     }
 

@@ -6,10 +6,8 @@ using UnityEngine.UI;
 
 public class UserInfo : MonoBehaviour
 {
-    public void InitializeUserInfo(string uN, Node.BeliefStates cC, bool hideCC, Node.BeliefStates mR, bool hideMR, Node.BeliefStates wE, bool hideWE)
+    public void InitializeUserInfo(Node.BeliefStates cC, bool hideCC, Node.BeliefStates mR, bool hideMR, Node.BeliefStates wE, bool hideWE)
     {
-        userName.text = uN;
-
         SetBeliefs(cC, hideCC, mR, hideMR, wE, hideWE);
     }
 
