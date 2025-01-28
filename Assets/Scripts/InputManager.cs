@@ -41,7 +41,7 @@ public class Inputmanger : MonoBehaviour
 
         if(mouseButtonHeld)
         {
-            Camera.main.GetComponent<CameraController>().MoveCamera(prevMousePos - curMousePos);
+            Camera.main.GetComponent<CameraController>().MoveCamera(Camera.main.ScreenToWorldPoint(prevMousePos) - Camera.main.ScreenToWorldPoint(curMousePos));
         }
 
         if(mouseButtonRightDown)

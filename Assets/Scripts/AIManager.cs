@@ -13,7 +13,6 @@ public class AIManager : MonoBehaviour
     private void Update()
     {
         timer -= Time.deltaTime;
-        tMP.text = "Time till next action : " + (Mathf.Round(timer * 10) / 10);
         
         if(timer < 0f)
         {
@@ -26,5 +25,4 @@ public class AIManager : MonoBehaviour
 
     private float timer;
     [SerializeField] private float roundTimer;
-    [SerializeField] private TextMeshProUGUI tMP;
 }

@@ -12,10 +12,10 @@ public class Node : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
 
-        if (isPlayer)
-        {
-            nodeHandle = System.Environment.UserName;
-        }
+        //if (isPlayer)
+        //{
+        //    nodeHandle = System.Environment.UserName;
+        //}
 
         handleText.text = nodeHandle;
 
@@ -25,23 +25,25 @@ public class Node : MonoBehaviour
 
         ShowMenu(false);
 
-        SetActionRing(false, 0);
+        actionPitch = Random.Range(1.25f, 1.5f);
     }
 
     private void Update()
     {
+        isAlly = (beliefClimateChange == BeliefStates.Believes && !cCHidden && !mRHidden && beliefMinorityRights == BeliefStates.Believes && beliefWealthInequality == BeliefStates.Believes && !wEHidden);
+
         bool cCAllyNeighbour = false;
         bool mRAllyNeighbour = false;
         bool wEAllyNeighbour = false;
 
         foreach(Node connectedNode in connectedNodes)
         {
-            if(connectedNode.performingAction)
+            if (connectedNode.performingAction || connectedNode.isBanned)
             {
                 continue;
             }
 
-            if(!connectedNode.cCHidden && connectedNode.beliefClimateChange == BeliefStates.Believes)
+            if (!connectedNode.cCHidden && connectedNode.beliefClimateChange == BeliefStates.Believes)
             {
                 cCAllyNeighbour = true;
             }
@@ -57,13 +59,13 @@ public class Node : MonoBehaviour
             }
         }
 
-        but_DM.EnableButton(!isPlayer && (cCHidden || mRHidden || wEHidden) && (cCAllyNeighbour || mRAllyNeighbour || wEAllyNeighbour));
-        but_Accuse.EnableButton(false);
+        but_DM.EnableButton(!isPlayer && !isAlly && (cCHidden || mRHidden || wEHidden) && (cCAllyNeighbour || mRAllyNeighbour || wEAllyNeighbour));
+        but_Accuse.EnableButton(!cCHidden && !mRHidden && !wEHidden && !isAlly && (cCAllyNeighbour || mRAllyNeighbour || wEAllyNeighbour));
         but_ClimateChange.EnableButton(cCAllyNeighbour && (cCHidden || beliefClimateChange != BeliefStates.Believes));
         but_MinorityRights.EnableButton(mRAllyNeighbour && (mRHidden || beliefMinorityRights != BeliefStates.Believes));
         but_WealthInequality.EnableButton(wEAllyNeighbour && (wEHidden || beliefWealthInequality != BeliefStates.Believes));
 
-        if(isPlayer || ((beliefClimateChange == BeliefStates.Believes && !cCHidden) || (!mRHidden || beliefMinorityRights == BeliefStates.Believes) && (beliefWealthInequality != BeliefStates.Believes) && (cCAllyNeighbour || mRAllyNeighbour || wEAllyNeighbour)))
+        if(isPlayer || isAlly)
         {
             accessRing.color = Color.blue;
         }
@@ -76,6 +78,11 @@ public class Node : MonoBehaviour
         else
         {
             accessRing.color = Color.red;
+        }
+
+        if(isBanned)
+        {
+            accessRing.color = Color.clear;
         }
     }
 
@@ -99,12 +106,17 @@ public class Node : MonoBehaviour
             }
         }
 
+        if(aT == ActionType.Ban)
+        {
+            isBanned = true;
+        }
+
         if (aT == ActionType.Educate_ClimateChange && beliefClimateChange != BeliefStates.Believes && !misinformerClimateChange)
         {
             beliefClimateChange -= 1;
         }
 
-        if (aT == ActionType.Disinform_ClimateChange && beliefClimateChange != BeliefStates.Denies && !misinformerClimateChange)
+        if (aT == ActionType.Disinform_ClimateChange && beliefClimateChange != BeliefStates.Denies)
         {
             beliefClimateChange += 1;
         }
@@ -114,7 +126,7 @@ public class Node : MonoBehaviour
             beliefMinorityRights -= 1;
         }
 
-        if (aT == ActionType.Disinform_MinorityRights && beliefMinorityRights != BeliefStates.Denies && !misinformerMinorityRights)
+        if (aT == ActionType.Disinform_MinorityRights && beliefMinorityRights != BeliefStates.Denies)
         {
             beliefMinorityRights += 1;
         }
@@ -124,7 +136,7 @@ public class Node : MonoBehaviour
             beliefWealthInequality -= 1;
         }
 
-        if (aT == ActionType.Disinform_WealthInequality && beliefWealthInequality != BeliefStates.Denies && !misinformerWealthInequality)
+        if (aT == ActionType.Disinform_WealthInequality && beliefWealthInequality != BeliefStates.Denies)
         {
             beliefWealthInequality += 1;
         }
@@ -145,8 +157,6 @@ public class Node : MonoBehaviour
             audioSource.Stop();
         }
 
-        SetActionRing(false, 0);
-
         audioSource.volume = 0.5f;
         audioSource.loop = false;
         audioSource.pitch = Random.Range(0.85f, 1.15f);
@@ -156,31 +166,17 @@ public class Node : MonoBehaviour
 
     public void PlayActionAudio()
     {
-        audioSource.volume = 0.25f;
+        audioSource.volume = 0f;
         audioSource.loop = true;
-        audioSource.pitch = Random.Range(0.85f, 1.15f);
+        audioSource.pitch = actionPitch - 0.75f;
         audioSource.clip = actionReady;
         audioSource.Play();
     }
 
-    public void SetActionRing(bool playerAction, float amountThrough)
+    public void SetActionAudio(bool playerAction, float amountThrough)
     {
-        amountThrough *= amountThrough;
-
-        Color idealColor = Color.clear;
-
-        if (playerAction)
-        {
-            idealColor = Color.blue;
-        }
-        else
-        {
-            idealColor = Color.yellow;
-        }
-
-        actionRing.transform.localScale = Vector3.Lerp(outerActionRingScale, Vector3.zero, amountThrough);
-        actionRing.color = Color.Lerp(Color.clear, idealColor, amountThrough);
-
+        audioSource.pitch = Mathf.Lerp(actionPitch - 0.75f, actionPitch, amountThrough);
+        audioSource.volume = Mathf.Lerp(0f, 0.5f, amountThrough);
     }
 
 
@@ -195,6 +191,8 @@ public class Node : MonoBehaviour
     }
 
     public bool showMenu;
+    public bool isAlly;
+    public bool isBanned;
 
     public int nodePrio;
     public bool performingAction;
@@ -231,6 +229,7 @@ public class Node : MonoBehaviour
     private AudioSource audioSource;
     [SerializeField] AudioClip actionComplete;
     [SerializeField] AudioClip actionReady;
+    private float actionPitch;
 
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 
@@ -239,8 +238,6 @@ public class Node : MonoBehaviour
     [SerializeField] public BeliefStates beliefWealthInequality;
 
     [SerializeField] SpriteRenderer accessRing;
-    [SerializeField] SpriteRenderer actionRing;
-    [SerializeField] Vector3 outerActionRingScale;
 
     public enum BeliefStates
     {

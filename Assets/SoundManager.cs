@@ -6,6 +6,16 @@ public class SoundManager : MonoBehaviour
 {
     private void Start()
     {
-        DontDestroyOnLoad(this.gameObject);
+        if (sM != null)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            sM = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
     }
+
+    public static SoundManager sM;
 }

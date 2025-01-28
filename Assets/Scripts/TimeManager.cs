@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+
     private void Start()
     {
         defaultTimeScale = 1.0f;
@@ -12,6 +13,11 @@ public class TimeManager : MonoBehaviour
     private void Update()
     {
         Time.timeScale = defaultTimeScale * timeMultiplier;
+    }
+
+    public void SetTimeScale(float timeScale)
+    {
+        Time.timeScale = timeScale;
     }
 
     private float defaultTimeScale;

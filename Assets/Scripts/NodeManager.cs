@@ -16,16 +16,45 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Update()
     {
-        DrawNodeConnectionLines();
+        if(!drawnLines)
+        {
+            DrawNodeConnectionLines();
+            drawnLines = true;
+        }
+
+        int totalMisinformers = 0;
+        int totalBanned = 0;
+
+        foreach(Node node in nodes)
+        {
+            if(node.isBanned)
+            {
+                totalBanned++;
+                if (!node.misinformerClimateChange && !node.misinformerMinorityRights && !node.misinformerWealthInequality)
+                {
+                    StateManager.sM.GameOver(false);
+                    return;
+                }
+            }
+
+            if (node.misinformerClimateChange || node.misinformerMinorityRights || node.misinformerWealthInequality)
+            {
+                totalMisinformers++;
+            }
+        }
+
+        if(totalBanned == totalMisinformers)
+        {
+            StateManager.sM.GameOver(true);
+        }
     }
 
     private void DrawNodeConnectionLines()
     {
         foreach(Node node in nodes)
         {
-
             foreach(Node connectedNode in node.connectedNodes)
             {
                 bool alreadyConnected = false;
@@ -78,6 +107,10 @@ public class NodeManager : MonoBehaviour
     [SerializeField] public List<Node> nodes = new List<Node>();
     [SerializeField] List<Line> lines = new List<Line>();
     [SerializeField] private GameObject lineObj;
+
+    private bool drawnLines = false;
+
+    private int totalBanned;
 }
 
 [System.Serializable]
