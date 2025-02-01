@@ -133,6 +133,7 @@ public class ActionManager : MonoBehaviour
             {
                 currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].playerActivated);
                 currentActions[i].actingNode.performingAction = false;
+                currentActions[i].receivingNode.receivingActions--;
                 Destroy(currentActions[i].actionLine.gameObject);
                 Destroy(currentActions[i].actionRing);
                 currentActions.Remove(currentActions[i]);
@@ -217,6 +218,7 @@ public class ActionManager : MonoBehaviour
         }
 
         actingNode.performingAction = true;
+        receivingNode.receivingActions++;
 
         if (buttonInfo.type == ActionType.DM)
         {
@@ -433,8 +435,6 @@ public class ActionManager : MonoBehaviour
                 continue;
             }
 
-            actingNodes[i].performingAction = true;
-
             foreach (Node node in actingNodes[i].connectedNodes)
             {
                 node.nodePrio = 0;
@@ -505,7 +505,7 @@ public class ActionManager : MonoBehaviour
             }
         }
 
-        if(educateCC == educateMR || educateMR == educateWE || educateCC == educateWE)
+        if (educateCC == educateMR || educateMR == educateWE || educateCC == educateWE)
         {
             educateCC += Random.Range(0, 10);
             educateMR += Random.Range(0, 10);
@@ -569,7 +569,9 @@ public class ActionManager : MonoBehaviour
             receivingNodes[i].PlayActionAudio();
 
             newCurrentAction.actingNode = actingNodes[i];
+            newCurrentAction.actingNode.performingAction = true;
             newCurrentAction.receivingNode = receivingNodes[i];
+            newCurrentAction.receivingNode.receivingActions++;
             newCurrentAction.timer = educationActionLength;
             newCurrentAction.actionLine = Instantiate<GameObject>(actionLineObj).GetComponent<LineRenderer>();
             newCurrentAction.actionLine.colorGradient = neutralGradient;

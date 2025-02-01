@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Node;
@@ -51,13 +52,26 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-    private void DrawNodeConnectionLines()
+    public void DrawNodeConnectionLines()
     {
+        if(lines.Count > 0)
+        {
+            for (int i = lines.Count - 1; i >= 0; i--)
+            {
+                Destroy(lines[i].lineR.gameObject);
+                lines.Remove(lines[i]);
+            }
+        }
         foreach(Node node in nodes)
         {
             foreach(Node connectedNode in node.connectedNodes)
             {
                 bool alreadyConnected = false;
+                
+                if(node.isBanned || connectedNode.isBanned)
+                {
+                    continue;
+                }
 
                 foreach(Line line in lines)
                 {

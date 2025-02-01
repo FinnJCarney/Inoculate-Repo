@@ -115,25 +115,25 @@ MonoBehaviour:
   preset: 6
   pixelResolutionX: 1280
   pixelResolutionY: 960
-  screenBend: 8.8
-  screenOverscan: 0.18
+  screenBend: 0.31
+  screenOverscan: 0.58
   vignetteSize: 6.01
   vignetteSmooth: 6.96
   vignetteRound: 15.6
   blur: 0
-  bleed: 2.6
+  bleed: 3.5
   smidge: 22.7
-  scanlinesStrength: 8.86
-  apertureStrength: 4.16
-  shadowlines: 0
-  shadowlinesSpeed: -4.9
-  shadowlinesAlpha: 0
-  noiseSize: 0
-  noiseSpeed: 0
-  noiseAlpha: 0
-  brightness: 0
+  scanlinesStrength: 0.9
+  apertureStrength: 0
+  shadowlines: 34.8
+  shadowlinesSpeed: -20
+  shadowlinesAlpha: 0.012
+  noiseSize: 8.5
+  noiseSpeed: 6.5
+  noiseAlpha: 0.05
+  brightness: 0.01
   contrast: 1.05
-  gamma: 1.43
+  gamma: 1.32
   red: 1
   green: 1
   blue: 1
