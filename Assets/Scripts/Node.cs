@@ -118,16 +118,17 @@ public class Node : MonoBehaviour
         if(!cCAllyNeighbour && !mRAllyNeighbour && !wEAllyNeighbour)
         {
 
-            accessRing.color = Color.clear;
+            accessRing.color = Color.white;
             allowanceRing.color = Color.clear;
         }
         
         if(receivingActions == 0 && ((cCAllyNeighbour && !cCAllyNeighbour && (cCHidden || beliefClimateChange != BeliefStates.Believes)) || (mRAllyNeighbour && !mRAllyNeighbourAvail && (mRHidden || beliefMinorityRights != BeliefStates.Believes)) || wEAllyNeighbour && !wEAllyNeighbourAvail && (wEHidden || beliefWealthInequality != BeliefStates.Believes)))
         {
-            accessRing.color = Color.red;
-            allowanceRing.color = Color.red;
-            allowanceRing.transform.position = accessRing.transform.position;
-            allowanceRing.transform.eulerAngles = new Vector3(-70, Time.time * 50, 0);
+            accessRing.color = Color.yellow;
+            allowanceRing.color = Color.clear;
+            //allowanceRing.color = Color.red;
+            //allowanceRing.transform.position = accessRing.transform.position;
+            //allowanceRing.transform.eulerAngles = new Vector3(-70, Time.time * 50, 0);
         }
     }
 
