@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static Node;
 
 public class NodeManager : MonoBehaviour
 {
@@ -52,6 +51,7 @@ public class NodeManager : MonoBehaviour
         }
     }
 
+   
     public void DrawNodeConnectionLines()
     {
         if(lines.Count > 0)
@@ -73,11 +73,12 @@ public class NodeManager : MonoBehaviour
                     continue;
                 }
 
-                foreach(Line line in lines)
+                foreach (Line line in lines)
                 {
-                    if(line.connectedNodes.Contains(node) && line.connectedNodes.Contains(connectedNode))
+                    if (line.connectedNodes.Contains(node) && line.connectedNodes.Contains(connectedNode))
                     {
                         alreadyConnected = true;
+                        line.lineR.material = twoWayLine;
                     }
                 }
 
@@ -125,6 +126,8 @@ public class NodeManager : MonoBehaviour
     private bool drawnLines = false;
 
     private int totalBanned;
+
+    [SerializeField] private Material twoWayLine;
 }
 
 [System.Serializable]

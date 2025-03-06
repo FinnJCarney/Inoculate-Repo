@@ -43,7 +43,7 @@ public class Node : MonoBehaviour
 
         foreach (Node connectedNode in connectedNodes)
         {
-            if (connectedNode.isBanned)
+            if (connectedNode.isBanned || !connectedNode.connectedNodes.Contains(this))
             {
                 continue;
             }
@@ -124,10 +124,8 @@ public class Node : MonoBehaviour
         
         if(receivingActions == 0 && ((cCAllyNeighbour && !cCAllyNeighbour && (cCHidden || beliefClimateChange != BeliefStates.Believes)) || (mRAllyNeighbour && !mRAllyNeighbourAvail && (mRHidden || beliefMinorityRights != BeliefStates.Believes)) || wEAllyNeighbour && !wEAllyNeighbourAvail && (wEHidden || beliefWealthInequality != BeliefStates.Believes)))
         {
-            accessRing.color = Color.red;
-            allowanceRing.color = Color.red;
-            allowanceRing.transform.position = accessRing.transform.position;
-            allowanceRing.transform.eulerAngles = new Vector3(-70, Time.time * 50, 0);
+            accessRing.color = Color.yellow;
+            allowanceRing.color = Color.clear;
         }
     }
 
