@@ -8,6 +8,10 @@ public class Node : MonoBehaviour
 {
     private void Start()
     {
+        userInformation = GetComponent<Node_UserInformation>();
+
+        nodeHandle = userInformation.NodeName != "" ? userInformation.NodeName : this.gameObject.name;
+
         NodeManager.nM.AddNodeToList(this);
 
         audioSource = GetComponent<AudioSource>();
@@ -27,6 +31,8 @@ public class Node : MonoBehaviour
         bannedCover.SetActive(isBanned);
 
         actionPitch = Random.Range(1.25f, 1.5f);
+
+        politicalAxes.SyncPoliticalAxes(this);
     }
 
     private void Update()
@@ -234,6 +240,9 @@ public class Node : MonoBehaviour
         Buttons.SetActive(show);
     }
 
+    [HideInInspector] public Node_UserInformation userInformation;
+    [SerializeField] private Node_PoliticalAxes politicalAxes;
+
     public bool showMenu;
     public bool isAlly;
     public bool isBanned;
@@ -277,11 +286,12 @@ public class Node : MonoBehaviour
     [SerializeField] AudioClip actionReady;
     private float actionPitch;
 
-    [SerializeField] public List<Node> connectedNodes = new List<Node>();
-
     [SerializeField] public BeliefStates beliefClimateChange;
     [SerializeField] public BeliefStates beliefMinorityRights;
     [SerializeField] public BeliefStates beliefWealthInequality;
+
+    
+    [SerializeField] public List<Node> connectedNodes = new List<Node>();
 
     [SerializeField] SpriteRenderer accessRing;
     [SerializeField] SpriteRenderer allowanceRing;
