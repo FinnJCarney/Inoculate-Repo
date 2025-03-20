@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Node;
 
@@ -75,6 +77,11 @@ public class ActionManager : MonoBehaviour
                 {
                     currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
                 }
+
+                if (currentActions[i].actionType == ActionType.Up || currentActions[i].actionType == ActionType.Down || currentActions[i].actionType == ActionType.Right || currentActions[i].actionType == ActionType.Left)
+                {
+                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength));
+                }
             }
             else
             {
@@ -129,6 +136,12 @@ public class ActionManager : MonoBehaviour
                 currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
             }
 
+            if (currentActions[i].actionType == ActionType.Up || currentActions[i].actionType == ActionType.Down || currentActions[i].actionType == ActionType.Right || currentActions[i].actionType == ActionType.Left)
+            {
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength);
+                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength);
+            }
+
             if (currentActions[i].timer < 0f)
             {
                 currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].playerActivated);
@@ -173,9 +186,11 @@ public class ActionManager : MonoBehaviour
 
         Node actingNode = null;
 
+
+
         foreach (Node connectedNode in receivingNode.connectedNodes)
         {
-            connectedNode.nodePrio = 0;
+            connectedNode.nodePrio = 100;
 
             if (connectedNode.performingAction || connectedNode.isBanned)
             {
@@ -183,20 +198,26 @@ public class ActionManager : MonoBehaviour
             }
 
             connectedNode.nodePrio -= receivingNode.connectedNodes.IndexOf(connectedNode);
+            connectedNode.nodePrio -= connectedNode.connectedNodes.Count;
 
-            if (connectedNode.cCHidden != true && connectedNode.beliefClimateChange == BeliefStates.Believes)
+            if (buttonInfo.type == ActionType.Left)
             {
-                connectedNode.nodePrio += 10;
+                connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.x - connectedNode.userInformation.beliefs.x) * 10;
             }
 
-            if (connectedNode.mRHidden != true && connectedNode.beliefMinorityRights == BeliefStates.Believes)
+            if (buttonInfo.type == ActionType.Right)
             {
-                connectedNode.nodePrio += 10;
+                connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.x - receivingNode.userInformation.beliefs.x) * 10;
             }
 
-            if (connectedNode.wEHidden != true && connectedNode.beliefWealthInequality == BeliefStates.Believes)
+            if (buttonInfo.type == ActionType.Up)
             {
-                connectedNode.nodePrio += 10;
+                connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.y - receivingNode.userInformation.beliefs.y) * 10;
+            }
+
+            if (buttonInfo.type == ActionType.Down)
+            {
+                connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.y - connectedNode.userInformation.beliefs.y) * 10;
             }
         }
 
@@ -254,67 +275,53 @@ public class ActionManager : MonoBehaviour
             currentActions.Add(newCurrentAction);
         }
 
-        if (buttonInfo.type == ActionType.Educate_ClimateChange)
+        //New Stuff
+        if (buttonInfo.type == ActionType.Left)
         {
-            CurrentAction newCurrentAction;
-            newCurrentAction.actionType = ActionType.Educate_ClimateChange;
-            newCurrentAction.actingNode = actingNode;
-            newCurrentAction.receivingNode = receivingNode;
-            newCurrentAction.timer = educationActionLength;
-            newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
-            newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
-            newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
-            newCurrentAction.playerActivated = true;
-            newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
-            newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
-            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
-            currentActions.Add(newCurrentAction);
+            MakeNewAction(ActionType.Left, mediumOnlineActionLength, actingNode, receivingNode);
         }
 
-        if (buttonInfo.type == ActionType.Educate_MinorityRights)
+        if (buttonInfo.type == ActionType.Right)
         {
-            CurrentAction newCurrentAction;
-            newCurrentAction.actionType = ActionType.Educate_MinorityRights;
-            newCurrentAction.actingNode = actingNode;
-            newCurrentAction.receivingNode = receivingNode;
-            newCurrentAction.timer = educationActionLength;
-            newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
-            newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
-            newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
-            newCurrentAction.playerActivated = true;
-            newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
-            newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
-            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
-            currentActions.Add(newCurrentAction);
+            MakeNewAction(ActionType.Right, mediumOnlineActionLength, actingNode, receivingNode);
         }
 
-        if (buttonInfo.type == ActionType.Educate_WealthInequality)
+        if (buttonInfo.type == ActionType.Up)
         {
-            CurrentAction newCurrentAction;
-            newCurrentAction.actionType = ActionType.Educate_WealthInequality;
-            newCurrentAction.actingNode = actingNode;
-            newCurrentAction.receivingNode = receivingNode;
-            newCurrentAction.timer = educationActionLength;
-            newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
-            newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
-            newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
-            newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
-            newCurrentAction.playerActivated = true;
-            newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
-            newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
-            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
-            currentActions.Add(newCurrentAction);
+            MakeNewAction(ActionType.Up, mediumOnlineActionLength, actingNode, receivingNode);
         }
 
+        if (buttonInfo.type == ActionType.Down)
+        {
+            MakeNewAction(ActionType.Down, mediumOnlineActionLength, actingNode, receivingNode);
+        }
+        //End of New Stuff
+    }
+
+    private void MakeNewAction(ActionType newActionType, float actionLength, Node actingNode, Node receivingNode)
+    {
+        CurrentAction newCurrentAction;
+        newCurrentAction.actionType = newActionType;
+        newCurrentAction.actingNode = actingNode;
+        newCurrentAction.receivingNode = receivingNode;
+        newCurrentAction.timer = educationActionLength;
+        newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
+        newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
+        newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
+        newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
+        newCurrentAction.playerActivated = true;
+        newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
+        newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
+        SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
+        currentActions.Add(newCurrentAction);
     }
 
     public void PerformAIAction(int NumOfActions)
     {
         Node[] actingNodes = new Node[NumOfActions];
 
-        int educateCC = 0;
-        int educateMR = 0;
-        int educateWE = 0;
+        int vertAction = 0;
+        int horiAction = 0;
 
         foreach (Node node in NodeManager.nM.nodes)
         {
@@ -333,77 +340,28 @@ public class ActionManager : MonoBehaviour
             if(node.misinformerClimateChange)
             {
                 node.nodePrio += 25;
-                educateCC += 15;
+
             }
 
             if (node.misinformerMinorityRights)
             {
                 node.nodePrio += 25;
-                educateMR += 15;
             }
 
             if (node.misinformerWealthInequality)
             {
                 node.nodePrio += 25;
-                educateWE += 15;
             }
 
-            if (node.beliefClimateChange != BeliefStates.Unsure)
-            {
-                node.nodePrio += 10;
-                educateCC += 10;
-            }
-            else
-            {
-                educateCC -= 50;
-            }
-
-            if (node.beliefClimateChange == BeliefStates.Denies)
-            {
-                node.nodePrio += 10;
-                educateCC += 10;
-            }
-
-            if (node.beliefMinorityRights != BeliefStates.Unsure)
-            {
-                node.nodePrio += 10;
-                educateMR += 10;
-            }
-            else
-            {
-                educateMR -= 50;
-            }
-
-            if (node.beliefMinorityRights == BeliefStates.Denies)
-            {
-                node.nodePrio += 10;
-                educateMR += 10;
-            }
-
-            if (node.beliefWealthInequality != BeliefStates.Unsure)
-            {
-                node.nodePrio += 10;
-                educateWE += 10;
-            }
-            else
-            {
-                educateWE -= 50;
-            }
-
-            if (node.beliefWealthInequality == BeliefStates.Denies)
-            {
-                node.nodePrio += 10;
-                educateWE += 10;
-            }
-
+            node.nodePrio += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x)) * 10;
+            node.nodePrio += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.y)) * 10;
+            
+            horiAction += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x)) * 10;
+            vertAction += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.y)) * 10;
 
             node.nodePrio += node.connectedNodes.Count * 3;
 
-            node.nodePrio += Random.Range(0, 20);
-
-            educateCC += Random.Range(0, 15);
-            educateMR += Random.Range(0, 15);
-            educateWE += Random.Range(0, 15);
+            node.nodePrio += Random.Range(0, 20);          
         }
 
         for (int i = 0; i < NumOfActions; i++)
@@ -439,40 +397,16 @@ public class ActionManager : MonoBehaviour
             {
                 node.nodePrio = 0;
 
-                if (node.isPlayer || node.isBanned)
+                if (node.isBanned)
                 {
                     node.nodePrio -= 1000;
                 }
 
-                if (node.beliefClimateChange != actingNodes[i].beliefClimateChange)
-                {
-                    node.nodePrio += 15;
-                    educateCC += 15;
-                }
-                else
-                {
-                    educateCC -= 100;
-                }
+                node.nodePrio += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.x));
+                node.nodePrio += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.y));
 
-                if (node.beliefMinorityRights != actingNodes[i].beliefMinorityRights)
-                {
-                    node.nodePrio += 15;
-                    educateMR += 15;
-                }
-                else
-                {
-                    educateMR -= 100;
-                }
-
-                if (node.beliefWealthInequality != actingNodes[i].beliefWealthInequality)
-                {
-                    node.nodePrio += 15;
-                    educateWE += 15;
-                }
-                else
-                {
-                    educateWE -= 100;
-                }
+                horiAction += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.x));
+                vertAction += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.y));
 
                 node.nodePrio += node.connectedNodes.Count;
 
@@ -505,11 +439,9 @@ public class ActionManager : MonoBehaviour
             }
         }
 
-        if (educateCC == educateMR || educateMR == educateWE || educateCC == educateWE)
+        if (vertAction == horiAction)
         {
-            educateCC += Random.Range(0, 10);
-            educateMR += Random.Range(0, 10);
-            educateWE += Random.Range(0, 10);
+            vertAction += Random.Range(-10, 10);
         }
 
         for (int i = 0; i < actingNodes.Length; i++)
@@ -523,39 +455,27 @@ public class ActionManager : MonoBehaviour
 
             newCurrentAction.actionType = ActionType.None;
 
-            if(educateCC > educateMR && educateCC > educateWE)
+            if(horiAction > vertAction)
             {
-                if (actingNodes[i].beliefClimateChange == BeliefStates.Believes)
+                if (actingNodes[i].userInformation.beliefs.x > receivingNodes[i].userInformation.beliefs.x)
                 {
-                    newCurrentAction.actionType = ActionType.Educate_ClimateChange;
+                    newCurrentAction.actionType = ActionType.Right;
                 }
                 else
                 {
-                    newCurrentAction.actionType = ActionType.Disinform_ClimateChange;
+                    newCurrentAction.actionType = ActionType.Left;
                 }
             }
 
-            if (educateMR > educateCC && educateMR > educateWE)
+            else
             {
-                if (actingNodes[i].beliefMinorityRights == BeliefStates.Believes)
+                if (actingNodes[i].userInformation.beliefs.y > receivingNodes[i].userInformation.beliefs.y)
                 {
-                    newCurrentAction.actionType = ActionType.Educate_MinorityRights;
+                    newCurrentAction.actionType = ActionType.Up;
                 }
                 else
                 {
-                    newCurrentAction.actionType = ActionType.Disinform_MinorityRights;
-                }
-            }
-
-            if (educateWE > educateCC && educateWE > educateMR)
-            {
-                if (actingNodes[i].beliefWealthInequality == BeliefStates.Believes)
-                {
-                    newCurrentAction.actionType = ActionType.Educate_WealthInequality;
-                }
-                else
-                {
-                    newCurrentAction.actionType = ActionType.Disinform_WealthInequality;
+                    newCurrentAction.actionType = ActionType.Down;
                 }
             }
 
@@ -572,7 +492,7 @@ public class ActionManager : MonoBehaviour
             newCurrentAction.actingNode.performingAction = true;
             newCurrentAction.receivingNode = receivingNodes[i];
             newCurrentAction.receivingNode.receivingActions++;
-            newCurrentAction.timer = educationActionLength;
+            newCurrentAction.timer = mediumOnlineActionLength;
             newCurrentAction.actionLine = Instantiate<GameObject>(actionLineObj).GetComponent<LineRenderer>();
             newCurrentAction.actionLine.colorGradient = neutralGradient;
             newCurrentAction.actionLine.SetPosition(0, actingNodes[i].transform.position);
@@ -590,6 +510,10 @@ public class ActionManager : MonoBehaviour
 
     [SerializeField] float dMActionLength;
     [SerializeField] float educationActionLength;
+
+    [SerializeField] float shortOnlineActionLength;
+    [SerializeField] float mediumOnlineActionLength;
+    [SerializeField] float longOnlineActionLength;
 
     [SerializeField] GameObject playerLineObj;
     [SerializeField] GameObject actionLineObj;
@@ -612,6 +536,10 @@ public enum ActionType
     Disinform_ClimateChange,
     Disinform_MinorityRights,
     Disinform_WealthInequality,
+    Left,
+    Right,
+    Up,
+    Down,
     None
 }
 

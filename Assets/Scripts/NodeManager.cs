@@ -24,6 +24,8 @@ public class NodeManager : MonoBehaviour
             drawnLines = true;
         }
 
+        CheckNodeConnections();
+
         int totalMisinformers = 0;
         int totalBanned = 0;
 
@@ -115,6 +117,33 @@ public class NodeManager : MonoBehaviour
         foreach (Node node in nodes)
         {
             node.ShowMenu(false);
+        }
+    }
+
+    public void SyncAllPoliticalAxes()
+    {
+        foreach (Node node in nodes)
+        {
+            node.politicalAxes.SyncPoliticalAxes(node);
+        }
+    }
+
+    private void CheckNodeConnections()
+    {
+        foreach(Node node in nodes)
+        {
+            node.isAlly = false;
+
+            foreach(Node connectedNode in node.connectedNodes)
+            {
+                if (connectedNode.isPlayer || connectedNode.isAlly)
+                {
+                    if (Mathf.Abs(connectedNode.userInformation.beliefs.x - node.userInformation.beliefs.x) < 1.1f && Mathf.Abs(connectedNode.userInformation.beliefs.y - node.userInformation.beliefs.y) < 1.1f)
+                    {
+                        node.isAlly = true;
+                    }
+                }
+            }
         }
     }
 

@@ -37,15 +37,15 @@ public class Node : MonoBehaviour
 
     private void Update()
     {
-        isAlly = (beliefClimateChange == BeliefStates.Believes && !cCHidden && !mRHidden && beliefMinorityRights == BeliefStates.Believes && beliefWealthInequality == BeliefStates.Believes && !wEHidden);
+        //isAlly = (beliefClimateChange == BeliefStates.Believes && !cCHidden && !mRHidden && beliefMinorityRights == BeliefStates.Believes && beliefWealthInequality == BeliefStates.Believes && !wEHidden);
 
+        int theorheticalActions = 0;
         int possibleActions = 0;
-        bool cCAllyNeighbour = false;
-        bool cCAllyNeighbourAvail = false;
-        bool mRAllyNeighbour = false;
-        bool mRAllyNeighbourAvail = false;
-        bool wEAllyNeighbour = false;
-        bool wEAllyNeighbourAvail = false;
+
+        bool hasLeftNeighbourAvail = false;
+        bool hasRightNeighbourAvail = false;
+        bool hasUpNeighbourAvail = false;
+        bool hasDownNeighbourAvail = false;
 
         foreach (Node connectedNode in connectedNodes)
         {
@@ -54,31 +54,43 @@ public class Node : MonoBehaviour
                 continue;
             }
 
-            if (!connectedNode.cCHidden && connectedNode.beliefClimateChange == BeliefStates.Believes)
+            if(connectedNode.performingAction)
             {
-                cCAllyNeighbour = true;
-
-                if (!connectedNode.performingAction)
-                {
-                    cCAllyNeighbourAvail = true;
-                }
+                theorheticalActions++;
+                continue;
             }
 
-            if (!connectedNode.mRHidden && connectedNode.beliefMinorityRights == BeliefStates.Believes)
+            if (connectedNode.isAlly || connectedNode.isPlayer)
             {
-                mRAllyNeighbour = true;
-                if (!connectedNode.performingAction)
-                {
-                    mRAllyNeighbourAvail = true;
-                }
-            }
+                theorheticalActions++;
+                possibleActions ++;
 
-            if (!connectedNode.wEHidden && connectedNode.beliefWealthInequality == BeliefStates.Believes)
-            {
-                wEAllyNeighbour = true;
-                if (!connectedNode.performingAction)
+                if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
                 {
-                    wEAllyNeighbourAvail = true;
+                    hasLeftNeighbourAvail = true;
+                    hasRightNeighbourAvail = true;
+                }
+                else if (connectedNode.userInformation.beliefs.x > this.userInformation.beliefs.x)
+                {
+                    hasRightNeighbourAvail = true;
+                }
+                else if (connectedNode.userInformation.beliefs.x < this.userInformation.beliefs.x)
+                {
+                    hasLeftNeighbourAvail = true;
+                }
+
+                if (connectedNode.userInformation.beliefs.y == this.userInformation.beliefs.y)
+                {
+                    hasUpNeighbourAvail = true;
+                    hasDownNeighbourAvail = true;
+                }
+                else if (connectedNode.userInformation.beliefs.y > this.userInformation.beliefs.y)
+                {
+                    hasUpNeighbourAvail = true;
+                }
+                else if (connectedNode.userInformation.beliefs.y < this.userInformation.beliefs.y)
+                {
+                    hasDownNeighbourAvail = true;
                 }
             }
 
@@ -88,15 +100,37 @@ public class Node : MonoBehaviour
             }
         }
 
-        but_DM.EnableButton(!isPlayer && !isAlly && (cCHidden || mRHidden || wEHidden) && (cCAllyNeighbourAvail || mRAllyNeighbourAvail || wEAllyNeighbourAvail));
-        but_Accuse.EnableButton(!cCHidden && !mRHidden && !wEHidden && !isAlly && (cCAllyNeighbourAvail || mRAllyNeighbourAvail || wEAllyNeighbourAvail));
-        but_ClimateChange.EnableButton(cCAllyNeighbourAvail && (cCHidden || beliefClimateChange != BeliefStates.Believes));
-        but_MinorityRights.EnableButton(mRAllyNeighbourAvail && (mRHidden || beliefMinorityRights != BeliefStates.Believes));
-        but_WealthInequality.EnableButton(wEAllyNeighbourAvail && (wEHidden || beliefWealthInequality != BeliefStates.Believes));
+        but_DM.EnableButton(!isPlayer && !isAlly);
+        //but_Accuse.EnableButton(!cCHidden && !mRHidden && !wEHidden && !isAlly && (cCAllyNeighbourAvail || mRAllyNeighbourAvail || wEAllyNeighbourAvail));
 
-        if (isPlayer || isAlly)
+
+        //New Stuff!
+        but_Left.EnableButton(hasLeftNeighbourAvail);
+        but_Right.EnableButton(hasRightNeighbourAvail);
+        but_Up.EnableButton(hasUpNeighbourAvail);
+        but_Down.EnableButton(hasDownNeighbourAvail);
+        //End of New Stuff
+
+        if (theorheticalActions > 0)
         {
-            accessRing.color = Color.blue;
+            accessRing.color = Color.yellow;
+            if(possibleActions == 0)
+            {
+                allowanceRing.color = Color.clear;
+            }
+            else
+            {
+                float amountThrough = Mathf.Sqrt(Time.time % 1.5f);
+                allowanceRing.color = Color.Lerp(accessRing.color, Color.clear, amountThrough);
+                allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
+                allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
+            }
+        }
+
+        if(theorheticalActions == 0)
+        {
+            accessRing.color = Color.clear;
+            allowanceRing.color = Color.clear;
         }
 
         if (isBanned)
@@ -105,33 +139,9 @@ public class Node : MonoBehaviour
             bannedCover.SetActive(isBanned);
         }
 
-        if (((cCAllyNeighbour && (cCHidden || beliefClimateChange != BeliefStates.Believes)) || (mRAllyNeighbour && (mRHidden || beliefMinorityRights != BeliefStates.Believes)) || wEAllyNeighbour && (wEHidden || beliefWealthInequality != BeliefStates.Believes)))
+        if (isPlayer || isAlly)
         {
-            accessRing.color = Color.yellow;
-            if (receivingActions < possibleActions)
-            {
-                float amountThrough = Mathf.Sqrt(Time.time % 1.5f);
-                allowanceRing.color = Color.Lerp(accessRing.color, Color.clear, amountThrough);
-                allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
-                allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
-            }
-            else
-            {
-                allowanceRing.color = Color.clear;
-            }
-        }
-
-        if(!cCAllyNeighbour && !mRAllyNeighbour && !wEAllyNeighbour)
-        {
-
-            accessRing.color = Color.clear;
-            allowanceRing.color = Color.clear;
-        }
-        
-        if(receivingActions == 0 && ((cCAllyNeighbour && !cCAllyNeighbour && (cCHidden || beliefClimateChange != BeliefStates.Believes)) || (mRAllyNeighbour && !mRAllyNeighbourAvail && (mRHidden || beliefMinorityRights != BeliefStates.Believes)) || wEAllyNeighbour && !wEAllyNeighbourAvail && (wEHidden || beliefWealthInequality != BeliefStates.Believes)))
-        {
-            accessRing.color = Color.yellow;
-            allowanceRing.color = Color.clear;
+            accessRing.color = Color.blue;
         }
     }
 
@@ -191,6 +201,28 @@ public class Node : MonoBehaviour
             beliefWealthInequality += 1;
         }
 
+        if (aT == ActionType.Left)
+        {
+            userInformation.beliefs.x -= 1;
+        }
+
+        if (aT == ActionType.Right)
+        {
+            userInformation.beliefs.x += 1;
+        }
+
+        if (aT == ActionType.Up)
+        {
+            userInformation.beliefs.y += 1;
+        }
+
+        if (aT == ActionType.Down)
+        {
+            userInformation.beliefs.y -= 1;
+        }
+
+        NodeManager.nM.SyncAllPoliticalAxes();
+
         uI.SetBeliefs(beliefClimateChange, cCHidden, beliefMinorityRights, mRHidden, beliefWealthInequality, wEHidden);
 
         if(playerActivated)
@@ -241,7 +273,7 @@ public class Node : MonoBehaviour
     }
 
     [HideInInspector] public Node_UserInformation userInformation;
-    [SerializeField] private Node_PoliticalAxes politicalAxes;
+    [HideInInspector] public Node_PoliticalAxes politicalAxes;
 
     public bool showMenu;
     public bool isAlly;
@@ -277,6 +309,11 @@ public class Node : MonoBehaviour
     [SerializeField] UserButton but_ClimateChange;
     [SerializeField] UserButton but_MinorityRights;
     [SerializeField] UserButton but_WealthInequality;
+
+    [SerializeField] UserButton but_Left;
+    [SerializeField] UserButton but_Right;
+    [SerializeField] UserButton but_Up;
+    [SerializeField] UserButton but_Down;
 
     [SerializeField] ParticleSystem playerPS;
     [SerializeField] ParticleSystem aIPs;
