@@ -8,18 +8,31 @@ public class TimeManager : MonoBehaviour
     private void Start()
     {
         defaultTimeScale = 1.0f;
+
+        if(i != null)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            i = this;
+        }
     }
 
     private void Update()
     {
         Time.timeScale = defaultTimeScale * timeMultiplier;
+        adjustedDeltaTime = Time.deltaTime * Time.timeScale;
     }
 
     public void SetTimeScale(float timeScale)
     {
-        Time.timeScale = timeScale;
+        timeMultiplier = timeScale;
     }
 
+    public static TimeManager i;
+
     private float defaultTimeScale;
-    [SerializeField][Range(0.1f, 8f)] float timeMultiplier;
+    public float adjustedDeltaTime;
+    [SerializeField][Range(0f, 8f)] public float timeMultiplier;
 }

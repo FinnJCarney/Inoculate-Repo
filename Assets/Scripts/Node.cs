@@ -23,10 +23,6 @@ public class Node : MonoBehaviour
 
         handleText.text = nodeHandle;
 
-        uI = GetComponentInChildren<UserInfo>();
-
-        uI.InitializeUserInfo(beliefClimateChange, cCHidden, beliefMinorityRights, mRHidden, beliefWealthInequality, wEHidden);
-
         ShowMenu(false);
         bannedCover.SetActive(isBanned);
 
@@ -37,8 +33,6 @@ public class Node : MonoBehaviour
 
     private void Update()
     {
-        //isAlly = (beliefClimateChange == BeliefStates.Believes && !cCHidden && !mRHidden && beliefMinorityRights == BeliefStates.Believes && beliefWealthInequality == BeliefStates.Believes && !wEHidden);
-
         int theorheticalActions = 0;
         int possibleActions = 0;
 
@@ -46,6 +40,8 @@ public class Node : MonoBehaviour
         bool hasRightNeighbourAvail = false;
         bool hasUpNeighbourAvail = false;
         bool hasDownNeighbourAvail = false;
+
+        bool hasAllyNeighbourAvail = false;
 
         foreach (Node connectedNode in connectedNodes)
         {
@@ -64,6 +60,7 @@ public class Node : MonoBehaviour
             {
                 theorheticalActions++;
                 possibleActions ++;
+                hasAllyNeighbourAvail = true;
 
                 if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
                 {
@@ -93,15 +90,10 @@ public class Node : MonoBehaviour
                     hasDownNeighbourAvail = true;
                 }
             }
-
-            if (!connectedNode.wEHidden && connectedNode.beliefWealthInequality == BeliefStates.Believes || !connectedNode.mRHidden && connectedNode.beliefMinorityRights == BeliefStates.Believes || !connectedNode.cCHidden && connectedNode.beliefClimateChange == BeliefStates.Believes)
-            {
-                possibleActions++;
-            }
         }
 
-        but_DM.EnableButton(!isPlayer && !isAlly);
-        //but_Accuse.EnableButton(!cCHidden && !mRHidden && !wEHidden && !isAlly && (cCAllyNeighbourAvail || mRAllyNeighbourAvail || wEAllyNeighbourAvail));
+        but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);
+        but_Accuse.EnableButton(!userInformation.userInfoHidden && hasAllyNeighbourAvail);
 
 
         //New Stuff!
@@ -120,7 +112,7 @@ public class Node : MonoBehaviour
             }
             else
             {
-                float amountThrough = Mathf.Sqrt(Time.time % 1.5f);
+                float amountThrough = Mathf.Sqrt((Time.time / TimeManager.i.timeMultiplier) % 1.5f);
                 allowanceRing.color = Color.Lerp(accessRing.color, Color.clear, amountThrough);
                 allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
                 allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
@@ -149,20 +141,7 @@ public class Node : MonoBehaviour
     {
         if (aT == ActionType.DM)
         {
-            if (cCHidden)
-            {
-                cCHidden = false;
-            }
-
-            if (mRHidden)
-            {
-                mRHidden = false;
-            }
-
-            if (wEHidden)
-            {
-                wEHidden = false;
-            }
+            userInformation.userInfoHidden = false;
         }
 
         if(aT == ActionType.Ban)
@@ -171,59 +150,30 @@ public class Node : MonoBehaviour
             NodeManager.nM.DrawNodeConnectionLines();
         }
 
-        if (aT == ActionType.Educate_ClimateChange && beliefClimateChange != BeliefStates.Believes && !misinformerClimateChange)
-        {
-            beliefClimateChange -= 1;
-        }
-
-        if (aT == ActionType.Disinform_ClimateChange && beliefClimateChange != BeliefStates.Denies)
-        {
-            beliefClimateChange += 1;
-        }
-
-        if (aT == ActionType.Educate_MinorityRights && beliefMinorityRights != BeliefStates.Believes && !misinformerMinorityRights)
-        {
-            beliefMinorityRights -= 1;
-        }
-
-        if (aT == ActionType.Disinform_MinorityRights && beliefMinorityRights != BeliefStates.Denies)
-        {
-            beliefMinorityRights += 1;
-        }
-
-        if (aT == ActionType.Educate_WealthInequality && beliefWealthInequality != BeliefStates.Believes && !misinformerWealthInequality)
-        {
-            beliefWealthInequality -= 1;
-        }
-
-        if (aT == ActionType.Disinform_WealthInequality && beliefWealthInequality != BeliefStates.Denies)
-        {
-            beliefWealthInequality += 1;
-        }
-
-        if (aT == ActionType.Left)
+        if (aT == ActionType.Left && !userInformation.misinformerHori)
         {
             userInformation.beliefs.x -= 1;
         }
 
-        if (aT == ActionType.Right)
+        if (aT == ActionType.Right && !userInformation.misinformerHori)
         {
             userInformation.beliefs.x += 1;
         }
 
-        if (aT == ActionType.Up)
+        if (aT == ActionType.Up && !userInformation.misinformerVert)
         {
             userInformation.beliefs.y += 1;
         }
 
-        if (aT == ActionType.Down)
+        if (aT == ActionType.Down && !userInformation.misinformerVert)
         {
             userInformation.beliefs.y -= 1;
         }
 
-        NodeManager.nM.SyncAllPoliticalAxes();
+        userInformation.beliefs.x = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.x));
+        userInformation.beliefs.y = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.y));
 
-        uI.SetBeliefs(beliefClimateChange, cCHidden, beliefMinorityRights, mRHidden, beliefWealthInequality, wEHidden);
+        NodeManager.nM.SyncAllPoliticalAxes();
 
         if(playerActivated)
         {
@@ -261,15 +211,11 @@ public class Node : MonoBehaviour
         audioSource.volume = Mathf.Lerp(0f, 0.5f, amountThrough);
     }
 
-
-
-
-
     public void ShowMenu(bool show)
     {
         showMenu = show;
         menu.SetActive(show);
-        Buttons.SetActive(show);
+        //Buttons.SetActive(show);
     }
 
     [HideInInspector] public Node_UserInformation userInformation;
@@ -286,13 +232,8 @@ public class Node : MonoBehaviour
     [Header("Gameplay Assignments")]
 
     [SerializeField] public bool isPlayer;
-    [SerializeField] public bool misinformerClimateChange;
-    [SerializeField] public bool misinformerMinorityRights;
-    [SerializeField] public bool misinformerWealthInequality;
                      
-    public bool cCHidden;
-    public bool mRHidden;
-    public bool wEHidden;
+    
 
     [Header("Object Assignements")]
     private UserInfo uI;
@@ -302,13 +243,8 @@ public class Node : MonoBehaviour
     [SerializeField] TextMeshPro handleText;
     [SerializeField] GameObject bannedCover;
 
-
-    [SerializeField] GameObject Buttons;
     [SerializeField] UserButton but_DM;
     [SerializeField] UserButton but_Accuse;
-    [SerializeField] UserButton but_ClimateChange;
-    [SerializeField] UserButton but_MinorityRights;
-    [SerializeField] UserButton but_WealthInequality;
 
     [SerializeField] UserButton but_Left;
     [SerializeField] UserButton but_Right;
@@ -326,7 +262,6 @@ public class Node : MonoBehaviour
     [SerializeField] public BeliefStates beliefClimateChange;
     [SerializeField] public BeliefStates beliefMinorityRights;
     [SerializeField] public BeliefStates beliefWealthInequality;
-
     
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 

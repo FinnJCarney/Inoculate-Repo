@@ -22,12 +22,17 @@ public class ActionManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        tm = TimeManager.i;
+    }
+
     private void Update()
     {
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
             var adjustedCurAction = currentActions[i];
-            adjustedCurAction.timer -= Time.deltaTime;
+            adjustedCurAction.timer -= tm.adjustedDeltaTime;
             currentActions[i] = adjustedCurAction;
 
 
@@ -157,7 +162,7 @@ public class ActionManager : MonoBehaviour
 
     private void SetActionRing(GameObject actionRing, bool playerActivated, float amountThrough)
     {
-        actionRing.transform.localScale = Vector3.Lerp(outerActionRingScale, Vector3.zero, amountThrough);
+        actionRing.transform.localScale = Vector3.Lerp(outerActionRingScale, new Vector3(0.1f, 0.1f, 0.1f), amountThrough);
         
         Color idealColor = Color.clear;
         
@@ -337,20 +342,25 @@ public class ActionManager : MonoBehaviour
                 node.nodePrio -= 25;
             }
 
-            if(node.misinformerClimateChange)
-            {
-                node.nodePrio += 25;
-
-            }
-
-            if (node.misinformerMinorityRights)
+            if(node.userInformation.misinformerHori)
             {
                 node.nodePrio += 25;
             }
 
-            if (node.misinformerWealthInequality)
+            if(node.userInformation.misinformerVert)
             {
                 node.nodePrio += 25;
+            }
+
+            foreach(Node connectedNode in node.connectedNodes)
+            {
+                node.nodePrio += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - connectedNode.userInformation.beliefs.x));
+                node.nodePrio += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - connectedNode.userInformation.beliefs.y));
+
+                if (node.userInformation.beliefs.x == connectedNode.userInformation.beliefs.x && node.userInformation.beliefs.x == connectedNode.userInformation.beliefs.y)
+                {
+                    node.nodePrio -= 10;
+                }
             }
 
             node.nodePrio += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x)) * 10;
@@ -359,9 +369,7 @@ public class ActionManager : MonoBehaviour
             horiAction += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x)) * 10;
             vertAction += Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.y)) * 10;
 
-            node.nodePrio += node.connectedNodes.Count * 3;
-
-            node.nodePrio += Random.Range(0, 20);          
+            node.nodePrio += Random.Range(0, 10);          
         }
 
         for (int i = 0; i < NumOfActions; i++)
@@ -405,8 +413,23 @@ public class ActionManager : MonoBehaviour
                 node.nodePrio += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.x));
                 node.nodePrio += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.y));
 
-                horiAction += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.x));
-                vertAction += 15 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.y));
+                horiAction += 20 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.x));
+                vertAction += 20 * Mathf.RoundToInt(Mathf.Abs(node.userInformation.beliefs.x - actingNodes[i].userInformation.beliefs.y));
+
+                if(node.userInformation.beliefs.x == actingNodes[i].userInformation.beliefs.x)
+                {
+                    horiAction = 0;
+                }
+
+                if (node.userInformation.beliefs.y == actingNodes[i].userInformation.beliefs.y)
+                {
+                    vertAction = 0;
+                }
+
+                if(horiAction == 0 && vertAction == 0)
+                {
+                    node.nodePrio -= 1000;
+                }
 
                 node.nodePrio += node.connectedNodes.Count;
 
@@ -446,8 +469,9 @@ public class ActionManager : MonoBehaviour
 
         for (int i = 0; i < actingNodes.Length; i++)
         {
-            if (actingNodes[i] == null)
+            if (actingNodes[i] == null || receivingNodes[i] == null)
             {
+                Debug.LogWarning("Failed to execute AI action");
                 continue;
             }
 
@@ -523,6 +547,8 @@ public class ActionManager : MonoBehaviour
     [SerializeField] Vector3 outerActionRingScale;
 
     [SerializeField] int actingNodeMemoryLength;
+
+    private TimeManager tm;
 }
 
 public enum ActionType

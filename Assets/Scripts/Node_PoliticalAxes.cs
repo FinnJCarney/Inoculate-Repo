@@ -7,7 +7,15 @@ public class Node_PoliticalAxes : MonoBehaviour
 {
     public void SyncPoliticalAxes(Node node)
     {
-        userObj.transform.localPosition = node.userInformation.beliefs * (0.9f * 1.5f);
+        if (!node.userInformation.userInfoHidden)
+        {
+            userObj.GetComponent<Image>().color = Color.white;
+            userObj.transform.localPosition = node.userInformation.beliefs * (0.9f * 1.5f);
+        }
+        else
+        {
+            userObj.GetComponent<Image>().color = Color.clear;
+        }
 
         if(connectedUserObjs.Count > 0)
         {
@@ -20,21 +28,23 @@ public class Node_PoliticalAxes : MonoBehaviour
 
         foreach(Node connectedNode in node.connectedNodes)
         {
-            Debug.Log("I'm making a userIndicator representing " + connectedNode + " for " + node);
-            var newUserObj = Instantiate(userObj, this.transform);
-            newUserObj.transform.localScale *= 0.75f;
-            newUserObj.transform.localPosition = connectedNode.userInformation.beliefs * (0.9f * 1.5f);
-            
-            if(connectedNode.isPlayer || connectedNode.isAlly)
+            if (!connectedNode.userInformation.userInfoHidden)
             {
-                newUserObj.GetComponent<Image>().color = Color.Lerp(Color.blue, Color.white, 0.5f);
-            }
-            else
-            {
-                newUserObj.GetComponent<Image>().color = Color.Lerp(Color.yellow, Color.white, 0.25f);
-            }
+                var newUserObj = Instantiate(userObj, this.transform);
+                newUserObj.transform.localScale *= 0.75f;
+                newUserObj.transform.localPosition = connectedNode.userInformation.beliefs * (0.9f * 1.5f);
 
-            connectedUserObjs.Add(newUserObj);
+                if (connectedNode.isPlayer || connectedNode.isAlly)
+                {
+                    newUserObj.GetComponent<Image>().color = Color.Lerp(Color.blue, Color.white, 0.5f);
+                }
+                else
+                {
+                    newUserObj.GetComponent<Image>().color = Color.Lerp(Color.yellow, Color.white, 0.25f);
+                }
+
+                connectedUserObjs.Add(newUserObj);
+            }
         }
     }
 

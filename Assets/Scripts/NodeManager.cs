@@ -34,14 +34,14 @@ public class NodeManager : MonoBehaviour
             if(node.isBanned)
             {
                 totalBanned++;
-                if (!node.misinformerClimateChange && !node.misinformerMinorityRights && !node.misinformerWealthInequality)
+                if (!node.userInformation.misinformerHori && !node.userInformation.misinformerVert)
                 {
                     StateManager.sM.GameOver(false);
                     return;
                 }
             }
 
-            if (node.misinformerClimateChange || node.misinformerMinorityRights || node.misinformerWealthInequality)
+            if (node.userInformation.misinformerHori || node.userInformation.misinformerVert)
             {
                 totalMisinformers++;
             }
@@ -138,7 +138,7 @@ public class NodeManager : MonoBehaviour
             {
                 if (connectedNode.isPlayer || connectedNode.isAlly)
                 {
-                    if (Mathf.Abs(connectedNode.userInformation.beliefs.x - node.userInformation.beliefs.x) < 1.1f && Mathf.Abs(connectedNode.userInformation.beliefs.y - node.userInformation.beliefs.y) < 1.1f)
+                    if (Mathf.Abs(connectedNode.userInformation.beliefs.x - node.userInformation.beliefs.x) + Mathf.Abs(connectedNode.userInformation.beliefs.y - node.userInformation.beliefs.y) < 1.1f)
                     {
                         node.isAlly = true;
                     }

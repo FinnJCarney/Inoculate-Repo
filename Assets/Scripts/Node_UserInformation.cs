@@ -9,6 +9,10 @@ public class Node_UserInformation : MonoBehaviour
     public string NodeName;
 
     public Vector2 beliefs;
+    public bool userInfoHidden;
+
+    public bool misinformerHori;
+    public bool misinformerVert;
 
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 }
