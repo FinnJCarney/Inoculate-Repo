@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -25,6 +26,7 @@ public class NodeManager : MonoBehaviour
         }
 
         CheckNodeConnections();
+        CheckNodeAbilities();
 
         int totalMisinformers = 0;
         int totalBanned = 0;
@@ -80,7 +82,15 @@ public class NodeManager : MonoBehaviour
                     if (line.connectedNodes.Contains(node) && line.connectedNodes.Contains(connectedNode))
                     {
                         alreadyConnected = true;
-                        line.lineR.material = twoWayLine;
+
+                        if ((node.isAlly && connectedNode.isAlly) || (node.isPlayer && connectedNode.isAlly) || (node.isAlly && connectedNode.isPlayer))
+                        {   
+                            line.lineR.material = blueLine;
+                        }
+                        else
+                        {
+                            line.lineR.material = twoWayLine;
+                        }
                     }
                 }
 
@@ -128,7 +138,28 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-    private void CheckNodeConnections()
+    private void CheckNodeAbilities()
+    {
+        foreach (Node node in nodes)
+        {
+            if(node.isAlly && node.userInformation.beliefs.x == 0 && node.userInformation.beliefs.y == 0)
+            {
+                if(!centristNodes.Contains(node))
+                {
+                    centristNodes.Add(node);
+                }
+            }
+            else
+            {
+                if (centristNodes.Contains(node))
+                {
+                    centristNodes.Remove(node);
+                }
+            }
+        }
+    }
+
+    public void CheckNodeConnections()
     {
         foreach(Node node in nodes)
         {
@@ -157,6 +188,10 @@ public class NodeManager : MonoBehaviour
     private int totalBanned;
 
     [SerializeField] private Material twoWayLine;
+    [SerializeField] private Material blueLine;
+    [SerializeField] private Material yellowLine;
+
+    [SerializeField] public List<Node> centristNodes = new List<Node>();
 }
 
 [System.Serializable]

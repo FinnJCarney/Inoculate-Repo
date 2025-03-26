@@ -95,13 +95,25 @@ public class Node : MonoBehaviour
         but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);
         but_Accuse.EnableButton(!userInformation.userInfoHidden && hasAllyNeighbourAvail);
 
+        but_Left.EnableButton(hasLeftNeighbourAvail && !userInformation.userInfoHidden);
+        but_Right.EnableButton(hasRightNeighbourAvail && !userInformation.userInfoHidden);
+        but_Up.EnableButton(hasUpNeighbourAvail && !userInformation.userInfoHidden);
+        but_Down.EnableButton(hasDownNeighbourAvail && !userInformation.userInfoHidden);
 
-        //New Stuff!
-        but_Left.EnableButton(hasLeftNeighbourAvail);
-        but_Right.EnableButton(hasRightNeighbourAvail);
-        but_Up.EnableButton(hasUpNeighbourAvail);
-        but_Down.EnableButton(hasDownNeighbourAvail);
-        //End of New Stuff
+        bool connectActionAvailable = false;
+
+        if(!userInformation.userInfoHidden && NodeManager.nM.centristNodes.Count > 0)
+        {
+            foreach(Node centristNode in NodeManager.nM.centristNodes)
+            {
+                if(!connectedNodes.Contains(centristNode) && centristNode != this)
+                {
+                    connectActionAvailable = true;
+                }
+            }
+        }
+
+        but_Connect.EnableButton(connectActionAvailable);
 
         if (theorheticalActions > 0)
         {
@@ -137,7 +149,7 @@ public class Node : MonoBehaviour
         }
     }
 
-    public void ActionResult(ActionType aT, bool playerActivated)
+    public void ActionResult(ActionType aT, bool playerActivated, Node actingNode)
     {
         if (aT == ActionType.DM)
         {
@@ -147,7 +159,6 @@ public class Node : MonoBehaviour
         if(aT == ActionType.Ban)
         {
             isBanned = true;
-            NodeManager.nM.DrawNodeConnectionLines();
         }
 
         if (aT == ActionType.Left && !userInformation.misinformerHori)
@@ -170,12 +181,20 @@ public class Node : MonoBehaviour
             userInformation.beliefs.y -= 1;
         }
 
+        if (aT == ActionType.Connect)
+        {
+            connectedNodes.Add(actingNode);
+            actingNode.connectedNodes.Add(actingNode);
+        }
+
         userInformation.beliefs.x = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.x));
         userInformation.beliefs.y = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.y));
 
+        NodeManager.nM.CheckNodeConnections();
         NodeManager.nM.SyncAllPoliticalAxes();
+        NodeManager.nM.DrawNodeConnectionLines();
 
-        if(playerActivated)
+        if (playerActivated)
         {
             playerPS.Play();
         }
@@ -250,6 +269,8 @@ public class Node : MonoBehaviour
     [SerializeField] UserButton but_Right;
     [SerializeField] UserButton but_Up;
     [SerializeField] UserButton but_Down;
+
+    [SerializeField] UserButton but_Connect;
 
     [SerializeField] ParticleSystem playerPS;
     [SerializeField] ParticleSystem aIPs;

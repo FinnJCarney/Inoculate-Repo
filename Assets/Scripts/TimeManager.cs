@@ -5,7 +5,7 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
 
-    private void Start()
+    private void Awake()
     {
         defaultTimeScale = 1.0f;
 
@@ -17,6 +17,11 @@ public class TimeManager : MonoBehaviour
         {
             i = this;
         }
+    }
+
+    private void OnDestroy()
+    {
+        i = null;
     }
 
     private void Update()

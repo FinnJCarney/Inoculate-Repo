@@ -50,42 +50,17 @@ public class ActionManager : MonoBehaviour
 
                 if (currentActions[i].actionType == ActionType.Ban)
                 {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Educate_ClimateChange)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Educate_MinorityRights)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Educate_WealthInequality)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Disinform_ClimateChange)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Disinform_MinorityRights)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Disinform_WealthInequality)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (educationActionLength - currentActions[i].timer) / educationActionLength));
+                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength));
                 }
 
                 if (currentActions[i].actionType == ActionType.Up || currentActions[i].actionType == ActionType.Down || currentActions[i].actionType == ActionType.Right || currentActions[i].actionType == ActionType.Left)
                 {
                     currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength));
+                }
+
+                if (currentActions[i].actionType == ActionType.Connect)
+                {
+                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength));
                 }
             }
             else
@@ -101,44 +76,8 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].actionType == ActionType.Ban)
             {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-            }
-
-            if (currentActions[i].actionType == ActionType.Educate_ClimateChange)
-            {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-            }
-
-            if (currentActions[i].actionType == ActionType.Educate_MinorityRights)
-            {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-            }
-
-            if (currentActions[i].actionType == ActionType.Educate_WealthInequality)
-            {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-            }
-
-            if (currentActions[i].actionType == ActionType.Disinform_ClimateChange)
-            {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-            }
-
-            if (currentActions[i].actionType == ActionType.Disinform_MinorityRights)
-            {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-            }
-
-            if (currentActions[i].actionType == ActionType.Disinform_WealthInequality)
-            {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
-                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (educationActionLength - currentActions[i].timer) / educationActionLength);
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
+                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
             }
 
             if (currentActions[i].actionType == ActionType.Up || currentActions[i].actionType == ActionType.Down || currentActions[i].actionType == ActionType.Right || currentActions[i].actionType == ActionType.Left)
@@ -147,9 +86,15 @@ public class ActionManager : MonoBehaviour
                 currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength);
             }
 
+            if (currentActions[i].actionType == ActionType.Connect)
+            {
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
+                currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
+            }
+
             if (currentActions[i].timer < 0f)
             {
-                currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].playerActivated);
+                currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].playerActivated, currentActions[i].actingNode);
                 currentActions[i].actingNode.performingAction = false;
                 currentActions[i].receivingNode.receivingActions--;
                 Destroy(currentActions[i].actionLine.gameObject);
@@ -192,55 +137,83 @@ public class ActionManager : MonoBehaviour
         Node actingNode = null;
 
 
-
-        foreach (Node connectedNode in receivingNode.connectedNodes)
+        if (buttonInfo.type != ActionType.Connect)
         {
-            connectedNode.nodePrio = 100;
-
-            if (connectedNode.performingAction || connectedNode.isBanned)
+            foreach (Node connectedNode in receivingNode.connectedNodes)
             {
-                connectedNode.nodePrio -= 1000;
+                connectedNode.nodePrio = 100;
+
+                if (connectedNode.performingAction || connectedNode.isBanned)
+                {
+                    connectedNode.nodePrio -= 1000;
+                }
+
+                connectedNode.nodePrio -= receivingNode.connectedNodes.IndexOf(connectedNode);
+                connectedNode.nodePrio -= connectedNode.connectedNodes.Count;
+
+                if (buttonInfo.type == ActionType.Left)
+                {
+                    connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.x - connectedNode.userInformation.beliefs.x) * 10;
+                }
+
+                if (buttonInfo.type == ActionType.Right)
+                {
+                    connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.x - receivingNode.userInformation.beliefs.x) * 10;
+                }
+
+                if (buttonInfo.type == ActionType.Up)
+                {
+                    connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.y - receivingNode.userInformation.beliefs.y) * 10;
+                }
+
+                if (buttonInfo.type == ActionType.Down)
+                {
+                    connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.y - connectedNode.userInformation.beliefs.y) * 10;
+                }
             }
 
-            connectedNode.nodePrio -= receivingNode.connectedNodes.IndexOf(connectedNode);
-            connectedNode.nodePrio -= connectedNode.connectedNodes.Count;
-
-            if (buttonInfo.type == ActionType.Left)
+            foreach (Node connectedNode in receivingNode.connectedNodes)
             {
-                connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.x - connectedNode.userInformation.beliefs.x) * 10;
-            }
+                if (connectedNode.nodePrio < 0)
+                {
+                    continue;
+                }
 
-            if (buttonInfo.type == ActionType.Right)
-            {
-                connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.x - receivingNode.userInformation.beliefs.x) * 10;
-            }
-
-            if (buttonInfo.type == ActionType.Up)
-            {
-                connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.y - receivingNode.userInformation.beliefs.y) * 10;
-            }
-
-            if (buttonInfo.type == ActionType.Down)
-            {
-                connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.y - connectedNode.userInformation.beliefs.y) * 10;
+                if (actingNode == null)
+                {
+                    actingNode = connectedNode;
+                }
+                else if (actingNode.nodePrio < connectedNode.nodePrio)
+                {
+                    actingNode = connectedNode;
+                }
             }
         }
 
-        foreach (Node connectedNode in receivingNode.connectedNodes)
+        if (buttonInfo.type == ActionType.Connect)
         {
-            if (connectedNode.nodePrio < 0)
+            Node closestCentristNode = null;
+            float shortestDistance = Mathf.Infinity;
+
+            foreach (Node centristNode in NodeManager.nM.centristNodes)
             {
-                continue;
+                if(!receivingNode.connectedNodes.Contains(centristNode))
+                {
+                    if(shortestDistance > Vector3.Distance(receivingNode.transform.position, centristNode.transform.position))
+                    {
+                        shortestDistance = Vector3.Distance(receivingNode.transform.position, centristNode.transform.position);
+                        closestCentristNode = centristNode;
+                    }
+                }
             }
 
-            if (actingNode == null)
-            {
-                actingNode = connectedNode;
-            }
-            else if (actingNode.nodePrio < connectedNode.nodePrio)
-            {
-                actingNode = connectedNode;
-            }
+            actingNode = closestCentristNode;
+        }
+
+        if (actingNode == null)
+        {
+            Debug.Log("Unable to find acting node");
+            return;
         }
 
         actingNode.performingAction = true;
@@ -280,7 +253,6 @@ public class ActionManager : MonoBehaviour
             currentActions.Add(newCurrentAction);
         }
 
-        //New Stuff
         if (buttonInfo.type == ActionType.Left)
         {
             MakeNewAction(ActionType.Left, mediumOnlineActionLength, actingNode, receivingNode);
@@ -300,7 +272,11 @@ public class ActionManager : MonoBehaviour
         {
             MakeNewAction(ActionType.Down, mediumOnlineActionLength, actingNode, receivingNode);
         }
-        //End of New Stuff
+
+        if (buttonInfo.type == ActionType.Connect)
+        {
+            MakeNewAction(ActionType.Connect, longOnlineActionLength, actingNode, receivingNode);
+        }
     }
 
     private void MakeNewAction(ActionType newActionType, float actionLength, Node actingNode, Node receivingNode)
@@ -309,7 +285,7 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.actionType = newActionType;
         newCurrentAction.actingNode = actingNode;
         newCurrentAction.receivingNode = receivingNode;
-        newCurrentAction.timer = educationActionLength;
+        newCurrentAction.timer = actionLength;
         newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
         newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
         newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
@@ -554,18 +530,12 @@ public class ActionManager : MonoBehaviour
 public enum ActionType
 { 
     DM,
-    Educate,
     Ban,
-    Educate_ClimateChange,
-    Educate_MinorityRights,
-    Educate_WealthInequality,
-    Disinform_ClimateChange,
-    Disinform_MinorityRights,
-    Disinform_WealthInequality,
     Left,
     Right,
     Up,
     Down,
+    Connect,
     None
 }
 
