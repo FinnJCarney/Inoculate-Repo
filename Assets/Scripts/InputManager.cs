@@ -27,7 +27,7 @@ public class Inputmanger : MonoBehaviour
             {
                 if (raycastHitInfo.collider.gameObject.tag == "Node")
                 {
-                    NodeManager.nM.CloseAllNodeMenus();
+                    //NodeManager.nM.CloseAllNodeMenus();
                     raycastHitInfo.collider.transform.parent.GetComponent<Node>().ShowMenu(true);
                 }
 

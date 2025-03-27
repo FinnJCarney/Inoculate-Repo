@@ -124,18 +124,7 @@ public class NodeManager : MonoBehaviour
 
     public void CloseAllNodeMenus()
     {
-        foreach (Node node in nodes)
-        {
-            node.ShowMenu(false);
-        }
-    }
-
-    public void SyncAllPoliticalAxes()
-    {
-        foreach (Node node in nodes)
-        {
-            node.politicalAxes.SyncPoliticalAxes(node);
-        }
+        HUDManager.i.SyncMenu(null);
     }
 
     private void CheckNodeAbilities()

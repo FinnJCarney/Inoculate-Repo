@@ -23,12 +23,12 @@ public class Node : MonoBehaviour
 
         handleText.text = nodeHandle;
 
-        ShowMenu(false);
+        menu.SetActive(false);
         bannedCover.SetActive(isBanned);
 
         actionPitch = Random.Range(1.25f, 1.5f);
 
-        politicalAxes.SyncPoliticalAxes(this);
+        //politicalAxes.SyncPoliticalAxes(this);
     }
 
     private void Update()
@@ -191,7 +191,7 @@ public class Node : MonoBehaviour
         userInformation.beliefs.y = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.y));
 
         NodeManager.nM.CheckNodeConnections();
-        NodeManager.nM.SyncAllPoliticalAxes();
+        HUDManager.i.SyncPoliticalAxes();
         NodeManager.nM.DrawNodeConnectionLines();
 
         if (playerActivated)
@@ -233,7 +233,8 @@ public class Node : MonoBehaviour
     public void ShowMenu(bool show)
     {
         showMenu = show;
-        menu.SetActive(show);
+        //menu.SetActive(show);
+        HUDManager.i.SyncMenu(this);
         //Buttons.SetActive(show);
     }
 
@@ -262,15 +263,13 @@ public class Node : MonoBehaviour
     [SerializeField] TextMeshPro handleText;
     [SerializeField] GameObject bannedCover;
 
-    [SerializeField] UserButton but_DM;
-    [SerializeField] UserButton but_Accuse;
-
-    [SerializeField] UserButton but_Left;
-    [SerializeField] UserButton but_Right;
-    [SerializeField] UserButton but_Up;
-    [SerializeField] UserButton but_Down;
-
-    [SerializeField] UserButton but_Connect;
+    [SerializeField] public UserButton but_DM;
+    [SerializeField] public UserButton but_Accuse;
+    [SerializeField] public UserButton but_Left;
+    [SerializeField] public UserButton but_Right;
+    [SerializeField] public UserButton but_Up;
+    [SerializeField] public UserButton but_Down;
+    [SerializeField] public UserButton but_Connect;
 
     [SerializeField] ParticleSystem playerPS;
     [SerializeField] ParticleSystem aIPs;

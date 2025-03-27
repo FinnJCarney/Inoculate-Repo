@@ -1630,7 +1630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3149060032755715543
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12617,7 +12617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2799481492739417845
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12713,14 +12713,13 @@ GameObject:
   - component: {fileID: 7641019301765506682}
   - component: {fileID: 4848311147570995935}
   - component: {fileID: 2841548670881142487}
-  - component: {fileID: 7653668461068370184}
   m_Layer: 5
   m_Name: PoliticalAxes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7641019301765506682
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12781,24 +12780,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7653668461068370184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7386698407419455093}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b21025b783ea4284dad7e18b2445ad45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  userObj: {fileID: 2244104774461840099, guid: 64c526517dfc5f040ad5a4af0f37893e, type: 3}
-  userObjsHolder: {fileID: 8788627388481070285}
-  myUserObj: {fileID: 0}
-  connectedUserObjs: []
-  userReveal: {fileID: 8300000, guid: dbc3c4653ffa24943acd6bcd2e71f876, type: 3}
-  userMove: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
 --- !u!1 &7559115712013899185
 GameObject:
   m_ObjectHideFlags: 0
@@ -12871,7 +12852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userInformation: {fileID: 1313546436057439833}
-  politicalAxes: {fileID: 7653668461068370184}
+  politicalAxes: {fileID: 0}
   showMenu: 0
   isAlly: 0
   isBanned: 0
