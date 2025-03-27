@@ -233,8 +233,12 @@ public class Node : MonoBehaviour
     public void ShowMenu(bool show)
     {
         showMenu = show;
-        //menu.SetActive(show);
-        HUDManager.i.SyncMenu(this);
+        menu.SetActive(show);
+
+        if (show)
+        {
+            HUDManager.i.SyncMenu(this);
+        }
         //Buttons.SetActive(show);
     }
 

@@ -124,6 +124,11 @@ public class NodeManager : MonoBehaviour
 
     public void CloseAllNodeMenus()
     {
+        foreach(Node node in nodes)
+        {
+            node.ShowMenu(false);
+        }
+
         HUDManager.i.SyncMenu(null);
     }
 

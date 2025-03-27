@@ -8,11 +8,6 @@ using UnityEditor.Experimental.GraphView;
 public class Node_PoliticalAxes : MonoBehaviour
 {
 
-    private void Start()
-    {
-        ClearAxes();
-    }
-
     public void SyncPoliticalAxes(Node node, bool onClick)
     {
         if(node == null)

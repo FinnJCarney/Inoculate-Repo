@@ -1843,6 +1843,11 @@ PrefabInstance:
       propertyPath: userInfoHidden
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2914076740761299765, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6232525151898465273, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: cCHidden
