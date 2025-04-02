@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Node;
@@ -22,6 +23,11 @@ public class ActionManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        aM = null;
+    }
+
     private void Start()
     {
         tm = TimeManager.i;
@@ -38,11 +44,6 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].playerActivated || currentActions[i].actingNode.showMenu || currentActions[i].receivingNode.showMenu)
             {
-                //if (!currentActions[i].actionLine.GetComponent<AudioSource>().isPlaying)
-                //{
-                //    currentActions[i].actionLine.GetComponent<AudioSource>().Play();
-                //}
-
                 if (currentActions[i].actionType == ActionType.DM)
                 {
                     currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (dMActionLength - currentActions[i].timer) / dMActionLength));
@@ -70,25 +71,25 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].actionType == ActionType.DM)
             {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (dMActionLength - currentActions[i].timer) / dMActionLength);
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (dMActionLength - currentActions[i].timer) / dMActionLength, currentActions[i].faction);
                 currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (dMActionLength - currentActions[i].timer) / dMActionLength);
             }
 
             if (currentActions[i].actionType == ActionType.Ban)
             {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength, currentActions[i].faction);
                 currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
             }
 
             if (currentActions[i].actionType == ActionType.Up || currentActions[i].actionType == ActionType.Down || currentActions[i].actionType == ActionType.Right || currentActions[i].actionType == ActionType.Left)
             {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength);
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength, currentActions[i].faction);
                 currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength);
             }
 
             if (currentActions[i].actionType == ActionType.Connect)
             {
-                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
+                SetActionRing(currentActions[i].actionRing, currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength, currentActions[i].faction);
                 currentActions[i].receivingNode.SetActionAudio(currentActions[i].playerActivated, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength);
             }
 
@@ -105,19 +106,31 @@ public class ActionManager : MonoBehaviour
         }
     }
 
-    private void SetActionRing(GameObject actionRing, bool playerActivated, float amountThrough)
+    private void SetActionRing(GameObject actionRing, bool playerActivated, float amountThrough, AllyStatus faction)
     {
         actionRing.transform.localScale = Vector3.Lerp(outerActionRingScale, new Vector3(0.1f, 0.1f, 0.1f), amountThrough);
         
         Color idealColor = Color.clear;
         
-        if(playerActivated)
+        if(faction == AllyStatus.Red)
+        {
+            idealColor = Color.red;
+        }
+        else if(faction == AllyStatus.Yellow)
+        {
+            idealColor = Color.yellow;
+        }
+        else if (faction == AllyStatus.Blue)
         {
             idealColor = Color.blue;
         }
+        else if (faction == AllyStatus.Green)
+        {
+            idealColor = Color.green;
+        }
         else
         {
-            idealColor = Color.yellow;
+            idealColor = Color.white;
         }
 
         actionRing.GetComponent<SpriteRenderer>().color = Color.Lerp(Color.clear, idealColor, amountThrough);
@@ -143,13 +156,13 @@ public class ActionManager : MonoBehaviour
             {
                 connectedNode.nodePrio = 100;
 
-                if (connectedNode.performingAction || connectedNode.isBanned)
+                if (connectedNode.performingAction || connectedNode.isBanned || connectedNode.userInformation.allyStatus != LevelManager.lM.playerAllyFaction)
                 {
                     connectedNode.nodePrio -= 1000;
                 }
 
                 connectedNode.nodePrio -= receivingNode.connectedNodes.IndexOf(connectedNode);
-                connectedNode.nodePrio -= connectedNode.connectedNodes.Count;
+                connectedNode.nodePrio -= connectedNode.connectedNodes.Count * 5;
 
                 if (buttonInfo.type == ActionType.Left)
                 {
@@ -221,36 +234,12 @@ public class ActionManager : MonoBehaviour
 
         if (buttonInfo.type == ActionType.DM)
         {
-            CurrentAction newCurrentAction;
-            newCurrentAction.actionType = ActionType.DM;
-            newCurrentAction.actingNode = actingNode;
-            newCurrentAction.receivingNode = receivingNode;
-            newCurrentAction.timer = dMActionLength;
-            newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
-            newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
-            newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
-            newCurrentAction.playerActivated = true;
-            newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
-            newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
-            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
-            currentActions.Add(newCurrentAction);
+            MakeNewAction(ActionType.DM, shortOnlineActionLength, actingNode, receivingNode);
         }
 
         if (buttonInfo.type == ActionType.Ban)
         {
-            CurrentAction newCurrentAction;
-            newCurrentAction.actionType = ActionType.Ban;
-            newCurrentAction.actingNode = actingNode;
-            newCurrentAction.receivingNode = receivingNode;
-            newCurrentAction.timer = educationActionLength;
-            newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
-            newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
-            newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
-            newCurrentAction.playerActivated = true;
-            newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
-            newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
-            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
-            currentActions.Add(newCurrentAction);
+            MakeNewAction(ActionType.Ban, longOnlineActionLength, actingNode, receivingNode);
         }
 
         if (buttonInfo.type == ActionType.Left)
@@ -286,14 +275,36 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.actingNode = actingNode;
         newCurrentAction.receivingNode = receivingNode;
         newCurrentAction.timer = actionLength;
-        newCurrentAction.actionLine = Instantiate<GameObject>(playerLineObj).GetComponent<LineRenderer>();
+        newCurrentAction.faction = actingNode.userInformation.allyStatus;
+
+        if (newCurrentAction.faction == AllyStatus.Red)
+        {
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<LineRenderer>();
+        }
+        else if (newCurrentAction.faction == AllyStatus.Yellow)
+        {
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<LineRenderer>();
+        }
+        else if (newCurrentAction.faction == AllyStatus.Green)
+        {
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<LineRenderer>();
+        }
+        else if (newCurrentAction.faction == AllyStatus.Blue)
+        {
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<LineRenderer>();
+        }
+        else
+        {
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<LineRenderer>();
+        }
+
         newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
         newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
         newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
         newCurrentAction.playerActivated = true;
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
         newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
-        SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
+        SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f, newCurrentAction.faction);
         currentActions.Add(newCurrentAction);
     }
 
@@ -308,7 +319,7 @@ public class ActionManager : MonoBehaviour
         {
             node.nodePrio = 0;
 
-            if (node.performingAction || node.isPlayer || node.isAlly || node.isBanned)
+            if (node.performingAction || node.userInformation.allyStatus == LevelManager.lM.playerAllyFaction || node.isBanned)
             {
                 node.nodePrio -= 1000;
             }
@@ -493,14 +504,35 @@ public class ActionManager : MonoBehaviour
             newCurrentAction.receivingNode = receivingNodes[i];
             newCurrentAction.receivingNode.receivingActions++;
             newCurrentAction.timer = mediumOnlineActionLength;
-            newCurrentAction.actionLine = Instantiate<GameObject>(actionLineObj).GetComponent<LineRenderer>();
-            newCurrentAction.actionLine.colorGradient = neutralGradient;
+            newCurrentAction.faction = actingNodes[i].userInformation.allyStatus;
+
+            if (newCurrentAction.faction == AllyStatus.Red)
+            {
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<LineRenderer>();
+            }
+            else if (newCurrentAction.faction == AllyStatus.Yellow)
+            {
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<LineRenderer>();
+            }
+            else if (newCurrentAction.faction == AllyStatus.Green)
+            {
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<LineRenderer>();
+            }
+            else if (newCurrentAction.faction == AllyStatus.Blue)
+            {
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<LineRenderer>();
+            }
+            else
+            {
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<LineRenderer>();
+            }
+
             newCurrentAction.actionLine.SetPosition(0, actingNodes[i].transform.position);
             newCurrentAction.actionLine.SetPosition(1, actingNodes[i].transform.position);
             newCurrentAction.playerActivated = false;
             newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
             newCurrentAction.actionRing.transform.position = receivingNodes[i].transform.position;
-            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f);
+            SetActionRing(newCurrentAction.actionRing, newCurrentAction.playerActivated, 0f, newCurrentAction.faction);
             currentActions.Add(newCurrentAction);
         }
     }
@@ -515,9 +547,11 @@ public class ActionManager : MonoBehaviour
     [SerializeField] float mediumOnlineActionLength;
     [SerializeField] float longOnlineActionLength;
 
-    [SerializeField] GameObject playerLineObj;
-    [SerializeField] GameObject actionLineObj;
-    [SerializeField] Gradient neutralGradient;
+    [SerializeField] GameObject ActionLineObj_Blue;
+    [SerializeField] GameObject ActionLineObj_Yellow;
+    [SerializeField] GameObject ActionLineObj_Red;
+    [SerializeField] GameObject ActionLineObj_Green;
+    [SerializeField] GameObject ActionLineObj_Neutral;
 
     [SerializeField] GameObject actionRing;
     [SerializeField] Vector3 outerActionRingScale;
@@ -549,5 +583,6 @@ public struct CurrentAction
     public LineRenderer actionLine;
     public bool playerActivated;
     public GameObject actionRing;
+    public AllyStatus faction;
 }
 

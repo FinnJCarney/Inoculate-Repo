@@ -56,7 +56,7 @@ public class Node : MonoBehaviour
                 continue;
             }
 
-            if (connectedNode.isAlly || connectedNode.isPlayer)
+            if (connectedNode.userInformation.allyStatus == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;
                 possibleActions ++;
@@ -143,9 +143,27 @@ public class Node : MonoBehaviour
             bannedCover.SetActive(isBanned);
         }
 
-        if (isPlayer || isAlly)
+        if (userInformation.allyStatus == LevelManager.lM.playerAllyFaction)
         {
-            accessRing.color = Color.blue;
+            if(userInformation.allyStatus == AllyStatus.Red)
+            {
+                accessRing.color = Color.red;
+            }
+
+            else if (userInformation.allyStatus == AllyStatus.Yellow)
+            {
+                accessRing.color = Color.yellow;
+            }
+
+            else if (userInformation.allyStatus == AllyStatus.Green)
+            {
+                accessRing.color = Color.green;
+            }
+
+            else if (userInformation.allyStatus == AllyStatus.Blue)
+            {
+                accessRing.color = Color.blue;
+            }
         }
     }
 
@@ -237,6 +255,7 @@ public class Node : MonoBehaviour
 
         if (show)
         {
+            NodeManager.nM.CloseAllNodeMenus(this);
             HUDManager.i.SyncMenu(this);
         }
         //Buttons.SetActive(show);
@@ -246,18 +265,11 @@ public class Node : MonoBehaviour
     [HideInInspector] public Node_PoliticalAxes politicalAxes;
 
     public bool showMenu;
-    public bool isAlly;
     public bool isBanned;
 
     public int nodePrio;
     public bool performingAction;
     public int receivingActions;
-
-    [Header("Gameplay Assignments")]
-
-    [SerializeField] public bool isPlayer;
-                     
-    
 
     [Header("Object Assignements")]
     private UserInfo uI;
@@ -282,20 +294,9 @@ public class Node : MonoBehaviour
     [SerializeField] AudioClip actionComplete;
     [SerializeField] AudioClip actionReady;
     private float actionPitch;
-
-    [SerializeField] public BeliefStates beliefClimateChange;
-    [SerializeField] public BeliefStates beliefMinorityRights;
-    [SerializeField] public BeliefStates beliefWealthInequality;
     
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 
     [SerializeField] SpriteRenderer accessRing;
     [SerializeField] SpriteRenderer allowanceRing;
-
-    public enum BeliefStates
-    {
-        Believes,
-        Unsure,
-        Denies,
-    }
 }

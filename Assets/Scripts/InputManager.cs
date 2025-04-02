@@ -46,7 +46,7 @@ public class Inputmanger : MonoBehaviour
 
         if(mouseButtonRightDown)
         {
-            NodeManager.nM.CloseAllNodeMenus();
+            NodeManager.nM.CloseAllNodeMenus(null);
         }
     }
 

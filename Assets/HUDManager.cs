@@ -72,7 +72,7 @@ public class HUDManager : MonoBehaviour
                 continue;
             }
 
-            if (connectedNode.isAlly || connectedNode.isPlayer)
+            if (connectedNode.userInformation.allyStatus == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;
                 possibleActions++;

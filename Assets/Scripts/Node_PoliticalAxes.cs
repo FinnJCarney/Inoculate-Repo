@@ -105,13 +105,25 @@ public class Node_PoliticalAxes : MonoBehaviour
                         }
                     }
 
-                    if (connectedNode.isPlayer || connectedNode.isAlly)
+                    if (connectedNode.userInformation.allyStatus == AllyStatus.Red)
+                    {
+                        associatedUserObj.userImage.color = Color.Lerp(Color.red, Color.white, 0.5f);
+                    }
+                    else if(connectedNode.userInformation.allyStatus == AllyStatus.Yellow)
+                    {
+                        associatedUserObj.userImage.color = Color.Lerp(Color.yellow, Color.white, 0.125f);
+                    }
+                    else if (connectedNode.userInformation.allyStatus == AllyStatus.Green)
+                    {
+                        associatedUserObj.userImage.color = Color.Lerp(Color.green, Color.white, 0.25f);
+                    }
+                    else if (connectedNode.userInformation.allyStatus == AllyStatus.Blue)
                     {
                         associatedUserObj.userImage.color = Color.Lerp(Color.blue, Color.white, 0.5f);
                     }
-                    else
+                    else if (connectedNode.userInformation.allyStatus == AllyStatus.Neutral)
                     {
-                        associatedUserObj.userImage.color = Color.Lerp(Color.yellow, Color.white, 0.125f);
+                        associatedUserObj.userImage.color = Color.Lerp(Color.black, Color.white, 0.75f);
                     }
 
                     if (associatedUserObj.userObj.transform.localPosition.x != connectedNode.userInformation.beliefs.x * (0.9f * 1.5f) || associatedUserObj.userObj.transform.localPosition.y != connectedNode.userInformation.beliefs.y * (0.9f * 1.5f))
