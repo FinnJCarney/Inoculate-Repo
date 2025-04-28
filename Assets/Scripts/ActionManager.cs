@@ -46,27 +46,22 @@ public class ActionManager : MonoBehaviour
             {
                 if (currentActions[i].actionType == ActionType.DM)
                 {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (dMActionLength - currentActions[i].timer) / dMActionLength));
+                    currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / dMActionLength), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
                 }
 
-                if (currentActions[i].actionType == ActionType.Ban)
+                if (currentActions[i].actionType == ActionType.Ban || currentActions[i].actionType == ActionType.Connect)
                 {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength));
+                    currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / longOnlineActionLength), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
                 }
 
                 if (currentActions[i].actionType == ActionType.Up || currentActions[i].actionType == ActionType.Down || currentActions[i].actionType == ActionType.Right || currentActions[i].actionType == ActionType.Left)
                 {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (mediumOnlineActionLength - currentActions[i].timer) / mediumOnlineActionLength));
-                }
-
-                if (currentActions[i].actionType == ActionType.Connect)
-                {
-                    currentActions[i].actionLine.SetPosition(1, Vector3.Lerp(currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, (longOnlineActionLength - currentActions[i].timer) / longOnlineActionLength));
+                    currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / mediumOnlineActionLength), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
                 }
             }
             else
             {
-                currentActions[i].actionLine.SetPosition(1, currentActions[i].actingNode.transform.position);
+                currentActions[i].actionLine.SyncLine(0, currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
             }
 
             if (currentActions[i].actionType == ActionType.DM)
@@ -279,28 +274,27 @@ public class ActionManager : MonoBehaviour
 
         if (newCurrentAction.faction == AllyStatus.Red)
         {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<LineRenderer>();
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<ActionLine>();
         }
         else if (newCurrentAction.faction == AllyStatus.Yellow)
         {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<LineRenderer>();
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<ActionLine>();
         }
         else if (newCurrentAction.faction == AllyStatus.Green)
         {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<LineRenderer>();
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<ActionLine>();
         }
         else if (newCurrentAction.faction == AllyStatus.Blue)
         {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<LineRenderer>();
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<ActionLine>();
         }
         else
         {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<LineRenderer>();
+            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<ActionLine>();
         }
 
         newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
-        newCurrentAction.actionLine.SetPosition(0, actingNode.transform.position);
-        newCurrentAction.actionLine.SetPosition(1, actingNode.transform.position);
+        newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position);
         newCurrentAction.playerActivated = true;
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
         newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
@@ -326,7 +320,7 @@ public class ActionManager : MonoBehaviour
 
             if (previousNodes.Contains(node))
             {
-                node.nodePrio -= 25;
+                node.nodePrio -= 100;
             }
 
             if(node.userInformation.misinformerHori)
@@ -508,27 +502,26 @@ public class ActionManager : MonoBehaviour
 
             if (newCurrentAction.faction == AllyStatus.Red)
             {
-                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<LineRenderer>();
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<ActionLine>();
             }
             else if (newCurrentAction.faction == AllyStatus.Yellow)
             {
-                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<LineRenderer>();
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<ActionLine>();
             }
             else if (newCurrentAction.faction == AllyStatus.Green)
             {
-                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<LineRenderer>();
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<ActionLine>();
             }
             else if (newCurrentAction.faction == AllyStatus.Blue)
             {
-                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<LineRenderer>();
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<ActionLine>();
             }
             else
             {
-                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<LineRenderer>();
+                newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<ActionLine>();
             }
 
-            newCurrentAction.actionLine.SetPosition(0, actingNodes[i].transform.position);
-            newCurrentAction.actionLine.SetPosition(1, actingNodes[i].transform.position);
+            newCurrentAction.actionLine.SyncLine(0, newCurrentAction.actingNode.transform.position, newCurrentAction.receivingNode.transform.position);
             newCurrentAction.playerActivated = false;
             newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
             newCurrentAction.actionRing.transform.position = receivingNodes[i].transform.position;
@@ -580,7 +573,7 @@ public struct CurrentAction
     public Node actingNode;
     public Node receivingNode;
     public float timer;
-    public LineRenderer actionLine;
+    public ActionLine actionLine;
     public bool playerActivated;
     public GameObject actionRing;
     public AllyStatus faction;
