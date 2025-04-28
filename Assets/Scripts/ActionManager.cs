@@ -28,6 +28,14 @@ public class ActionManager : MonoBehaviour
         aM = null;
     }
 
+    public void FlushAllActions()
+    {
+        for (int i = currentActions.Count - 1; i >= 0; i--)
+        {
+            currentActions.Remove(currentActions[i]);
+        }
+    }
+
     private void Start()
     {
         tm = TimeManager.i;

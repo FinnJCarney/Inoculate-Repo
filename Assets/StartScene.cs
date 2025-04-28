@@ -7,9 +7,10 @@ public class StartScene : MonoBehaviour
 {
     void Start()
     {
-        SceneManager.LoadSceneAsync(1);
-        SceneManager.LoadSceneAsync(2);
-        SceneManager.LoadSceneAsync(3);
+        
+        SceneManager.LoadScene(1, LoadSceneMode.Additive);
+        SceneManager.LoadScene(2, LoadSceneMode.Additive);
+        SceneManager.LoadScene(3, LoadSceneMode.Additive);
         SceneManager.UnloadScene(0);
     }
 }

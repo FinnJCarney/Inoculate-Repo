@@ -37,6 +37,8 @@ public class Inputmanger : MonoBehaviour
                     ActionManager.aM.PerformButtonAction(buttonInfo);
                 }
             }
+
+            prevMousePos = curMousePos;
         }
 
         if(mouseButtonHeld)

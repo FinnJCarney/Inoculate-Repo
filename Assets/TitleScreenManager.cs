@@ -29,13 +29,20 @@ public class TitleScreenManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(clickNumber < movePos.Length)
+        if (clickNumber < movePos.Length)
         {
             this.transform.localPosition = Vector3.Lerp(this.transform.localPosition, movePos[clickNumber], 0.25f);
         }
         else
         {
-            SceneLoader.sL.LoadScene(Level1SceneName);
+            if (!begunLoad)
+            {
+                SceneLoader.sL.LoadManagers();
+                SceneLoader.sL.LoadHUD();
+                SceneLoader.sL.LoadSceneAdditive("Level1");
+                begunLoad = true;
+            }
+            SceneLoader.sL.UnloadScene("TitleScreen");
         }
     }
 
@@ -51,4 +58,6 @@ public class TitleScreenManager : MonoBehaviour
     int clickNumber;
     [SerializeField] Vector3[] movePos;
     [SerializeField] string Level1SceneName;
+
+    bool begunLoad = false;
 }

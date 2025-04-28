@@ -18,8 +18,31 @@ public class NodeManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        nM = null;
+    }
+
+    public void FlushAllLinesAndNodes()
+    {
+        for (int i = lines.Count - 1; i >= 0; i--)
+        {
+            Destroy(lines[i].lineR.gameObject);
+            lines.Remove(lines[i]);
+        }
+
+        for (int i = nodes.Count - 1; i >= 0; i--)
+        {
+            nodes.Remove(nodes[i]);
+        }
+    }
+
     private void Update()
     {
+        if(StateManager.sM == null || LevelManager.lM == null)
+        {
+            return;
+        }
 
         DrawNodeConnectionLines();
         CheckNodeConnections();

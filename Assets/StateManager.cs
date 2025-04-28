@@ -10,6 +10,11 @@ public class StateManager : MonoBehaviour
         sM = this;
     }
 
+    private void OnDestroy()
+    {
+        sM = null;
+    }
+
     public void GameOver(bool won)
     {
         if(gameOver)
@@ -36,14 +41,18 @@ public class StateManager : MonoBehaviour
     {
         if(gameOver && Input.GetMouseButtonDown(0))
         {
+            NodeManager.nM.FlushAllLinesAndNodes();
+            ActionManager.aM.FlushAllActions();
+            SceneLoader.sL.UnloadScene(currentScene);
             if (wonOrLost)
             {
-                SceneLoader.sL.LoadScene(successScene);
+                SceneLoader.sL.LoadSceneAdditive(successScene);
             }
             else
             {
-                SceneLoader.sL.LoadScene(failScene);
+                SceneLoader.sL.LoadSceneAdditive(failScene);
             }
+            Debug.Log(this.gameObject.scene);
         }
     }
 
@@ -56,4 +65,5 @@ public class StateManager : MonoBehaviour
     [SerializeField] private GameObject FailureScreen;
     [SerializeField] private string failScene;
     [SerializeField] private string successScene;
+    [SerializeField] private string currentScene;
 }
