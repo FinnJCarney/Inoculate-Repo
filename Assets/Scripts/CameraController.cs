@@ -36,6 +36,39 @@ public class CameraController : MonoBehaviour
                 velocity += (zoomDir * newZoomAmount * zoomMagnitude);
             }
         }
+
+        if(Input.touchCount > 1)
+        {
+            foreach(Touch touch in Input.touches)
+            {
+                if(touch.phase == TouchPhase.Began)
+                {
+                    pinchDis = Vector2.Distance(Input.touches[0].position, Input.touches[1].position);
+                }
+            }
+
+            float newDistance = Vector2.Distance(Input.touches[0].position, Input.touches[1].position);
+            float disChange = (pinchDis - newDistance) * 0.005f;
+            Debug.Log(disChange);
+            if (Mathf.Abs(disChange) > 0.01f)
+            {
+                if (disChange + zoomAmount > 1f)
+                {
+                    zoomAmount = 1;
+                }
+                else if (disChange + zoomAmount < -1f)
+                {
+                    zoomAmount = -1;
+                }
+                else
+                {
+                    zoomAmount += disChange;
+                    velocity += (zoomDir * -disChange * zoomMagnitude);
+                }
+            }
+
+            pinchDis = newDistance;
+        }
         
 
 
@@ -53,6 +86,7 @@ public class CameraController : MonoBehaviour
     private float defaultY; //Use this to clamp zooming? Idk
     private float zoomAmount;
     private Vector3 zoomDir;
+    private float pinchDis;
     [SerializeField] float zoomMagnitude;
     [SerializeField] private float speed; 
 }

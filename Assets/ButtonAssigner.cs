@@ -9,11 +9,16 @@ public class ButtonAssigner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(reqMan == RequestedManager.TimeManager)
-        {
-            var button = GetComponent<Button>();
+        var button = GetComponent<Button>();
 
+        if (reqMan == RequestedManager.TimeManager)
+        {
             button.onClick.AddListener(delegate { TimeManager.i.SetTimeScale(value); } );
+        }
+
+        if(reqMan == RequestedManager.HUDManager)
+        {
+            button.onClick.AddListener(delegate { NodeManager.nM.CloseAllNodeMenus(null); });
         }
     }
 
@@ -24,7 +29,8 @@ public class ButtonAssigner : MonoBehaviour
     public enum RequestedManager
     { 
         None,
-        TimeManager
+        TimeManager,
+        HUDManager
     }
 
 }

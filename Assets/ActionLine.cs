@@ -19,7 +19,6 @@ public class ActionLine : MonoBehaviour
             Vector3 newEndingPos = endingPos +  (Vector3.down * 0.5f);
             float positionValue = i / (float)lineRenderer.positionCount * amountThrough;
             float middleProximity = 1f - Mathf.Pow(Mathf.Abs((positionValue - 0.5f) * 2f), 2f);
-            Debug.Log(middleProximity);
             Vector3 pointPos = Vector3.Lerp(startingPos, newEndingPos, positionValue);
             pointPos += (new Vector3(randomOffset.x, yValue, randomOffset.y)) * middleProximity;
             lineRenderer.SetPosition(i, pointPos);

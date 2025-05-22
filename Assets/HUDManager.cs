@@ -71,7 +71,7 @@ public class HUDManager : MonoBehaviour
                 continue;
             }
 
-            if (connectedNode.userInformation.allyStatus == LevelManager.lM.playerAllyFaction)
+            if (connectedNode.userInformation.faction == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;
                 possibleActions++;
@@ -109,16 +109,16 @@ public class HUDManager : MonoBehaviour
     
         bool connectActionAvailable = false;
 
-        if (!selectedNode.userInformation.userInfoHidden && NodeManager.nM.centristNodes.Count > 0)
-        {
-            foreach (Node centristNode in NodeManager.nM.centristNodes)
-            {
-                if (!selectedNode.connectedNodes.Contains(centristNode) && centristNode != this)
-                {
-                    connectActionAvailable = true;
-                }
-            }
-        }
+        //if (!selectedNode.userInformation.userInfoHidden && NodeManager.nM.centristNodes.Count > 0)
+        //{
+        //    foreach (Node centristNode in NodeManager.nM.centristNodes)
+        //    {
+        //        if (!selectedNode.connectedNodes.Contains(centristNode) && centristNode != this)
+        //        {
+        //            connectActionAvailable = true;
+        //        }
+        //    }
+        //}
 
         if (!selectedNode.isBanned)
         {

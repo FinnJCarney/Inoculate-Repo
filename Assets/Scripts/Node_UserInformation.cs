@@ -12,8 +12,10 @@ public class Node_UserInformation : MonoBehaviour
     public bool userInfoHidden;
 
     public bool isPlayer;
-    public AllyStatus allyStatus;
-    public AllyStatus instigator;
+    public Faction faction;
+    public Faction instigator;
+
+    public levelFaction levelFaction;
 
     public bool misinformerHori;
     public bool misinformerVert;
@@ -21,13 +23,17 @@ public class Node_UserInformation : MonoBehaviour
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 }
 
-public enum AllyStatus
+public enum Faction
 { 
-    Red,
-    Blue,
-    Green,
-    Yellow,
+    UpRight,
+    UpLeft,
+    DownLeft,
+    DownRight,
     Neutral,
+    UpCenter,
+    DownCenter,
+    CenterRight,
+    CenterLeft,
     None
 }
 

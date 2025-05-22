@@ -134,6 +134,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: faction
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: beliefs.x
       value: -1
       objectReference: {fileID: 0}
@@ -321,7 +326,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNode: {fileID: 264201882}
-  playerAllyFaction: 1
+  playerAllyFaction: 2
+  numOfActionsPerTurn: 1
+  roundTimer: 5
+  factionTimers:
+  - timer: 5
+    faction: 3
+  - timer: 5
+    faction: 2
+  - timer: 5
+    faction: 4
+  specificFactionSettings: []
 --- !u!224 &203814428 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8788627388481070285, guid: 7f1ddec15223f064784005becbf99e84,
@@ -910,13 +925,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: faction
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: beliefs.x
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: beliefs.y
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1173,7 +1193,7 @@ MonoBehaviour:
   SuccessScreen: {fileID: 1320127541}
   FailureScreen: {fileID: 1352259083}
   failScene: Level1
-  successScene: Level2
+  successScene: Level3
   currentScene: Level1
 --- !u!1 &1241353151
 GameObject:
@@ -1378,6 +1398,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: faction
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: beliefs.x
       value: 2
       objectReference: {fileID: 0}
@@ -1389,12 +1414,12 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: allyStatus
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: instigator
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1405,6 +1430,11 @@ PrefabInstance:
         type: 3}
       propertyPath: misinformerHori
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
+      propertyPath: misinformerVert
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6232525151898465273, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1654,13 +1684,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: faction
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: beliefs.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: beliefs.y
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1827,13 +1862,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: faction
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: beliefs.x
       value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: beliefs.y
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -2187,6 +2227,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: faction
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: NodeName
       value: 
       objectReference: {fileID: 0}
@@ -2213,7 +2258,7 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: instigator
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6232525151898465273, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}

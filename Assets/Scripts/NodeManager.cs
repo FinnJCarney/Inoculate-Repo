@@ -80,44 +80,43 @@ public class NodeManager : MonoBehaviour
     {
         foreach(Node node in nodes)
         {
-            if (node.isBanned)
-            {
-                continue;
-            }
 
             foreach (Node connectedNode in node.connectedNodes)
             {
                 bool alreadyConnected = false;
-                
-                if(connectedNode.isBanned)
-                {
-                    continue;
-                }
 
-                foreach (Line line in lines)
+                for (int i = lines.Count - 1; i >= 0; i--)
                 {
+                    var line = lines[i];
+
                     if (line.connectedNodes.Contains(node) && line.connectedNodes.Contains(connectedNode))
                     {
                         alreadyConnected = true;
 
-                        if (node.userInformation.allyStatus == connectedNode.userInformation.allyStatus)
+                        if(node.isBanned || connectedNode.isBanned)
                         {
-                            if (node.userInformation.allyStatus == AllyStatus.Yellow)
+                            Destroy(line.lineR.gameObject);
+                            lines.Remove(line);
+                        }
+
+                        if (node.userInformation.faction == connectedNode.userInformation.faction)
+                        {
+                            if (node.userInformation.faction == Faction.DownRight)
                             {
                                 line.lineR.material = yellowLine;
                             }
 
-                            else if (node.userInformation.allyStatus == AllyStatus.Red)
+                            else if (node.userInformation.faction == Faction.UpRight)
                             {
                                 line.lineR.material = redLine;
                             }
 
-                            else if (node.userInformation.allyStatus == AllyStatus.Green)
+                            else if (node.userInformation.faction == Faction.DownLeft)
                             {
                                 line.lineR.material = greenLine;
                             }
 
-                            else if (node.userInformation.allyStatus == AllyStatus.Blue)
+                            else if (node.userInformation.faction == Faction.UpLeft)
                             {
                                 line.lineR.material = blueLine;
                             }
@@ -131,6 +130,10 @@ public class NodeManager : MonoBehaviour
 
                 if (!alreadyConnected)
                 {
+                    if(node.isBanned || connectedNode.isBanned)
+                    {
+                        continue;
+                    }
 
                     var newLineObj = Instantiate<GameObject>(lineObj);
                     newLineObj.transform.parent = this.transform;
@@ -179,7 +182,7 @@ public class NodeManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
-            if(node.userInformation.allyStatus != LevelManager.lM.playerAllyFaction && node.userInformation.beliefs.x == 0 && node.userInformation.beliefs.y == 0)
+            if(node.userInformation.faction != LevelManager.lM.playerAllyFaction && node.userInformation.beliefs.x == 0 && node.userInformation.beliefs.y == 0)
             {
                 if(!centristNodes.Contains(node))
                 {
@@ -198,28 +201,42 @@ public class NodeManager : MonoBehaviour
 
     public void CheckNodeConnections()
     {
+        blueNodes.Clear();
+        redNodes.Clear();
+        yellowNodes.Clear();
+        greenNodes.Clear();
+        neutralNodes.Clear();
+
         foreach(Node node in nodes)
         {
-            if(node.userInformation.instigator != AllyStatus.None)
+            if(node.userInformation.instigator != Faction.None)
             {
-                if (node.userInformation.instigator == AllyStatus.Yellow)
+                if (node.userInformation.instigator == Faction.DownRight)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Yellow;
+                    node.userInformation.faction = Faction.DownRight;
+
+                    yellowNodes.Add(node);
                 }
 
-                if (node.userInformation.instigator == AllyStatus.Red)
+                if (node.userInformation.instigator == Faction.UpRight)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Red;
+                    node.userInformation.faction = Faction.UpRight;
+
+                    redNodes.Add(node);
                 }
 
-                if (node.userInformation.instigator == AllyStatus.Green)
+                if (node.userInformation.instigator == Faction.DownLeft)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Green;
+                    node.userInformation.faction = Faction.DownLeft;
+
+                    greenNodes.Add(node);
                 }
 
-                if (node.userInformation.instigator == AllyStatus.Blue)
+                if (node.userInformation.instigator == Faction.UpLeft)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Blue;
+                    node.userInformation.faction = Faction.UpLeft;
+
+                    blueNodes.Add(node);
                 }
 
                 continue;
@@ -232,11 +249,18 @@ public class NodeManager : MonoBehaviour
 
             int allyNum = 0;
 
+            if(node.isBanned)
+            {
+                node.userInformation.faction = Faction.Neutral;
+                continue;
+            }
+
+
             foreach (Node connectedNode in node.connectedNodes)
             {
                 if (Mathf.Abs(connectedNode.userInformation.beliefs.x - node.userInformation.beliefs.x) + Mathf.Abs(connectedNode.userInformation.beliefs.y - node.userInformation.beliefs.y) < 1.1f)
                 {
-                    if (connectedNode.userInformation.allyStatus == AllyStatus.Yellow)
+                    if (connectedNode.userInformation.faction == Faction.DownRight)
                     {
                         if (yellowAlly == false)
                         {
@@ -245,7 +269,7 @@ public class NodeManager : MonoBehaviour
                         }
                     }
 
-                    else if(connectedNode.userInformation.allyStatus == AllyStatus.Red)
+                    else if(connectedNode.userInformation.faction == Faction.UpRight)
                     {
                         if (redAlly == false)
                         {
@@ -254,7 +278,7 @@ public class NodeManager : MonoBehaviour
                         }
                     }
 
-                    else if(connectedNode.userInformation.allyStatus == AllyStatus.Green)
+                    else if(connectedNode.userInformation.faction == Faction.DownLeft)
                     {
                         if (greenAlly == false)
                         {
@@ -263,7 +287,7 @@ public class NodeManager : MonoBehaviour
                         }
                     }
 
-                    else if (connectedNode.userInformation.allyStatus == AllyStatus.Blue)
+                    else if (connectedNode.userInformation.faction == Faction.UpLeft)
                     {
                         if (blueAlly == false)
                         {
@@ -276,29 +300,38 @@ public class NodeManager : MonoBehaviour
 
             if(allyNum == 0 || allyNum > 1)
             {
-                node.userInformation.allyStatus = AllyStatus.Neutral;
+                node.userInformation.faction = Faction.Neutral;
+                neutralNodes.Add(node);
             }
 
             else
             {
                 if (yellowAlly)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Yellow;
+                    node.userInformation.faction = Faction.DownRight;
+
+                    yellowNodes.Add(node);
                 }
 
-                if (redAlly)
+                else if (redAlly)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Red;
+                    node.userInformation.faction = Faction.UpRight;
+
+                    redNodes.Add(node);
                 }
 
                 if (greenAlly)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Green;
+                    node.userInformation.faction = Faction.DownLeft;
+
+                    greenNodes.Add(node);
                 }
 
                 if (blueAlly)
                 {
-                    node.userInformation.allyStatus = AllyStatus.Blue;
+                    node.userInformation.faction = Faction.UpLeft;
+
+                    blueNodes.Add(node);
                 }
             }
         }
@@ -306,6 +339,11 @@ public class NodeManager : MonoBehaviour
 
 
     [SerializeField] public List<Node> nodes = new List<Node>();
+    [SerializeField] public List<Node> yellowNodes = new List<Node>();
+    [SerializeField] public List<Node> redNodes = new List<Node>();
+    [SerializeField] public List<Node> greenNodes = new List<Node>();
+    [SerializeField] public List<Node> blueNodes = new List<Node>();
+    [SerializeField] public List<Node> neutralNodes = new List<Node>();
     [SerializeField] List<Line> lines = new List<Line>();
     [SerializeField] private GameObject lineObj;
 

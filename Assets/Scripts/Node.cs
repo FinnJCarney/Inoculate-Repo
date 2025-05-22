@@ -33,6 +33,8 @@ public class Node : MonoBehaviour
 
     private void Update()
     {
+        nodeVisual.color = LevelManager.lM.GiveAverageColor(userInformation.beliefs);
+
         int theorheticalActions = 0;
         int possibleActions = 0;
 
@@ -56,7 +58,7 @@ public class Node : MonoBehaviour
                 continue;
             }
 
-            if (connectedNode.userInformation.allyStatus == LevelManager.lM.playerAllyFaction)
+            if (connectedNode.userInformation.faction == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;
                 possibleActions ++;
@@ -117,15 +119,15 @@ public class Node : MonoBehaviour
 
         if (theorheticalActions > 0)
         {
-            accessRing.color = Color.yellow;
-            if(possibleActions == 0)
+            var factionColor = LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color;
+            if (possibleActions == 0)
             {
                 allowanceRing.color = Color.clear;
             }
             else
             {
                 float amountThrough = Mathf.Sqrt((Time.time / TimeManager.i.timeMultiplier) % 1.5f);
-                allowanceRing.color = Color.Lerp(accessRing.color, Color.clear, amountThrough);
+                allowanceRing.color = Color.Lerp(factionColor, Color.clear, amountThrough);
                 allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
                 allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
             }
@@ -143,28 +145,7 @@ public class Node : MonoBehaviour
             bannedCover.SetActive(isBanned);
         }
 
-        if (userInformation.allyStatus == LevelManager.lM.playerAllyFaction)
-        {
-            if(userInformation.allyStatus == AllyStatus.Red)
-            {
-                accessRing.color = Color.red;
-            }
-
-            else if (userInformation.allyStatus == AllyStatus.Yellow)
-            {
-                accessRing.color = Color.yellow;
-            }
-
-            else if (userInformation.allyStatus == AllyStatus.Green)
-            {
-                accessRing.color = Color.green;
-            }
-
-            else if (userInformation.allyStatus == AllyStatus.Blue)
-            {
-                accessRing.color = Color.blue;
-            }
-        }
+        accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
     }
 
     public void ActionResult(ActionType aT, bool playerActivated, Node actingNode)
@@ -296,6 +277,8 @@ public class Node : MonoBehaviour
     private float actionPitch;
     
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
+
+    [SerializeField] private SpriteRenderer nodeVisual;
 
     [SerializeField] SpriteRenderer accessRing;
     [SerializeField] SpriteRenderer allowanceRing;

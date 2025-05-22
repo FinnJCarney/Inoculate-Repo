@@ -39,5 +39,5 @@ public class TimeManager : MonoBehaviour
 
     private float defaultTimeScale;
     public float adjustedDeltaTime;
-    [SerializeField][Range(0f, 8f)] public float timeMultiplier;
+    [SerializeField][Range(0f, 16f)] public float timeMultiplier;
 }
