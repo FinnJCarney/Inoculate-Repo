@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.17276844, g: 0.21589246, b: 0.2978263, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -869,6 +869,7 @@ RectTransform:
   m_Children:
   - {fileID: 438866062}
   - {fileID: 68367996}
+  - {fileID: 877570733}
   - {fileID: 545223011}
   - {fileID: 5470730}
   m_Father: {fileID: 718952140}
@@ -2335,6 +2336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedNode: {fileID: 0}
   politicalAxes: {fileID: 301151341}
+  SpaceCoverHolder: {fileID: 877570732}
   hiddenCover: {fileID: 545223010}
   bannedCover: {fileID: 5470729}
   userName: {fileID: 2111589224}
@@ -2353,6 +2355,8 @@ MonoBehaviour:
   but_Up: {fileID: 716283394}
   but_Down: {fileID: 699194883}
   but_Connect: {fileID: 1529081929}
+  spaceHider: {fileID: 2244104774461840099, guid: ace4775830b3737428d43b18e9e9fddf,
+    type: 3}
 --- !u!1 &751651107
 GameObject:
   m_ObjectHideFlags: 0
@@ -2698,6 +2702,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 870409055}
   m_CullTransparentMesh: 1
+--- !u!1 &877570732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 877570733}
+  m_Layer: 5
+  m_Name: SpaceCoversHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &877570733
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877570732}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 301151340}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &946562030
 GameObject:
   m_ObjectHideFlags: 0

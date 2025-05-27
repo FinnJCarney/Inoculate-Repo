@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,7 +32,27 @@ public class HUDManager : MonoBehaviour
             UIButton.onClick.AddListener(delegate { ActionManager.aM.PerformButtonAction(userButton); });
         }
 
+        SetMenuBounds();
+
         SyncMenu(null);
+    }
+
+    private void SetMenuBounds()
+    { 
+        string levelReferenceString = LevelManager.lM.levelMap.Replace("\n", string.Empty);
+
+        for (int i = 0; i < 25; i++)
+        {
+            if(levelReferenceString[i] == '0')
+            {
+                Debug.Log("Is this running?");
+                int yCord = Mathf.FloorToInt(i / 5f);
+                Vector2 spaceCoords = new Vector2(i - (yCord * 5) - 2, 2 - yCord);
+                var thisSpaceHider = Instantiate(spaceHider, SpaceCoverHolder.transform);
+                thisSpaceHider.transform.localPosition = spaceCoords * 0.9f * 1.5f;
+                hiddenSpaces.Add(spaceCoords);
+            }
+        }
     }
 
     private void Update()
@@ -103,6 +124,82 @@ public class HUDManager : MonoBehaviour
                 else if (connectedNode.userInformation.beliefs.y < selectedNode.userInformation.beliefs.y)
                 {
                     hasDownNeighbourAvail = true;
+                }
+            }
+
+            if (hasUpNeighbourAvail) //Main Up
+            {
+                if (selectedNode.userInformation.beliefs.y + 1 == 3)
+                {
+                    hasUpNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.up)
+                        {
+                            hasUpNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasDownNeighbourAvail) //Main Down
+            {
+                if (selectedNode.userInformation.beliefs.y - 1 == -3)
+                {
+                    hasDownNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.down)
+                        {
+                            hasDownNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasRightNeighbourAvail) //Main Right
+            {
+                if (selectedNode.userInformation.beliefs.x + 1 == 3)
+                {
+                    hasRightNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.right)
+                        {
+                            hasRightNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasLeftNeighbourAvail) //Main Left
+            {
+                if (selectedNode.userInformation.beliefs.x - 1 == -3)
+                {
+                    hasLeftNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.left)
+                        {
+                            hasLeftNeighbourAvail = false;
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -190,6 +287,7 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private Node selectedNode;
 
     [SerializeField] public Node_PoliticalAxes politicalAxes;
+    [SerializeField] private GameObject SpaceCoverHolder;
     [SerializeField] private GameObject hiddenCover;
     [SerializeField] private GameObject bannedCover;
 
@@ -203,4 +301,8 @@ public class HUDManager : MonoBehaviour
     [SerializeField] public UserButton but_Up;
     [SerializeField] public UserButton but_Down;
     [SerializeField] public UserButton but_Connect;
+
+    [SerializeField] private GameObject spaceHider;
+
+    [HideInInspector] public List<Vector2> hiddenSpaces = new List<Vector2>();
 }

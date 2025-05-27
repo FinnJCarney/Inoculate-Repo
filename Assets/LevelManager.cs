@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
@@ -123,6 +124,9 @@ public class LevelManager : MonoBehaviour
 
     public Node playerNode;
     public Faction playerAllyFaction;
+
+    [TextArea(5, 5)]
+    public string levelMap = "11111\n11111\n11111\n11111\n11111";
 
     [SerializeField] int numOfActionsPerTurn;
 

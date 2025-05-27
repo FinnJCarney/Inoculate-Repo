@@ -92,6 +92,84 @@ public class Node : MonoBehaviour
                     hasDownNeighbourAvail = true;
                 }
             }
+
+            var hiddenSpaces = HUDManager.i.hiddenSpaces;
+
+            if (hasUpNeighbourAvail) //Main Up
+            {
+                if (userInformation.beliefs.y + 1 == 3)
+                {
+                    hasUpNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == userInformation.beliefs + Vector2.up)
+                        {
+                            hasUpNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasDownNeighbourAvail) //Main Down
+            {
+                if (userInformation.beliefs.y - 1 == -3)
+                {
+                    hasDownNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == userInformation.beliefs + Vector2.down)
+                        {
+                            hasDownNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasRightNeighbourAvail) //Main Right
+            {
+                if (userInformation.beliefs.x + 1 == 3)
+                {
+                    hasRightNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == userInformation.beliefs + Vector2.right)
+                        {
+                            hasRightNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (hasLeftNeighbourAvail) //Main Left
+            {
+                if (userInformation.beliefs.x - 1 == -3)
+                {
+                    hasLeftNeighbourAvail = false;
+                }
+                else
+                {
+                    foreach (Vector2 hiddenSpace in hiddenSpaces)
+                    {
+                        if (hiddenSpace == userInformation.beliefs + Vector2.left)
+                        {
+                            hasLeftNeighbourAvail = false;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);

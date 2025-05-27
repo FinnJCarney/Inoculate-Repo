@@ -3304,6 +3304,15 @@ MonoBehaviour:
       position: {x: 0, y: 0}
   playerNode: {fileID: 264201882}
   playerAllyFaction: 1
+  levelMap: '11011
+
+    11111
+
+    01110
+
+    11111
+
+    11011'
   numOfActionsPerTurn: 1
   roundTimer: 4
   factionTimers:
