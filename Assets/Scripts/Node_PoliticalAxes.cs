@@ -192,13 +192,13 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                 bool breakOutForLoop = false;
 
-                //foreach (HUDLines hudLines in hudLines)
-                //{
-                //    if (hudLines.containingNodes.Contains(.associatedNode) && hudLines.containingNodes.Contains(nodeObj2.associatedNode))
-                //    {
-                //        continue;
-                //    }
-                //}
+                foreach (HUDLines hudLines in hudLines)
+                {
+                    if (hudLines.containingNodes.Contains(line.connectedNodes[0]) && hudLines.containingNodes.Contains(line.connectedNodes[1]))
+                    {
+                        continue;
+                    }
+                }
 
                 if (breakOutForLoop)
                 {
@@ -210,8 +210,8 @@ public class Node_PoliticalAxes : MonoBehaviour
                     continue;
                 }
 
-                GameObject nodeObj1;
-                GameObject nodeObj2;
+                GameObject nodeObj1 = null;
+                GameObject nodeObj2 = null;
 
                 foreach (objOnBoard objOB in nodeObjsOnBoard)
                 {
@@ -220,14 +220,14 @@ public class Node_PoliticalAxes : MonoBehaviour
                         nodeObj1 = objOB.userObj;
                     }
 
-                    if (objOB.associatedNode == line.connectedNodes[0])
+                    if (objOB.associatedNode == line.connectedNodes[1])
                     {
                         nodeObj2 = objOB.userObj;
                     }
                 }
 
                 var newLine = Instantiate(HUDLineObj, HUDLineHolder.transform);
-                //newLine.transform.localPosition = Vector3.Lerp(nodeObj1.transform.localPosition, nodeObj2.transform.localPosition, 0.5f);
+                newLine.transform.localPosition = Vector3.Lerp(nodeObj1.transform.localPosition, nodeObj2.transform.localPosition, 0.5f);
 
                 if (nodeObj1.transform.localPosition.y == nodeObj2.transform.localPosition.y)
                 {
@@ -237,6 +237,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                 newLine.GetComponent<Image>().material = LevelManager.lM.GiveLineMaterial(line.lineFaction);
                 var newHudLine = new HUDLines();
                 newHudLine.lineObj = newLine;
+                newHudLine.containingNodes = new List<Node>();
                 newHudLine.containingNodes.Add(line.connectedNodes[0]);
                 newHudLine.containingNodes.Add(line.connectedNodes[1]);
                 hudLines.Add(newHudLine);
@@ -273,7 +274,7 @@ public class Node_PoliticalAxes : MonoBehaviour
 
     [SerializeField] private GameObject myUserObj;
     [SerializeField] private List<objOnBoard> connectedUserObjs = new List<objOnBoard>();
-    private List<HUDLines> hudLines = new List<HUDLines>();
+    [SerializeField] private List<HUDLines> hudLines = new List<HUDLines>();
 
     [SerializeField] private AudioClip userReveal;
     [SerializeField] private AudioClip userMove;
@@ -287,6 +288,7 @@ public class Node_PoliticalAxes : MonoBehaviour
         public Node associatedNode;
     }
 
+    [System.Serializable]
     public struct HUDLines
     {
         public GameObject lineObj;

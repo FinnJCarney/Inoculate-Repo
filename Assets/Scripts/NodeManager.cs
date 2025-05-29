@@ -105,7 +105,7 @@ public class NodeManager : MonoBehaviour
                         replacementLine.lineR = line.lineR;
                         replacementLine.connectedNodes = line.connectedNodes;
 
-                        if (node.userInformation.faction == connectedNode.userInformation.faction)
+                        if (node.userInformation.faction == connectedNode.userInformation.faction && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
                         {
                             replacementLine.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
                             if (node.userInformation.faction != Faction.Neutral)
@@ -145,7 +145,7 @@ public class NodeManager : MonoBehaviour
                     newLine.lineR = newLineR;
                     newLine.connectedNodes = connectedNodes;
 
-                    if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral)
+                    if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
                     {
                         newLine.lineFaction = node.userInformation.faction;
                     }
