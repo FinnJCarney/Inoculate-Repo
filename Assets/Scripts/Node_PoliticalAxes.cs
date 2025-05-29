@@ -9,7 +9,9 @@ public class Node_PoliticalAxes : MonoBehaviour
 
     public void SyncPoliticalAxes(Node node, bool onClick)
     {
-        if(node == null)
+        List<objOnBoard> nodeObjsOnBoard = new List<objOnBoard>();
+
+        if (node == null)
         {
             return;
         }
@@ -49,6 +51,13 @@ public class Node_PoliticalAxes : MonoBehaviour
                 }
             }
 
+            objOnBoard userObjOnBoard = new objOnBoard();
+            userObjOnBoard.userObj = myUserObj;
+            userObjOnBoard.userImage = myUserObj.GetComponent<Image>();
+            userObjOnBoard.userAudioSource = myUserObj.GetComponent<AudioSource>();
+            userObjOnBoard.associatedNode = node;
+            nodeObjsOnBoard.Add(userObjOnBoard);
+
             if (myUserObj.transform.localPosition.x != node.userInformation.beliefs.x * (0.9f * 1.5f) || myUserObj.transform.localPosition.y != node.userInformation.beliefs.y * (0.9f * 1.5f))
             {
                 if (!onClick)
@@ -67,11 +76,11 @@ public class Node_PoliticalAxes : MonoBehaviour
             {
                 if (!connectedNode.userInformation.userInfoHidden)
                 {
-                    connectedUserObj associatedUserObj = new connectedUserObj();
+                    objOnBoard associatedUserObj = new objOnBoard();
 
-                    foreach (connectedUserObj cUO in connectedUserObjs)
+                    foreach (objOnBoard cUO in connectedUserObjs)
                     {
-                        if (connectedNode == cUO.asociatedNode)
+                        if (connectedNode == cUO.associatedNode)
                         {
                             associatedUserObj = cUO;
                             break;
@@ -83,7 +92,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                         associatedUserObj.userObj = Instantiate(userObj, userObjsHolder);
                         associatedUserObj.userImage = associatedUserObj.userObj.GetComponent<Image>();
                         associatedUserObj.userAudioSource = associatedUserObj.userObj.GetComponent<AudioSource>();
-                        associatedUserObj.asociatedNode = connectedNode;
+                        associatedUserObj.associatedNode = connectedNode;
                         connectedUserObjs.Add(associatedUserObj);
 
                         if (!onClick)
@@ -104,26 +113,9 @@ public class Node_PoliticalAxes : MonoBehaviour
                         }
                     }
 
-                    if (connectedNode.userInformation.faction == Faction.UpRight)
-                    {
-                        associatedUserObj.userImage.color = Color.Lerp(Color.red, Color.white, 0.5f);
-                    }
-                    else if(connectedNode.userInformation.faction == Faction.DownRight)
-                    {
-                        associatedUserObj.userImage.color = Color.Lerp(Color.yellow, Color.white, 0.125f);
-                    }
-                    else if (connectedNode.userInformation.faction == Faction.DownLeft)
-                    {
-                        associatedUserObj.userImage.color = Color.Lerp(Color.green, Color.white, 0.25f);
-                    }
-                    else if (connectedNode.userInformation.faction == Faction.UpLeft)
-                    {
-                        associatedUserObj.userImage.color = Color.Lerp(Color.blue, Color.white, 0.5f);
-                    }
-                    else if (connectedNode.userInformation.faction == Faction.Neutral)
-                    {
-                        associatedUserObj.userImage.color = Color.Lerp(Color.black, Color.white, 0.75f);
-                    }
+                    nodeObjsOnBoard.Add(associatedUserObj);
+
+                    associatedUserObj.userImage.color = Color.Lerp(LevelManager.lM.GiveAverageColor(associatedUserObj.associatedNode.userInformation.beliefs), Color.white, 0.5f);
 
                     if (associatedUserObj.userObj.transform.localPosition.x != connectedNode.userInformation.beliefs.x * (0.9f * 1.5f) || associatedUserObj.userObj.transform.localPosition.y != connectedNode.userInformation.beliefs.y * (0.9f * 1.5f))
                     {
@@ -138,7 +130,6 @@ public class Node_PoliticalAxes : MonoBehaviour
                             associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * (0.9f * 1.5f);
                         }
                     }
-
                 }
             }
 
@@ -150,7 +141,7 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                     foreach (Node connectedNode in node.connectedNodes)
                     {
-                        if (connectedNode == connectedUserObjs[i].asociatedNode)
+                        if (connectedNode == connectedUserObjs[i].associatedNode)
                         {
                             associatedNodeExists = true;
                         }
@@ -162,6 +153,93 @@ public class Node_PoliticalAxes : MonoBehaviour
                         connectedUserObjs.RemoveAt(i);
                     }
                 }
+            }
+
+            for (int i = hudLines.Count - 1; i >= 0; i--)
+            {
+                Destroy(hudLines[i].lineObj);
+                hudLines.RemoveAt(i);
+            }
+
+            hudLines.Clear();
+
+            List<Node> nodesOnBoard = new List<Node>();
+
+            foreach(objOnBoard objOB in nodeObjsOnBoard)
+            {
+                nodesOnBoard.Add(objOB.associatedNode);
+            }
+
+            foreach (Line line in NodeManager.nM.lines)
+            {
+                //Is the line associated with a faction
+                if(line.lineFaction == Faction.Neutral)
+                {
+                    continue;
+                }
+
+                //Is one of the nodes it on the HUD
+                if (!nodesOnBoard.Contains(line.connectedNodes[0]))
+                {
+                    continue;
+                }
+                
+                //Is the other node in it on the HUD (and also not the same node as node 1)
+                if (!nodesOnBoard.Contains(line.connectedNodes[1]))
+                {
+                    continue;
+                }
+
+                bool breakOutForLoop = false;
+
+                //foreach (HUDLines hudLines in hudLines)
+                //{
+                //    if (hudLines.containingNodes.Contains(.associatedNode) && hudLines.containingNodes.Contains(nodeObj2.associatedNode))
+                //    {
+                //        continue;
+                //    }
+                //}
+
+                if (breakOutForLoop)
+                {
+                    continue;
+                }
+
+                if (line.connectedNodes[0].userInformation.beliefs == line.connectedNodes[1].userInformation.beliefs)
+                {
+                    continue;
+                }
+
+                GameObject nodeObj1;
+                GameObject nodeObj2;
+
+                foreach (objOnBoard objOB in nodeObjsOnBoard)
+                {
+                    if(objOB.associatedNode == line.connectedNodes[0])
+                    {
+                        nodeObj1 = objOB.userObj;
+                    }
+
+                    if (objOB.associatedNode == line.connectedNodes[0])
+                    {
+                        nodeObj2 = objOB.userObj;
+                    }
+                }
+
+                var newLine = Instantiate(HUDLineObj, HUDLineHolder.transform);
+                //newLine.transform.localPosition = Vector3.Lerp(nodeObj1.transform.localPosition, nodeObj2.transform.localPosition, 0.5f);
+
+                if (nodeObj1.transform.localPosition.y == nodeObj2.transform.localPosition.y)
+                {
+                    newLine.transform.Rotate(0, 0, 90);
+                }
+
+                newLine.GetComponent<Image>().material = LevelManager.lM.GiveLineMaterial(line.lineFaction);
+                var newHudLine = new HUDLines();
+                newHudLine.lineObj = newLine;
+                newHudLine.containingNodes.Add(line.connectedNodes[0]);
+                newHudLine.containingNodes.Add(line.connectedNodes[1]);
+                hudLines.Add(newHudLine);
             }
         }
     }
@@ -190,18 +268,28 @@ public class Node_PoliticalAxes : MonoBehaviour
     [SerializeField] private GameObject userObj;
     [SerializeField] private Transform userObjsHolder;
 
+    [SerializeField] private GameObject HUDLineObj;
+    [SerializeField] private GameObject HUDLineHolder;
+
     [SerializeField] private GameObject myUserObj;
-    [SerializeField] private List<connectedUserObj> connectedUserObjs = new List<connectedUserObj>();
+    [SerializeField] private List<objOnBoard> connectedUserObjs = new List<objOnBoard>();
+    private List<HUDLines> hudLines = new List<HUDLines>();
 
     [SerializeField] private AudioClip userReveal;
     [SerializeField] private AudioClip userMove;
 
     [System.Serializable]
-    public struct connectedUserObj
+    public struct objOnBoard
     { 
         public GameObject userObj;
         public Image userImage;
         public AudioSource userAudioSource;
-        public Node asociatedNode;
+        public Node associatedNode;
+    }
+
+    public struct HUDLines
+    {
+        public GameObject lineObj;
+        public List<Node> containingNodes;
     }
 }

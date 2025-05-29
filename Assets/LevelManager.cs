@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
@@ -120,7 +121,12 @@ public class LevelManager : MonoBehaviour
         return outputColor;
     }
 
-    [SerializeField] public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
+    public Material GiveLineMaterial(Faction faction)
+    {
+        return levelFactions[faction].lineMaterial;
+    }
+
+    public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
 
     public Node playerNode;
     public Faction playerAllyFaction;
@@ -146,6 +152,7 @@ public struct levelFaction
 {
     public Color color;
     public Vector2 position;
+    public Material lineMaterial;
 }
 
 

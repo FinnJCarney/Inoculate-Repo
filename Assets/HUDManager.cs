@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -129,78 +128,22 @@ public class HUDManager : MonoBehaviour
 
             if (hasUpNeighbourAvail) //Main Up
             {
-                if (selectedNode.userInformation.beliefs.y + 1 == 3)
-                {
-                    hasUpNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.up)
-                        {
-                            hasUpNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasUpNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.up);
             }
 
             if (hasDownNeighbourAvail) //Main Down
             {
-                if (selectedNode.userInformation.beliefs.y - 1 == -3)
-                {
-                    hasDownNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.down)
-                        {
-                            hasDownNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasDownNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.down);
             }
 
             if (hasRightNeighbourAvail) //Main Right
             {
-                if (selectedNode.userInformation.beliefs.x + 1 == 3)
-                {
-                    hasRightNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.right)
-                        {
-                            hasRightNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasRightNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.right);
             }
 
             if (hasLeftNeighbourAvail) //Main Left
             {
-                if (selectedNode.userInformation.beliefs.x - 1 == -3)
-                {
-                    hasLeftNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == selectedNode.userInformation.beliefs + Vector2.left)
-                        {
-                            hasLeftNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasLeftNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.left);
             }
         }
     
@@ -280,6 +223,26 @@ public class HUDManager : MonoBehaviour
         {
             politicalAxes.SyncPoliticalAxes(selectedNode, false);
         }
+    }
+
+    public bool IsSpaceValid(Vector2 requestedSpace)
+    {
+        if(Mathf.Abs(requestedSpace.x) > 2 || Mathf.Abs(requestedSpace.y) > 2)
+        {
+            return false;
+        }
+        else
+        {
+            foreach (Vector2 hiddenSpace in hiddenSpaces)
+            {
+                if (hiddenSpace == requestedSpace)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public static HUDManager i;

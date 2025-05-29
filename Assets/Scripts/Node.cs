@@ -93,82 +93,24 @@ public class Node : MonoBehaviour
                 }
             }
 
-            var hiddenSpaces = HUDManager.i.hiddenSpaces;
-
             if (hasUpNeighbourAvail) //Main Up
             {
-                if (userInformation.beliefs.y + 1 == 3)
-                {
-                    hasUpNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == userInformation.beliefs + Vector2.up)
-                        {
-                            hasUpNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasUpNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.up);
             }
 
             if (hasDownNeighbourAvail) //Main Down
             {
-                if (userInformation.beliefs.y - 1 == -3)
-                {
-                    hasDownNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == userInformation.beliefs + Vector2.down)
-                        {
-                            hasDownNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasDownNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.down);
             }
 
             if (hasRightNeighbourAvail) //Main Right
             {
-                if (userInformation.beliefs.x + 1 == 3)
-                {
-                    hasRightNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == userInformation.beliefs + Vector2.right)
-                        {
-                            hasRightNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasRightNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.right);
             }
 
             if (hasLeftNeighbourAvail) //Main Left
             {
-                if (userInformation.beliefs.x - 1 == -3)
-                {
-                    hasLeftNeighbourAvail = false;
-                }
-                else
-                {
-                    foreach (Vector2 hiddenSpace in hiddenSpaces)
-                    {
-                        if (hiddenSpace == userInformation.beliefs + Vector2.left)
-                        {
-                            hasLeftNeighbourAvail = false;
-                            break;
-                        }
-                    }
-                }
+                hasLeftNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.left);
             }
         }
 
@@ -240,22 +182,34 @@ public class Node : MonoBehaviour
 
         if (aT == ActionType.Left && !userInformation.misinformerHori)
         {
-            userInformation.beliefs.x -= 1;
+            if(HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.left))
+            {
+                userInformation.beliefs += Vector2.left;
+            }
         }
 
         if (aT == ActionType.Right && !userInformation.misinformerHori)
         {
-            userInformation.beliefs.x += 1;
+            if (HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.right))
+            {
+                userInformation.beliefs += Vector2.right;
+            }
         }
 
         if (aT == ActionType.Up && !userInformation.misinformerVert)
         {
-            userInformation.beliefs.y += 1;
+            if (HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.up))
+            {
+                userInformation.beliefs += Vector2.up;
+            }
         }
 
         if (aT == ActionType.Down && !userInformation.misinformerVert)
         {
-            userInformation.beliefs.y -= 1;
+            if (HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.down))
+            {
+                userInformation.beliefs += Vector2.down;
+            }
         }
 
         if (aT == ActionType.Connect)
@@ -263,9 +217,6 @@ public class Node : MonoBehaviour
             connectedNodes.Add(actingNode);
             actingNode.connectedNodes.Add(actingNode);
         }
-
-        userInformation.beliefs.x = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.x));
-        userInformation.beliefs.y = Mathf.Max(-2, Mathf.Min(2, userInformation.beliefs.y));
 
         NodeManager.nM.CheckNodeConnections();
         HUDManager.i.SyncPoliticalAxes();

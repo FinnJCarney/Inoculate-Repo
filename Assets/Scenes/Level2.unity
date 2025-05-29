@@ -3294,25 +3294,30 @@ MonoBehaviour:
     m_values:
     - color: {r: 1, g: 0.2688679, b: 0.2688679, a: 1}
       position: {x: 2, y: 2}
+      lineMaterial: {fileID: 2100000, guid: bf033a8e9a0e1674b889b52179a113d5, type: 2}
     - color: {r: 0.27058828, g: 0.558092, b: 1, a: 1}
       position: {x: -2, y: 2}
+      lineMaterial: {fileID: 2100000, guid: 7a75eb398009c9b43afc5d1caf71a7e3, type: 2}
     - color: {r: 0.27058828, g: 1, b: 0.32349584, a: 1}
       position: {x: -2, y: -2}
+      lineMaterial: {fileID: 2100000, guid: e5096db7ffe7b264d968b881f17c39b4, type: 2}
     - color: {r: 1, g: 0.9430666, b: 0.27058828, a: 1}
       position: {x: 2, y: -2}
+      lineMaterial: {fileID: 2100000, guid: 95bf68d6dbaa28f4d9986b880170462b, type: 2}
     - color: {r: 1, g: 1, b: 1, a: 1}
       position: {x: 0, y: 0}
+      lineMaterial: {fileID: 2100000, guid: 83b7a16fe63249e49b5fd4149d859292, type: 2}
   playerNode: {fileID: 264201882}
   playerAllyFaction: 1
-  levelMap: '11011
+  levelMap: '11111
 
     11111
 
-    01110
+    11111
 
     11111
 
-    11011'
+    11111'
   numOfActionsPerTurn: 1
   roundTimer: 4
   factionTimers:

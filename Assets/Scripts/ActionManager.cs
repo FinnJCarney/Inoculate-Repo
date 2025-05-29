@@ -358,6 +358,7 @@ public class ActionManager : MonoBehaviour
             float ideologicalDistance = 0;
 
 
+            //REWORK THIS to be a count of current factions and their noted ideological centers
             if (faction == Faction.UpRight)
             {
                 ideologicalDistance = Vector2.Distance(averagePos, new Vector2(2, 2));
@@ -375,7 +376,7 @@ public class ActionManager : MonoBehaviour
                 ideologicalDistance = Vector2.Distance(averagePos, new Vector2(-2, -2));
             }
 
-            //Acting in "Inoculate"
+            //Acting on "Inoculate"
             if (ideologicalDistance > 2)
             {
                 Debug.Log("Performing Inoculate action for " + faction);
@@ -396,7 +397,7 @@ public class ActionManager : MonoBehaviour
                         float proximityValue = (0.1f / Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs)) + 0.1f;
                         float strategicValue = 0;
 
-                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y)
+                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Up;
@@ -422,7 +423,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y)
+                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Down;
@@ -448,7 +449,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x)
+                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Right;
@@ -474,7 +475,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x)
+                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Left;
@@ -527,7 +528,7 @@ public class ActionManager : MonoBehaviour
                         }
 
 
-                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y)
+                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Up;
@@ -563,7 +564,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y)
+                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Down;
@@ -598,7 +599,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x)
+                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Right;
@@ -633,7 +634,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x)
+                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Left;

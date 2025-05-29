@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class NodeManager : MonoBehaviour
 {
@@ -44,9 +45,9 @@ public class NodeManager : MonoBehaviour
             return;
         }
 
-        DrawNodeConnectionLines();
         CheckNodeConnections();
         CheckNodeAbilities();
+        DrawNodeConnectionLines();
 
         int totalMisinformers = 0;
         int totalBanned = 0;
@@ -75,10 +76,10 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-   
+
     public void DrawNodeConnectionLines()
     {
-        foreach(Node node in nodes)
+        foreach (Node node in nodes)
         {
 
             foreach (Node connectedNode in node.connectedNodes)
@@ -93,44 +94,38 @@ public class NodeManager : MonoBehaviour
                     {
                         alreadyConnected = true;
 
-                        if(node.isBanned || connectedNode.isBanned)
+                        if (node.isBanned || connectedNode.isBanned)
                         {
                             Destroy(line.lineR.gameObject);
                             lines.Remove(line);
+                            continue;
                         }
+
+                        var replacementLine = new Line();
+                        replacementLine.lineR = line.lineR;
+                        replacementLine.connectedNodes = line.connectedNodes;
 
                         if (node.userInformation.faction == connectedNode.userInformation.faction)
                         {
-                            if (node.userInformation.faction == Faction.DownRight)
+                            replacementLine.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
+                            if (node.userInformation.faction != Faction.Neutral)
                             {
-                                line.lineR.material = yellowLine;
-                            }
-
-                            else if (node.userInformation.faction == Faction.UpRight)
-                            {
-                                line.lineR.material = redLine;
-                            }
-
-                            else if (node.userInformation.faction == Faction.DownLeft)
-                            {
-                                line.lineR.material = greenLine;
-                            }
-
-                            else if (node.userInformation.faction == Faction.UpLeft)
-                            {
-                                line.lineR.material = blueLine;
+                                replacementLine.lineFaction = node.userInformation.faction;
                             }
                         }
                         else
                         {
-                            line.lineR.material = neutralLine;
+                            replacementLine.lineR.material = neutralLine;
+                            replacementLine.lineFaction = Faction.Neutral;
                         }
+
+                        line = replacementLine;
                     }
                 }
 
                 if (!alreadyConnected)
                 {
-                    if(node.isBanned || connectedNode.isBanned)
+                    if (node.isBanned || connectedNode.isBanned)
                     {
                         continue;
                     }
@@ -149,6 +144,16 @@ public class NodeManager : MonoBehaviour
                     Line newLine;
                     newLine.lineR = newLineR;
                     newLine.connectedNodes = connectedNodes;
+
+                    if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral)
+                    {
+                        newLine.lineFaction = node.userInformation.faction;
+                    }
+                    else
+                    {
+                        newLine.lineFaction = Faction.Neutral;
+                    }
+
                     lines.Add(newLine);
                 }
             }
@@ -344,7 +349,7 @@ public class NodeManager : MonoBehaviour
     [SerializeField] public List<Node> greenNodes = new List<Node>();
     [SerializeField] public List<Node> blueNodes = new List<Node>();
     [SerializeField] public List<Node> neutralNodes = new List<Node>();
-    [SerializeField] List<Line> lines = new List<Line>();
+    [SerializeField] public List<Line> lines = new List<Line>();
     [SerializeField] private GameObject lineObj;
 
     private int totalBanned;
@@ -362,6 +367,7 @@ public class NodeManager : MonoBehaviour
 public struct Line
 {
     public LineRenderer lineR;
+    public Faction lineFaction;
     public List<Node> connectedNodes;
 }
 
