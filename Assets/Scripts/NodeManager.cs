@@ -1,11 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq.Expressions;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 
 public class NodeManager : MonoBehaviour
 {
@@ -36,6 +32,8 @@ public class NodeManager : MonoBehaviour
         {
             nodes.Remove(nodes[i]);
         }
+
+        nodeFactions.Clear();
     }
 
     private void Update()
@@ -45,34 +43,99 @@ public class NodeManager : MonoBehaviour
             return;
         }
 
-        CheckNodeConnections();
-        CheckNodeAbilities();
-        DrawNodeConnectionLines();
-
-        int totalMisinformers = 0;
-        int totalBanned = 0;
-
-        foreach(Node node in nodes)
+        if (nodeFactions.Count == 0)
         {
-            if(node.isBanned)
+            foreach(Faction faction in LevelManager.lM.levelFactions.Keys)
             {
-                totalBanned++;
-                if (!node.userInformation.misinformerHori && !node.userInformation.misinformerVert)
-                {
-                    StateManager.sM.GameOver(false);
-                    return;
-                }
-            }
-
-            if (node.userInformation.misinformerHori || node.userInformation.misinformerVert)
-            {
-                totalMisinformers++;
+                nodeFactions.Add(faction, null);
+                nodeFactions[faction] = new List<Node>();
             }
         }
 
-        if(totalBanned == totalMisinformers)
+        CheckNodeConnections();
+        CheckNodeAbilities();
+        DrawNodeConnectionLines();
+        ManageGameMode(LevelManager.lM.gameMode);
+    }
+
+    public void ManageGameMode(GameMode gameMode)
+    {
+
+        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 1.5f)
         {
-            StateManager.sM.GameOver(true);
+            StateManager.sM.GameOver(false);
+            return;
+        }
+
+        if (LevelManager.lM.gameMode == GameMode.MisinformerHunt)
+        {
+            int totalMisinformers = 0;
+            int totalBanned = 0;
+
+            foreach (Node node in nodes)
+            {
+                if (node.isBanned)
+                {
+                    totalBanned++;
+                    if (!node.userInformation.misinformerHori && !node.userInformation.misinformerVert)
+                    {
+                        StateManager.sM.GameOver(false);
+                        return;
+                    }
+                }
+
+                if (node.userInformation.misinformerHori || node.userInformation.misinformerVert)
+                {
+                    totalMisinformers++;
+                }
+            }
+
+            if (totalBanned == totalMisinformers)
+            {
+                StateManager.sM.GameOver(true);
+            }
+        }
+
+        else if (LevelManager.lM.gameMode == GameMode.MapControl)
+        {
+            int nodesInPlayerFaction = 0;
+
+            foreach (Node node in nodes)
+            {
+                if (node.userInformation.faction == LevelManager.lM.playerAllyFaction)
+                {
+                    nodesInPlayerFaction++;
+                }
+            }
+
+            if (nodesInPlayerFaction > nodes.Count * LevelManager.lM.amountRequiredForControl)
+            {
+                StateManager.sM.GameOver(true);
+            }
+        }
+
+        else if (LevelManager.lM.gameMode == GameMode.SpecificNodeCapture)
+        {
+            int nodesRequired = 0;
+            int nodesCaptured = 0;
+
+            foreach (Node node in nodes)
+            {
+                if (node.userInformation.toCapture)
+                {
+                    nodesRequired++;
+
+                    if (node.userInformation.faction == LevelManager.lM.playerAllyFaction)
+                    {
+                        nodesCaptured++;
+                    }
+                }
+            }
+
+            if(nodesRequired == nodesCaptured)
+            {
+                StateManager.sM.GameOver(true);
+            }
         }
     }
 
@@ -81,7 +144,6 @@ public class NodeManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
-
             foreach (Node connectedNode in node.connectedNodes)
             {
                 bool alreadyConnected = false;
@@ -101,26 +163,28 @@ public class NodeManager : MonoBehaviour
                             continue;
                         }
 
-                        var replacementLine = new Line();
-                        replacementLine.lineR = line.lineR;
-                        replacementLine.connectedNodes = line.connectedNodes;
-
                         if (node.userInformation.faction == connectedNode.userInformation.faction && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
                         {
-                            replacementLine.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
-                            if (node.userInformation.faction != Faction.Neutral)
+                            if(line.lineFaction != node.userInformation.faction)
                             {
-                                replacementLine.lineFaction = node.userInformation.faction;
+                                line.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
+                                line.lineFaction = node.userInformation.faction;
+                                HUDManager.i.SyncPoliticalAxes();
                             }
+                            
                         }
                         else
                         {
-                            replacementLine.lineR.material = neutralLine;
-                            replacementLine.lineFaction = Faction.Neutral;
+                            if (line.lineFaction != Faction.Neutral)
+                            {
+                                line.lineR.material = neutralLine;
+                                line.lineFaction = Faction.Neutral;
+                                HUDManager.i.SyncPoliticalAxes();
+                            }
                         }
-
-                        line = replacementLine;
                     }
+
+                    lines[i] = line;
                 }
 
                 if (!alreadyConnected)
@@ -134,8 +198,8 @@ public class NodeManager : MonoBehaviour
                     newLineObj.transform.parent = this.transform;
                     var newLineR = newLineObj.GetComponent<LineRenderer>();
                     newLineR.positionCount = 2;
-                    newLineR.SetPosition(0, node.transform.position - (Vector3.up * 0.1f));
-                    newLineR.SetPosition(1, connectedNode.transform.position - (Vector3.up * 0.1f));
+                    newLineR.SetPosition(0, node.transform.position - (Vector3.up * 0.25f));
+                    newLineR.SetPosition(1, connectedNode.transform.position - (Vector3.up * 0.25f));
 
                     List<Node> connectedNodes = new List<Node>();
                     connectedNodes.Add(node);
@@ -147,10 +211,12 @@ public class NodeManager : MonoBehaviour
 
                     if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
                     {
+                        newLine.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
                         newLine.lineFaction = node.userInformation.faction;
                     }
                     else
                     {
+                        newLine.lineR.material = neutralLine;
                         newLine.lineFaction = Faction.Neutral;
                     }
 
@@ -163,6 +229,7 @@ public class NodeManager : MonoBehaviour
     public void AddNodeToList(Node node)
     {
         nodes.Add(node);
+        node.nodeVisual.sprite = faceSprites[Mathf.RoundToInt(Random.Range(0, faceSprites.Length - 1))];
     }
 
     public void CloseAllNodeMenus(Node exceptionNode)
@@ -206,161 +273,145 @@ public class NodeManager : MonoBehaviour
 
     public void CheckNodeConnections()
     {
-        blueNodes.Clear();
-        redNodes.Clear();
-        yellowNodes.Clear();
-        greenNodes.Clear();
-        neutralNodes.Clear();
-
-        foreach(Node node in nodes)
+        foreach (Faction faction in nodeFactions.Keys)
         {
-            if(node.userInformation.instigator != Faction.None)
+            nodeFactions[faction].Clear();
+        }
+
+        foreach (Node node in nodes)
+        {
+            if (node.userInformation.instigator != Faction.None && nodeFactions.ContainsKey(node.userInformation.instigator))
             {
-                if (node.userInformation.instigator == Faction.DownRight)
+                if(Vector2.Distance(node.userInformation.beliefs, LevelManager.lM.levelFactions[node.userInformation.instigator].position) > 1.5f)
                 {
-                    node.userInformation.faction = Faction.DownRight;
-
-                    yellowNodes.Add(node);
+                    node.userInformation.instigator = Faction.None;
                 }
-
-                if (node.userInformation.instigator == Faction.UpRight)
+                else
                 {
-                    node.userInformation.faction = Faction.UpRight;
+                    node.userInformation.faction = node.userInformation.instigator;
+                    nodeFactions[node.userInformation.faction].Add(node);
 
-                    redNodes.Add(node);
+                    continue;
                 }
-
-                if (node.userInformation.instigator == Faction.DownLeft)
-                {
-                    node.userInformation.faction = Faction.DownLeft;
-
-                    greenNodes.Add(node);
-                }
-
-                if (node.userInformation.instigator == Faction.UpLeft)
-                {
-                    node.userInformation.faction = Faction.UpLeft;
-
-                    blueNodes.Add(node);
-                }
-
-                continue;
             }
 
-            bool yellowAlly = false;
-            bool redAlly = false;
-            bool greenAlly = false;
-            bool blueAlly = false;
-
-            int allyNum = 0;
-
-            if(node.isBanned)
+            if (node.isBanned)
             {
                 node.userInformation.faction = Faction.Neutral;
                 continue;
             }
 
+            List<Node> alliedNodes = new List<Node>();
 
             foreach (Node connectedNode in node.connectedNodes)
             {
-                if (Mathf.Abs(connectedNode.userInformation.beliefs.x - node.userInformation.beliefs.x) + Mathf.Abs(connectedNode.userInformation.beliefs.y - node.userInformation.beliefs.y) < 1.1f)
+                if (connectedNode.userInformation.faction != Faction.Neutral && Vector2.Distance(connectedNode.userInformation.beliefs, node.userInformation.beliefs) < 1.1f)
                 {
-                    if (connectedNode.userInformation.faction == Faction.DownRight)
+                    alliedNodes.Add(connectedNode);
+                }
+            }
+
+            Faction possibleAlliedFaction = Faction.None;
+
+            if (alliedNodes.Count > 0)
+            {
+                foreach (Node alliedNode in alliedNodes)
+                {
+                    if (alliedNode.userInformation.faction == Faction.Neutral)
                     {
-                        if (yellowAlly == false)
-                        {
-                            yellowAlly = true;
-                            allyNum++;
-                        }
+                        continue;
                     }
 
-                    else if(connectedNode.userInformation.faction == Faction.UpRight)
+                    if (possibleAlliedFaction == Faction.None)
                     {
-                        if (redAlly == false)
-                        {
-                            redAlly = true;
-                            allyNum++;
-                        }
+                        possibleAlliedFaction = alliedNode.userInformation.faction;
+                        continue;
                     }
 
-                    else if(connectedNode.userInformation.faction == Faction.DownLeft)
+                    if(possibleAlliedFaction != alliedNode.userInformation.faction)
                     {
-                        if (greenAlly == false)
-                        {
-                            greenAlly = true;
-                            allyNum++;
-                        }
-                    }
-
-                    else if (connectedNode.userInformation.faction == Faction.UpLeft)
-                    {
-                        if (blueAlly == false)
-                        {
-                            blueAlly = true;
-                            allyNum++;
-                        }
+                        possibleAlliedFaction = Faction.Neutral;
+                        break;
                     }
                 }
             }
 
-            if(allyNum == 0 || allyNum > 1)
+            if (possibleAlliedFaction == Faction.None)
             {
-                node.userInformation.faction = Faction.Neutral;
-                neutralNodes.Add(node);
+                possibleAlliedFaction = Faction.Neutral;
             }
 
-            else
+            else if (possibleAlliedFaction != Faction.Neutral)
             {
-                if (yellowAlly)
+                if (!CheckIfConnectedToInstigator(node, possibleAlliedFaction))
                 {
-                    node.userInformation.faction = Faction.DownRight;
-
-                    yellowNodes.Add(node);
+                    possibleAlliedFaction = Faction.Neutral;
                 }
+            }
 
-                else if (redAlly)
+            node.userInformation.faction = possibleAlliedFaction;
+            nodeFactions[possibleAlliedFaction].Add(node);
+
+        }
+    }
+
+    public bool CheckIfConnectedToInstigator(Node node, Faction faction)
+    {
+        List<Node> nodesToCheck = new List<Node>();
+
+        List<Node> nodesChecked = new List<Node>();
+
+        nodesToCheck.Add(node);
+
+        foreach(Node connectedNode in node.connectedNodes)
+        {
+            if (Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
+            {
+                nodesToCheck.Add(connectedNode);
+            }
+        }
+
+        for (int i = 0; i < nodesToCheck.Count; i++)
+        {
+            if (nodesToCheck[i].userInformation.faction != faction)
+            {
+                continue;
+            }
+
+            if(nodesToCheck[i].userInformation.instigator == faction)
+            {
+                return true;
+            }
+
+            nodesChecked.Add(nodesToCheck[i]);
+
+            foreach(Node nodeToAdd in nodesToCheck[i].connectedNodes)
+            {
+                if(!nodesChecked.Contains(nodeToAdd) && Vector2.Distance(nodesToCheck[i].userInformation.beliefs, nodeToAdd.userInformation.beliefs) < 1.1f)
                 {
-                    node.userInformation.faction = Faction.UpRight;
-
-                    redNodes.Add(node);
-                }
-
-                if (greenAlly)
-                {
-                    node.userInformation.faction = Faction.DownLeft;
-
-                    greenNodes.Add(node);
-                }
-
-                if (blueAlly)
-                {
-                    node.userInformation.faction = Faction.UpLeft;
-
-                    blueNodes.Add(node);
+                    nodesToCheck.Add(nodeToAdd);
                 }
             }
         }
+
+        return false;
     }
 
 
     [SerializeField] public List<Node> nodes = new List<Node>();
-    [SerializeField] public List<Node> yellowNodes = new List<Node>();
-    [SerializeField] public List<Node> redNodes = new List<Node>();
-    [SerializeField] public List<Node> greenNodes = new List<Node>();
-    [SerializeField] public List<Node> blueNodes = new List<Node>();
-    [SerializeField] public List<Node> neutralNodes = new List<Node>();
+
+    [SerializeField] public Dictionary<Faction, List<Node>> nodeFactions = new Dictionary<Faction, List<Node>>();
+
     [SerializeField] public List<Line> lines = new List<Line>();
     [SerializeField] private GameObject lineObj;
 
     private int totalBanned;
 
     [SerializeField] private Material neutralLine;
-    [SerializeField] private Material blueLine;
-    [SerializeField] private Material yellowLine;
-    [SerializeField] private Material redLine;
-    [SerializeField] private Material greenLine;
 
     [SerializeField] public List<Node> centristNodes = new List<Node>();
+
+    [SerializeField] private Sprite[] faceSprites;
 }
 
 [System.Serializable]

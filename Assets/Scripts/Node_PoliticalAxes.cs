@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Linq.Expressions;
 
 public class Node_PoliticalAxes : MonoBehaviour
 {
@@ -39,7 +40,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                     myUserObj.transform.localScale = new Vector3(0, defaultScale.y, defaultScale.z);
                     myUserObj.transform.DOScale(defaultScale, 0.5f);
 
-                    myUserObj.transform.localPosition = node.userInformation.beliefs * (0.9f * 1.5f);
+                    myUserObj.transform.localPosition = node.userInformation.beliefs * 1.4f;
 
                     myUserObj.GetComponent<AudioSource>().pitch = Random.Range(0.9f, 1.1f);
                     myUserObj.GetComponent<AudioSource>().PlayOneShot(userReveal);
@@ -47,28 +48,32 @@ public class Node_PoliticalAxes : MonoBehaviour
                 }
                 else
                 {
-                    myUserObj.transform.localPosition = node.userInformation.beliefs * (0.9f * 1.5f);
+                    myUserObj.transform.localPosition = node.userInformation.beliefs * 1.4f;
                 }
             }
 
             objOnBoard userObjOnBoard = new objOnBoard();
             userObjOnBoard.userObj = myUserObj;
-            userObjOnBoard.userImage = myUserObj.GetComponent<Image>();
+            userObjOnBoard.userImage = myUserObj.GetComponent<UserIndicator>().profile;
+            userObjOnBoard.userFaction = myUserObj.GetComponent<UserIndicator>().faction;
             userObjOnBoard.userAudioSource = myUserObj.GetComponent<AudioSource>();
             userObjOnBoard.associatedNode = node;
+            userObjOnBoard.userImage.sprite = userObjOnBoard.associatedNode.nodeVisual.sprite;
+            userObjOnBoard.userImage.color = Color.Lerp(LevelManager.lM.GiveAverageColor(node.userInformation.beliefs), Color.white, 0.75f);
+            userObjOnBoard.userFaction.color = LevelManager.lM.levelFactions[node.userInformation.faction].color;
             nodeObjsOnBoard.Add(userObjOnBoard);
 
-            if (myUserObj.transform.localPosition.x != node.userInformation.beliefs.x * (0.9f * 1.5f) || myUserObj.transform.localPosition.y != node.userInformation.beliefs.y * (0.9f * 1.5f))
+            if (myUserObj.transform.localPosition.x != node.userInformation.beliefs.x * 1.4f || myUserObj.transform.localPosition.y != node.userInformation.beliefs.y * 1.4f)
             {
                 if (!onClick)
                 {
-                    myUserObj.transform.DOLocalMove(node.userInformation.beliefs * (0.9f * 1.5f), 0.3f);
+                    myUserObj.transform.DOLocalMove(node.userInformation.beliefs * 1.4f, 0.3f);
                     myUserObj.GetComponent<AudioSource>().pitch = Random.Range(0.9f, 1.1f);
                     myUserObj.GetComponent<AudioSource>().PlayOneShot(userMove);
                 }
                 else
                 {
-                    myUserObj.transform.localPosition = node.userInformation.beliefs * (0.9f * 1.5f);
+                    myUserObj.transform.localPosition = node.userInformation.beliefs * 1.4f;
                 }
             }
 
@@ -90,9 +95,11 @@ public class Node_PoliticalAxes : MonoBehaviour
                     if (associatedUserObj.userObj == null)
                     {
                         associatedUserObj.userObj = Instantiate(userObj, userObjsHolder);
-                        associatedUserObj.userImage = associatedUserObj.userObj.GetComponent<Image>();
+                        associatedUserObj.userImage = associatedUserObj.userObj.GetComponent<UserIndicator>().profile;
+                        associatedUserObj.userFaction = associatedUserObj.userObj.GetComponent<UserIndicator>().faction;
                         associatedUserObj.userAudioSource = associatedUserObj.userObj.GetComponent<AudioSource>();
                         associatedUserObj.associatedNode = connectedNode;
+                        associatedUserObj.userImage.sprite = connectedNode.nodeVisual.sprite;
                         connectedUserObjs.Add(associatedUserObj);
 
                         if (!onClick)
@@ -101,7 +108,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                             associatedUserObj.userObj.transform.localScale = new Vector3(0, defaultScale.y, defaultScale.z);
                             associatedUserObj.userObj.transform.DOScale(defaultScale, 0.5f);
 
-                            associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * (0.9f * 1.5f);
+                            associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * 1.4f;
 
                             associatedUserObj.userAudioSource.pitch = Random.Range(0.9f, 1.1f);
                             associatedUserObj.userAudioSource.PlayOneShot(userReveal);
@@ -109,25 +116,26 @@ public class Node_PoliticalAxes : MonoBehaviour
                         else
                         {
                             associatedUserObj.userObj.transform.localScale *= 0.75f;
-                            associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * (0.9f * 1.5f);
+                            associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * 1.4f;
                         }
                     }
 
                     nodeObjsOnBoard.Add(associatedUserObj);
 
                     associatedUserObj.userImage.color = Color.Lerp(LevelManager.lM.GiveAverageColor(associatedUserObj.associatedNode.userInformation.beliefs), Color.white, 0.5f);
+                    associatedUserObj.userFaction.color = LevelManager.lM.levelFactions[associatedUserObj.associatedNode.userInformation.faction].color;
 
-                    if (associatedUserObj.userObj.transform.localPosition.x != connectedNode.userInformation.beliefs.x * (0.9f * 1.5f) || associatedUserObj.userObj.transform.localPosition.y != connectedNode.userInformation.beliefs.y * (0.9f * 1.5f))
+                    if (associatedUserObj.userObj.transform.localPosition.x != connectedNode.userInformation.beliefs.x * 1.4f || associatedUserObj.userObj.transform.localPosition.y != connectedNode.userInformation.beliefs.y * 1.4f)
                     {
                         if (!onClick)
                         {
-                            associatedUserObj.userObj.transform.DOLocalMove(connectedNode.userInformation.beliefs * (0.9f * 1.5f), 0.3f);
+                            associatedUserObj.userObj.transform.DOLocalMove(connectedNode.userInformation.beliefs * 1.4f, 0.3f);
                             associatedUserObj.userAudioSource.pitch = Random.Range(0.9f, 1.1f);
                             associatedUserObj.userAudioSource.PlayOneShot(userMove);
                         }
                         else
                         {
-                            associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * (0.9f * 1.5f);
+                            associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * 1.4f;
                         }
                     }
                 }
@@ -149,6 +157,10 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                     if (!associatedNodeExists)
                     {
+                        if(nodeObjsOnBoard.Contains(connectedUserObjs[i]))
+                        {
+                            nodeObjsOnBoard.Remove(connectedUserObjs[i]);
+                        }
                         Destroy(connectedUserObjs[i].userObj);
                         connectedUserObjs.RemoveAt(i);
                     }
@@ -158,10 +170,8 @@ public class Node_PoliticalAxes : MonoBehaviour
             for (int i = hudLines.Count - 1; i >= 0; i--)
             {
                 Destroy(hudLines[i].lineObj);
-                hudLines.RemoveAt(i);
+                hudLines.Remove(hudLines[i]);
             }
-
-            hudLines.Clear();
 
             List<Node> nodesOnBoard = new List<Node>();
 
@@ -192,10 +202,12 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                 bool breakOutForLoop = false;
 
-                foreach (HUDLines hudLines in hudLines)
+                //Is this connection already represented by a line
+                foreach (HUDLines hudLine in hudLines)
                 {
-                    if (hudLines.containingNodes.Contains(line.connectedNodes[0]) && hudLines.containingNodes.Contains(line.connectedNodes[1]))
+                    if (hudLine.containingNodes.Contains(line.connectedNodes[0]) && hudLine.containingNodes.Contains(line.connectedNodes[1]))
                     {
+                        breakOutForLoop = true;
                         continue;
                     }
                 }
@@ -240,6 +252,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                 newHudLine.containingNodes = new List<Node>();
                 newHudLine.containingNodes.Add(line.connectedNodes[0]);
                 newHudLine.containingNodes.Add(line.connectedNodes[1]);
+                newHudLine.ogLine = line;
                 hudLines.Add(newHudLine);
             }
         }
@@ -284,6 +297,7 @@ public class Node_PoliticalAxes : MonoBehaviour
     { 
         public GameObject userObj;
         public Image userImage;
+        public Image userFaction;
         public AudioSource userAudioSource;
         public Node associatedNode;
     }
@@ -293,5 +307,6 @@ public class Node_PoliticalAxes : MonoBehaviour
     {
         public GameObject lineObj;
         public List<Node> containingNodes;
+        public Line ogLine;
     }
 }

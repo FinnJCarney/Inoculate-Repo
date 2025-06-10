@@ -20,6 +20,8 @@ public class Node_UserInformation : MonoBehaviour
     public bool misinformerHori;
     public bool misinformerVert;
 
+    public bool toCapture;
+
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 }
 

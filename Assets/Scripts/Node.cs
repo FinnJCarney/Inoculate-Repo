@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Node : MonoBehaviour
@@ -33,7 +32,7 @@ public class Node : MonoBehaviour
 
     private void Update()
     {
-        nodeVisual.color = LevelManager.lM.GiveAverageColor(userInformation.beliefs);
+        nodeVisual.color = Color.Lerp(LevelManager.lM.GiveAverageColor(userInformation.beliefs), Color.white, 0.5f);
 
         int theorheticalActions = 0;
         int possibleActions = 0;
@@ -307,7 +306,7 @@ public class Node : MonoBehaviour
     
     [SerializeField] public List<Node> connectedNodes = new List<Node>();
 
-    [SerializeField] private SpriteRenderer nodeVisual;
+    [SerializeField] public SpriteRenderer nodeVisual;
 
     [SerializeField] SpriteRenderer accessRing;
     [SerializeField] SpriteRenderer allowanceRing;

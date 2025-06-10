@@ -1,12 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using TMPro;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
-using static Node;
 
 public class ActionManager : MonoBehaviour
 {
@@ -114,27 +109,8 @@ public class ActionManager : MonoBehaviour
         actionRing.transform.localScale = Vector3.Lerp(outerActionRingScale, new Vector3(0.1f, 0.1f, 0.1f), amountThrough);
         
         Color idealColor = Color.clear;
-        
-        if(faction == Faction.UpRight)
-        {
-            idealColor = Color.red;
-        }
-        else if(faction == Faction.DownRight)
-        {
-            idealColor = Color.yellow;
-        }
-        else if (faction == Faction.UpLeft)
-        {
-            idealColor = Color.blue;
-        }
-        else if (faction == Faction.DownLeft)
-        {
-            idealColor = Color.green;
-        }
-        else
-        {
-            idealColor = Color.white;
-        }
+
+        idealColor = LevelManager.lM.levelFactions[faction].color;
 
         actionRing.GetComponent<SpriteRenderer>().color = Color.Lerp(Color.clear, idealColor, amountThrough);
     }
@@ -279,28 +255,7 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.receivingNode = receivingNode;
         newCurrentAction.timer = actionLength;
         newCurrentAction.faction = actingNode.userInformation.faction;
-
-        if (newCurrentAction.faction == Faction.UpRight)
-        {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<ActionLine>();
-        }
-        else if (newCurrentAction.faction == Faction.DownRight)
-        {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<ActionLine>();
-        }
-        else if (newCurrentAction.faction == Faction.DownLeft)
-        {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<ActionLine>();
-        }
-        else if (newCurrentAction.faction == Faction.UpLeft)
-        {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<ActionLine>();
-        }
-        else
-        {
-            newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<ActionLine>();
-        }
-
+        newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine).GetComponent<ActionLine>();
         newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
         newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position);
         newCurrentAction.playerActivated = true;
@@ -319,26 +274,7 @@ public class ActionManager : MonoBehaviour
             List<PossibleAction> possibleActions = new List<PossibleAction>();
             List<Node> possibleActingNodes = null;
 
-            if (faction == Faction.UpRight)
-            {
-                possibleActingNodes = NodeManager.nM.redNodes;
-            }
-            else if (faction == Faction.DownRight)
-            {
-                possibleActingNodes = NodeManager.nM.yellowNodes;
-            }
-            else if (faction == Faction.UpLeft)
-            {
-                possibleActingNodes = NodeManager.nM.blueNodes;
-            }
-            else if (faction == Faction.DownLeft)
-            {
-                possibleActingNodes = NodeManager.nM.greenNodes;
-            }
-            else if (faction == Faction.Neutral)
-            {
-                possibleActingNodes = NodeManager.nM.neutralNodes;
-            }
+            possibleActingNodes = NodeManager.nM.nodeFactions[faction];
 
             if(possibleActingNodes.Count == 0)
             {
@@ -358,23 +294,7 @@ public class ActionManager : MonoBehaviour
             float ideologicalDistance = 0;
 
 
-            //REWORK THIS to be a count of current factions and their noted ideological centers
-            if (faction == Faction.UpRight)
-            {
-                ideologicalDistance = Vector2.Distance(averagePos, new Vector2(2, 2));
-            }
-            else if (faction == Faction.DownRight)
-            {
-                ideologicalDistance = Vector2.Distance(averagePos, new Vector2(2, -2));
-            }
-            else if (faction == Faction.UpLeft)
-            {
-                ideologicalDistance = Vector2.Distance(averagePos, new Vector2(-2, 2));
-            }
-            else if (faction == Faction.DownLeft)
-            {
-                ideologicalDistance = Vector2.Distance(averagePos, new Vector2(-2, -2));
-            }
+            ideologicalDistance = Vector2.Distance(averagePos, LevelManager.lM.levelFactions[faction].position);
 
             //Acting on "Inoculate"
             if (ideologicalDistance > 2)
@@ -418,6 +338,12 @@ public class ActionManager : MonoBehaviour
                                 }
                             }
 
+                            //Temp version of "Value add for move also pulling node towards factions ideological center"
+                            if(Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            {
+                                strategicValue += 2f;
+                            }
+
                             newPossibleAction.score += strategicValue;
                             newPossibleAction.score += Random.Range(0f, 1f);
                             possibleActions.Add(newPossibleAction);
@@ -442,6 +368,12 @@ public class ActionManager : MonoBehaviour
                                 {
                                     strategicValue += 2f;
                                 }
+                            }
+
+                            //Temp version of "Value add for move also pulling node towards factions ideological center"
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            {
+                                strategicValue += 2f;
                             }
 
                             newPossibleAction.score += strategicValue;
@@ -470,6 +402,11 @@ public class ActionManager : MonoBehaviour
                                 }
                             }
 
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            {
+                                strategicValue += 2f;
+                            }
+
                             newPossibleAction.score += strategicValue;
                             newPossibleAction.score += Random.Range(0f, 1f);
                             possibleActions.Add(newPossibleAction);
@@ -494,6 +431,11 @@ public class ActionManager : MonoBehaviour
                                 {
                                     strategicValue += 2f;
                                 }
+                            }
+
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            {
+                                strategicValue += 2f;
                             }
 
                             newPossibleAction.score += strategicValue;
@@ -697,26 +639,7 @@ public class ActionManager : MonoBehaviour
                     newCurrentAction.timer = mediumOnlineActionLength;
                     newCurrentAction.faction = newCurrentAction.actingNode.userInformation.faction;
 
-                    if (newCurrentAction.faction == Faction.UpRight)
-                    {
-                        newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Red).GetComponent<ActionLine>();
-                    }
-                    else if (newCurrentAction.faction == Faction.DownRight)
-                    {
-                        newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Yellow).GetComponent<ActionLine>();
-                    }
-                    else if (newCurrentAction.faction == Faction.DownLeft)
-                    {
-                        newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Green).GetComponent<ActionLine>();
-                    }
-                    else if (newCurrentAction.faction == Faction.UpLeft)
-                    {
-                        newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Blue).GetComponent<ActionLine>();
-                    }
-                    else
-                    {
-                        newCurrentAction.actionLine = Instantiate<GameObject>(ActionLineObj_Neutral).GetComponent<ActionLine>();
-                    }
+                    newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[faction].actionLine).GetComponent<ActionLine>();
 
                     newCurrentAction.actionLine.SyncLine(0, newCurrentAction.actingNode.transform.position, newCurrentAction.receivingNode.transform.position);
                     newCurrentAction.playerActivated = false;

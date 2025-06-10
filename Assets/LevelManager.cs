@@ -46,30 +46,7 @@ public class LevelManager : MonoBehaviour
 
             float timeToReduceBy = Time.deltaTime;
 
-            if (factionTimers[i].faction == Faction.UpRight)
-            {
-                timeToReduceBy *= (NodeManager.nM.redNodes.Count / (float)NodeManager.nM.nodes.Count);
-            }
-
-            if (factionTimers[i].faction == Faction.DownRight)
-            {
-                timeToReduceBy *= (NodeManager.nM.yellowNodes.Count / (float)NodeManager.nM.nodes.Count);
-            }
-
-            if (factionTimers[i].faction == Faction.DownLeft)
-            {
-                timeToReduceBy *= (NodeManager.nM.greenNodes.Count / (float)NodeManager.nM.nodes.Count);
-            }
-
-            if (factionTimers[i].faction == Faction.UpLeft)
-            {
-                timeToReduceBy *= (NodeManager.nM.blueNodes.Count / (float)NodeManager.nM.nodes.Count);
-            }
-
-            if (factionTimers[i].faction == Faction.Neutral)
-            {
-                timeToReduceBy *= (NodeManager.nM.neutralNodes.Count / (float)NodeManager.nM.nodes.Count);
-            }
+            timeToReduceBy *= NodeManager.nM.nodeFactions[adjustedFactionTimer.faction].Count / (float)NodeManager.nM.nodes.Count;
 
             timeToReduceBy = Mathf.Clamp(timeToReduceBy, Time.deltaTime * 0.4f, Time.deltaTime * 0.8f);
 
@@ -105,17 +82,14 @@ public class LevelManager : MonoBehaviour
     {
         Color outputColor = Color.white;
 
-        foreach(levelFaction lvlFaction in levelFactions.Values)
+        foreach (levelFaction lvlFaction in levelFactions.Values)
         {
             if(lvlFaction.position == Vector2.zero)
             {
                 continue;
             }
 
-            if(Vector2.Distance(pos, lvlFaction.position) < 5f)
-            {
-                outputColor = Color.Lerp(lvlFaction.color, outputColor, Vector2.Distance(pos, lvlFaction.position) / 6f);
-            }
+            outputColor = Color.Lerp(lvlFaction.color, outputColor, (Vector2.Distance(pos, lvlFaction.position) / 5f));
         }
 
         return outputColor;
@@ -126,10 +100,13 @@ public class LevelManager : MonoBehaviour
         return levelFactions[faction].lineMaterial;
     }
 
-    public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
-
     public Node playerNode;
     public Faction playerAllyFaction;
+
+    public GameMode gameMode;
+    public float amountRequiredForControl;
+
+    public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
 
     [TextArea(5, 5)]
     public string levelMap = "11111\n11111\n11111\n11111\n11111";
@@ -153,6 +130,7 @@ public struct levelFaction
     public Color color;
     public Vector2 position;
     public Material lineMaterial;
+    public GameObject actionLine;
 }
 
 
@@ -170,3 +148,13 @@ public struct specificFactionSetting
     public float specificTimer;
     public float specificNumOfTurns;
 }
+
+public enum GameMode
+{ 
+    MisinformerHunt,
+    SpecificNodeCapture,
+    MapControl,
+    FactionElimination,
+    None
+}
+

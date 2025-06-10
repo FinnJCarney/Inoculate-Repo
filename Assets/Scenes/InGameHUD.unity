@@ -844,9 +844,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 301151340}
+  - component: {fileID: 301151341}
   - component: {fileID: 301151343}
   - component: {fileID: 301151342}
-  - component: {fileID: 301151341}
   m_Layer: 5
   m_Name: PoliticalAxes
   m_TagString: Untagged
@@ -900,6 +900,7 @@ MonoBehaviour:
   HUDLineHolder: {fileID: 550121667}
   myUserObj: {fileID: 0}
   connectedUserObjs: []
+  hudLines: []
   userReveal: {fileID: 8300000, guid: dbc3c4653ffa24943acd6bcd2e71f876, type: 3}
   userMove: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
 --- !u!114 &301151342

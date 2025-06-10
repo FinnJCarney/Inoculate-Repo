@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,7 +43,6 @@ public class HUDManager : MonoBehaviour
         {
             if(levelReferenceString[i] == '0')
             {
-                Debug.Log("Is this running?");
                 int yCord = Mathf.FloorToInt(i / 5f);
                 Vector2 spaceCoords = new Vector2(i - (yCord * 5) - 2, 2 - yCord);
                 var thisSpaceHider = Instantiate(spaceHider, SpaceCoverHolder.transform);

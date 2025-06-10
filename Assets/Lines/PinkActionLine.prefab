@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2175188053730708383}
-  - component: {fileID: 5823076513660791747}
   - component: {fileID: 3082717458355634730}
-  - component: {fileID: 7324493227297834404}
+  - component: {fileID: 64018666615554039}
+  - component: {fileID: -4517682441822904174}
   m_Layer: 0
-  m_Name: NeutralActionLine
+  m_Name: PinkActionLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,21 +34,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5823076513660791747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5016487758517115089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5372a590193bef48878b002e1ed1999, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numOfPointsOnLine: 50
-  randomOffsetRange: 2
-  yValue: 5
 --- !u!120 &3082717458355634730
 LineRenderer:
   serializedVersion: 2
@@ -70,7 +55,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ee98b449f50708a40aede711ee8a4ac1, type: 2}
+  - {fileID: 2100000, guid: fe2069569130be44bb226f7ca649fb3b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114,8 +99,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
-      key1: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
+      key0: {r: 0.7735849, g: 0.12771447, b: 0.7098803, a: 1}
+      key1: {r: 0.6901961, g: 0.074509814, b: 0.60578036, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -153,7 +138,7 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!82 &7324493227297834404
+--- !u!82 &64018666615554039
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -249,3 +234,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-4517682441822904174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5016487758517115089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5372a590193bef48878b002e1ed1999, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numOfPointsOnLine: 50
+  randomOffsetRange: 1
+  yValue: 5
