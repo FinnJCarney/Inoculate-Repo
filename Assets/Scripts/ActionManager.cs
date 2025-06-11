@@ -41,6 +41,16 @@ public class ActionManager : MonoBehaviour
     {
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
+            if (currentActions[i].faction != currentActions[i].actingNode.userInformation.faction)
+            {
+                currentActions[i].actingNode.performingAction = false;
+                currentActions[i].receivingNode.receivingActions--;
+                Destroy(currentActions[i].actionLine.gameObject);
+                Destroy(currentActions[i].actionRing);
+                currentActions.Remove(currentActions[i]);
+                continue;
+            }
+
             var adjustedCurAction = currentActions[i];
             adjustedCurAction.timer -= tm.adjustedDeltaTime;
             currentActions[i] = adjustedCurAction;
@@ -131,7 +141,7 @@ public class ActionManager : MonoBehaviour
 
         if (buttonInfo.type != ActionType.Connect)
         {
-            foreach (Node connectedNode in receivingNode.connectedNodes)
+            foreach (Node connectedNode in receivingNode.userInformation.connectedNodes.Keys)
             {
                 connectedNode.nodePrio = 100;
 
@@ -140,8 +150,7 @@ public class ActionManager : MonoBehaviour
                     connectedNode.nodePrio -= 1000;
                 }
 
-                connectedNode.nodePrio -= receivingNode.connectedNodes.IndexOf(connectedNode);
-                connectedNode.nodePrio -= connectedNode.connectedNodes.Count * 5;
+                connectedNode.nodePrio -= connectedNode.userInformation.connectedNodes.Count * 5;
 
                 if (buttonInfo.type == ActionType.Left)
                 {
@@ -164,7 +173,7 @@ public class ActionManager : MonoBehaviour
                 }
             }
 
-            foreach (Node connectedNode in receivingNode.connectedNodes)
+            foreach (Node connectedNode in receivingNode.userInformation.connectedNodes.Keys)
             {
                 if (connectedNode.nodePrio < 0)
                 {
@@ -189,7 +198,7 @@ public class ActionManager : MonoBehaviour
 
             foreach (Node centristNode in NodeManager.nM.centristNodes)
             {
-                if(!receivingNode.connectedNodes.Contains(centristNode))
+                if(!receivingNode.userInformation.connectedNodes.Contains(centristNode))
                 {
                     if(shortestDistance > Vector3.Distance(receivingNode.transform.position, centristNode.transform.position))
                     {
@@ -307,7 +316,7 @@ public class ActionManager : MonoBehaviour
                         continue;
                     }
 
-                    foreach (Node connectedNode in node.connectedNodes)
+                    foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
                     {
                         if (connectedNode.userInformation.faction != node.userInformation.faction)
                         {
@@ -330,11 +339,16 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
                                 {
                                     strategicValue += 2f;
+
+                                    //if(Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -362,11 +376,16 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
                                 {
                                     strategicValue += 2f;
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -394,11 +413,16 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
                                 {
                                     strategicValue += 2f;
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -425,11 +449,16 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
                                 {
                                     strategicValue += 2f;
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -458,7 +487,7 @@ public class ActionManager : MonoBehaviour
                         continue;
                     }
 
-                    foreach (Node connectedNode in node.connectedNodes)
+                    foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
                     {
                         float proximityValue = (0.1f / Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs)) + 0.1f;
                         float factionValue = node.userInformation.faction == connectedNode.userInformation.faction ? 0f : 2.5f;
@@ -485,7 +514,7 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, cNConnectedNode.userInformation.beliefs) < 1.5f)
                                 {
@@ -497,6 +526,11 @@ public class ActionManager : MonoBehaviour
                                     {
                                         strategicValue -= 2f;
                                     }
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -520,7 +554,7 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, cNConnectedNode.userInformation.beliefs) < 1.5f)
                                 {
@@ -532,6 +566,11 @@ public class ActionManager : MonoBehaviour
                                     {
                                         strategicValue -= 2f;
                                     }
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -555,7 +594,7 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, cNConnectedNode.userInformation.beliefs) < 1.5f)
                                 {
@@ -567,6 +606,11 @@ public class ActionManager : MonoBehaviour
                                     {
                                         strategicValue -= 2f;
                                     }
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 
@@ -590,7 +634,7 @@ public class ActionManager : MonoBehaviour
                                 newPossibleAction.score += 2.5f;
                             }
 
-                            foreach (Node cNConnectedNode in connectedNode.connectedNodes)
+                            foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
                             {
                                 if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, cNConnectedNode.userInformation.beliefs) < 1.5f)
                                 {
@@ -602,6 +646,11 @@ public class ActionManager : MonoBehaviour
                                     {
                                         strategicValue -= 2f;
                                     }
+
+                                    //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, cNConnectedNode.userInformation.beliefs) < 1.1f)
+                                    //{
+                                    //    strategicValue -= 4f;
+                                    //}
                                 }
                             }
 

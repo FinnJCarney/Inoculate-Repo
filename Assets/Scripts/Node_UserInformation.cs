@@ -22,7 +22,7 @@ public class Node_UserInformation : MonoBehaviour
 
     public bool toCapture;
 
-    [SerializeField] public List<Node> connectedNodes = new List<Node>();
+    public SerializableDictionary<Node, connectedNodeInfo> connectedNodes = new SerializableDictionary<Node, connectedNodeInfo>();
 }
 
 public enum Faction
@@ -37,5 +37,26 @@ public enum Faction
     CenterRight,
     CenterLeft,
     None
+}
+
+[System.Serializable]
+public struct connectedNodeInfo
+{
+    public connectionLayer layer;
+    public connectionType type;
+}
+
+public enum connectionLayer
+{
+    onlineOffline,
+    online,
+    offline
+}
+
+public enum connectionType
+{
+    mutual,
+    influencedBy,
+    influenceOn
 }
 

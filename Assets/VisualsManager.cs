@@ -18,6 +18,7 @@ public class VisualsManager : MonoBehaviour
         var renderFeature = uRD.rendererFeatures[0];
         cRTRF = renderFeature.ConvertTo<CRTRendererFeature>();
         defaultShadowLines = cRTRF.shadowlines;
+        defaultShadowLinesSpeed = cRTRF.shadowlinesSpeed;
         defaultVignetteSmooth = cRTRF.vignetteSmooth;
         defaultBleed = cRTRF.bleed;
 
@@ -26,18 +27,6 @@ public class VisualsManager : MonoBehaviour
         vProf.TryGet<FilmGrain>(out filmGrain);
         defaultBloomIntensity = bloom.intensity.value;
         defaultFilmGrainIntensity = filmGrain.intensity.value;
-
-        SwapLayer(online);
-    }
-
-    void Update()
-    {
-        if(changeLayer)
-        {
-            online = !online;
-            changeLayer = false;
-            SwapLayer(online);
-        }
     }
 
     public void SwapLayer(bool online)
@@ -52,6 +41,7 @@ public class VisualsManager : MonoBehaviour
             DOTween.To(() => filmGrain.intensity.value, x => filmGrain.intensity.value = x, defaultFilmGrainIntensity, 0.5f);
             DOTween.To(() => cRTRF.bleed, x => cRTRF.bleed = x, defaultBleed, 0.5f);
             DOTween.To(() => cRTRF.shadowlines, x => cRTRF.shadowlines = x, defaultShadowLines, 0.5f);
+            DOTween.To(() => cRTRF.shadowlinesSpeed, x => cRTRF.shadowlinesSpeed = x, defaultShadowLinesSpeed, 0.5f);
             DOTween.To(() => cRTRF.vignetteSmooth, x => cRTRF.vignetteSmooth = x, defaultVignetteSmooth, 0.5f);
             offlinePSMat.DOColor(Color.clear, 0.5f);
             
@@ -63,6 +53,7 @@ public class VisualsManager : MonoBehaviour
             DOTween.To(() => filmGrain.intensity.value, x => filmGrain.intensity.value = x, 0f, 0.5f);
             DOTween.To(() => cRTRF.bleed, x => cRTRF.bleed = x, 0f, 0.5f);
             DOTween.To(() => cRTRF.shadowlines, x => cRTRF.shadowlines = x, 0f, 0.5f);
+            DOTween.To(() => cRTRF.shadowlinesSpeed, x => cRTRF.shadowlinesSpeed = x, 0, 0.5f);
             DOTween.To(() => cRTRF.vignetteSmooth, x => cRTRF.vignetteSmooth = x, 0.025f, 0.5f);
             offlinePSMat.DOColor(offlinePSColor, 0.5f);
         }
@@ -86,12 +77,9 @@ public class VisualsManager : MonoBehaviour
     private float defaultFilmGrainIntensity;
 
     private float defaultShadowLines;
+    private float defaultShadowLinesSpeed; 
     private float defaultVignetteSmooth;
     private float defaultBleed;
 
     [SerializeField] private bool changeLayer;
-    public bool online = true;
-
-    private float one = 1f;
-    private float zero = 1f;
 }

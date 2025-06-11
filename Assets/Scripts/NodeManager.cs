@@ -144,7 +144,7 @@ public class NodeManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
-            foreach (Node connectedNode in node.connectedNodes)
+            foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
             {
                 bool alreadyConnected = false;
 
@@ -156,7 +156,7 @@ public class NodeManager : MonoBehaviour
                     {
                         alreadyConnected = true;
 
-                        if (node.isBanned || connectedNode.isBanned)
+                        if (node.isBanned || connectedNode.isBanned || (node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && LayerManager.lM.activeLayer != line.connectionLayer))
                         {
                             Destroy(line.lineR.gameObject);
                             lines.Remove(line);
@@ -194,6 +194,11 @@ public class NodeManager : MonoBehaviour
                         continue;
                     }
 
+                    if(node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && node.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+                    {
+                        continue;
+                    }
+
                     var newLineObj = Instantiate<GameObject>(lineObj);
                     newLineObj.transform.parent = this.transform;
                     var newLineR = newLineObj.GetComponent<LineRenderer>();
@@ -219,6 +224,8 @@ public class NodeManager : MonoBehaviour
                         newLine.lineR.material = neutralLine;
                         newLine.lineFaction = Faction.Neutral;
                     }
+
+                    newLine.connectionLayer = node.userInformation.connectedNodes[connectedNode].layer;
 
                     lines.Add(newLine);
                 }
@@ -303,8 +310,29 @@ public class NodeManager : MonoBehaviour
 
             List<Node> alliedNodes = new List<Node>();
 
-            foreach (Node connectedNode in node.connectedNodes)
+            foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
             {
+                if(!connectedNode.userInformation.connectedNodes.ContainsKey(node))
+                {
+                    Debug.LogWarning(node + "is not properly connected to " + connectedNode);
+                    continue;
+                }
+
+                if (connectedNode.userInformation.connectedNodes[node].layer != node.userInformation.connectedNodes[connectedNode].layer)
+                {
+                    Debug.LogWarning(node + " has a connection layer discrepancy with " + connectedNode);
+                    continue;
+                }
+
+                if (connectedNode.userInformation.connectedNodes[node].type != node.userInformation.connectedNodes[connectedNode].type)
+                {
+                    if (!(connectedNode.userInformation.connectedNodes[node].type == connectionType.influencedBy && node.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.userInformation.connectedNodes[node].type == connectionType.influenceOn && node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy))
+                    {
+                        Debug.LogWarning(node + " has a connection type discrepancy with " + connectedNode);
+                        continue;
+                    }
+                }
+
                 if (connectedNode.userInformation.faction != Faction.Neutral && Vector2.Distance(connectedNode.userInformation.beliefs, node.userInformation.beliefs) < 1.1f)
                 {
                     alliedNodes.Add(connectedNode);
@@ -363,7 +391,7 @@ public class NodeManager : MonoBehaviour
 
         nodesToCheck.Add(node);
 
-        foreach(Node connectedNode in node.connectedNodes)
+        foreach(Node connectedNode in node.userInformation.connectedNodes.Keys)
         {
             if (Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
             {
@@ -385,7 +413,7 @@ public class NodeManager : MonoBehaviour
 
             nodesChecked.Add(nodesToCheck[i]);
 
-            foreach(Node nodeToAdd in nodesToCheck[i].connectedNodes)
+            foreach(Node nodeToAdd in nodesToCheck[i].userInformation.connectedNodes.Keys)
             {
                 if(!nodesChecked.Contains(nodeToAdd) && Vector2.Distance(nodesToCheck[i].userInformation.beliefs, nodeToAdd.userInformation.beliefs) < 1.1f)
                 {
@@ -417,6 +445,7 @@ public class NodeManager : MonoBehaviour
 [System.Serializable]
 public struct Line
 {
+    public connectionLayer connectionLayer;
     public LineRenderer lineR;
     public Faction lineFaction;
     public List<Node> connectedNodes;

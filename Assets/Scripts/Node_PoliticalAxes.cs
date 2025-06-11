@@ -77,7 +77,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                 }
             }
 
-            foreach (Node connectedNode in node.connectedNodes)
+            foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
             {
                 if (!connectedNode.userInformation.userInfoHidden)
                 {
@@ -147,7 +147,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                 {
                     bool associatedNodeExists = false;
 
-                    foreach (Node connectedNode in node.connectedNodes)
+                    foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
                     {
                         if (connectedNode == connectedUserObjs[i].associatedNode)
                         {

@@ -15,19 +15,12 @@ public class Node : MonoBehaviour
 
         audioSource = GetComponent<AudioSource>();
 
-        //if (isPlayer)
-        //{
-        //    nodeHandle = System.Environment.UserName;
-        //}
-
         handleText.text = nodeHandle;
 
         menu.SetActive(false);
         bannedCover.SetActive(isBanned);
 
         actionPitch = Random.Range(1.25f, 1.5f);
-
-        //politicalAxes.SyncPoliticalAxes(this);
     }
 
     private void Update()
@@ -44,9 +37,19 @@ public class Node : MonoBehaviour
 
         bool hasAllyNeighbourAvail = false;
 
-        foreach (Node connectedNode in connectedNodes)
+        foreach (Node connectedNode in userInformation.connectedNodes.Keys)
         {
-            if (connectedNode.isBanned || !connectedNode.connectedNodes.Contains(this))
+            if (connectedNode.isBanned)
+            {
+                continue;
+            }
+
+            if(userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+            {
+                continue;
+            }
+
+            if(userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.userInformation.connectedNodes[this].type == connectionType.influencedBy)
             {
                 continue;
             }
@@ -62,6 +65,8 @@ public class Node : MonoBehaviour
                 theorheticalActions++;
                 possibleActions ++;
                 hasAllyNeighbourAvail = true;
+
+                Debug.Log(this + " node has has an available ally due to a connection with " + connectedNode);
 
                 if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
                 {
@@ -115,7 +120,7 @@ public class Node : MonoBehaviour
 
         but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);
         but_Accuse.EnableButton(!userInformation.userInfoHidden && hasAllyNeighbourAvail);
-
+        
         but_Left.EnableButton(hasLeftNeighbourAvail && !userInformation.userInfoHidden);
         but_Right.EnableButton(hasRightNeighbourAvail && !userInformation.userInfoHidden);
         but_Up.EnableButton(hasUpNeighbourAvail && !userInformation.userInfoHidden);
@@ -127,7 +132,7 @@ public class Node : MonoBehaviour
         {
             foreach(Node centristNode in NodeManager.nM.centristNodes)
             {
-                if(!connectedNodes.Contains(centristNode) && centristNode != this)
+                if(!userInformation.connectedNodes.Contains(centristNode) && centristNode != this)
                 {
                     connectActionAvailable = true;
                 }
@@ -213,8 +218,11 @@ public class Node : MonoBehaviour
 
         if (aT == ActionType.Connect)
         {
-            connectedNodes.Add(actingNode);
-            actingNode.connectedNodes.Add(actingNode);
+            var newConnectedNodeInfo = new connectedNodeInfo();
+            newConnectedNodeInfo.layer = connectionLayer.onlineOffline;
+            newConnectedNodeInfo.type = connectionType.mutual;
+            userInformation.connectedNodes.Add(actingNode, newConnectedNodeInfo);
+            actingNode.userInformation.connectedNodes.Add(actingNode, newConnectedNodeInfo);
         }
 
         NodeManager.nM.CheckNodeConnections();
@@ -284,7 +292,7 @@ public class Node : MonoBehaviour
     private UserInfo uI;
 
     [SerializeField] GameObject menu;
-    [SerializeField] string nodeHandle;
+    private string nodeHandle;
     [SerializeField] TextMeshPro handleText;
     [SerializeField] GameObject bannedCover;
 
@@ -303,8 +311,6 @@ public class Node : MonoBehaviour
     [SerializeField] AudioClip actionComplete;
     [SerializeField] AudioClip actionReady;
     private float actionPitch;
-    
-    [SerializeField] public List<Node> connectedNodes = new List<Node>();
 
     [SerializeField] public SpriteRenderer nodeVisual;
 

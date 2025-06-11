@@ -40,6 +40,12 @@ public class LevelManager : MonoBehaviour
     {
         for (int i = 0; i < factionTimers.Count; i++)
         {
+            if (!NodeManager.nM.nodeFactions.ContainsKey(factionTimers[i].faction))
+            {
+                Debug.LogWarning("Faction " + factionTimers[i].faction + " is not in NodeFactions");
+                continue;
+            }
+
             factionTimer adjustedFactionTimer;
             adjustedFactionTimer.timer = factionTimers[i].timer;
             adjustedFactionTimer.faction = factionTimers[i].faction;

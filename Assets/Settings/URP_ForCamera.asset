@@ -82,14 +82,14 @@ MonoBehaviour:
   screenBend: 0.31
   screenOverscan: 0.58
   vignetteSize: 6.01
-  vignetteSmooth: 6.96
+  vignetteSmooth: 0.025
   vignetteRound: 15.6
   blur: 0
-  bleed: 7.7
+  bleed: 0
   smidge: 22.7
   scanlinesStrength: 0
   apertureStrength: 0
-  shadowlines: 34.8
+  shadowlines: 0
   shadowlinesSpeed: -20
   shadowlinesAlpha: 0.012
   noiseSize: 0
@@ -97,7 +97,7 @@ MonoBehaviour:
   noiseAlpha: 0.644
   brightness: 0.01
   contrast: 1.05
-  gamma: 1.32
+  gamma: 1.07
   red: 1
   green: 1
   blue: 1

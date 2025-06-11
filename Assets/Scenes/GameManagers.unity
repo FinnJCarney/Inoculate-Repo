@@ -436,10 +436,9 @@ MonoBehaviour:
   offlinePS: {fileID: 0}
   offlinePSMat: {fileID: 2100000, guid: cd2075b698409aa45bdcee6c290ebcc1, type: 2}
   offlinePSColor: {r: 0.5996351, g: 0.68963426, b: 0.7264151, a: 0.28235295}
-  onlineBackground: {r: 0.2, g: 0.003921569, b: 0.12941177, a: 1}
+  onlineBackground: {r: 0.25490198, g: 0.019607844, b: 0.16862746, a: 1}
   offlineBackground: {r: 0.21933961, g: 0.24719226, b: 0.2924528, a: 1}
   changeLayer: 0
-  online: 1
 --- !u!4 &1036586659
 Transform:
   m_ObjectHideFlags: 0
@@ -490,6 +489,7 @@ MonoBehaviour:
   buttonImage: {fileID: 151200466}
   offlineSpr: {fileID: 21300000, guid: 53b126113c9c7d747a1c900a89276442, type: 3}
   onlineSpr: {fileID: 21300000, guid: a6f94a209f8489845ae3c2cc15c62125, type: 3}
+  activeLayer: 1
 --- !u!4 &1063325463
 Transform:
   m_ObjectHideFlags: 0

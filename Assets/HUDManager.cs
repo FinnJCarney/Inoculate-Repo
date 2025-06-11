@@ -76,9 +76,9 @@ public class HUDManager : MonoBehaviour
         bool hasDownNeighbourAvail = false;
         bool hasAllyNeighbourAvail = false;
 
-        foreach (Node connectedNode in selectedNode.connectedNodes)
+        foreach (Node connectedNode in selectedNode.userInformation.connectedNodes.Keys)
         {
-            if (connectedNode.isBanned || !connectedNode.connectedNodes.Contains(selectedNode))
+            if (connectedNode.isBanned || !connectedNode.userInformation.connectedNodes.Contains(selectedNode))
             {
                 continue;
             }
