@@ -428,7 +428,7 @@ public class NodeManager : MonoBehaviour
 
     [SerializeField] public List<Node> nodes = new List<Node>();
 
-    [SerializeField] public Dictionary<Faction, List<Node>> nodeFactions = new Dictionary<Faction, List<Node>>();
+    [SerializeField] public SerializableDictionary<Faction, List<Node>> nodeFactions = new SerializableDictionary<Faction, List<Node>>();
 
     [SerializeField] public List<Line> lines = new List<Line>();
     [SerializeField] private GameObject lineObj;

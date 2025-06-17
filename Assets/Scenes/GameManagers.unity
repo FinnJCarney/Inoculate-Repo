@@ -249,6 +249,9 @@ MonoBehaviour:
   shortOnlineActionLength: 5
   mediumOnlineActionLength: 10
   longOnlineActionLength: 20
+  shortOfflineActionLength: 0
+  mediumOfflineActionLength: 0
+  longOfflineActionLength: 0
   ActionLineObj_Blue: {fileID: 5016487758517115089, guid: e04e3a711e86f29409f924e664d9f4aa,
     type: 3}
   ActionLineObj_Yellow: {fileID: 5016487758517115089, guid: bd685ab17d251db41892f0f01f623653,
@@ -263,6 +266,23 @@ MonoBehaviour:
     type: 3}
   outerActionRingScale: {x: 4, y: 4, z: 4}
   actingNodeMemoryLength: 3
+  actionInformation:
+    m_keys: 02000000030000000400000005000000000000000100000006000000
+    m_values:
+    - actionLength: {x: 10, y: 15}
+      actionPosition: {x: -1, y: 0}
+    - actionLength: {x: 10, y: 15}
+      actionPosition: {x: 1, y: 0}
+    - actionLength: {x: 10, y: 15}
+      actionPosition: {x: 0, y: 1}
+    - actionLength: {x: 10, y: 15}
+      actionPosition: {x: 0, y: -1}
+    - actionLength: {x: 5, y: 7.5}
+      actionPosition: {x: 0, y: 0}
+    - actionLength: {x: 20, y: 30}
+      actionPosition: {x: 0, y: 0}
+    - actionLength: {x: 20, y: 30}
+      actionPosition: {x: 0, y: 0}
 --- !u!1 &418542471
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,6 +29,18 @@ public class LevelManager : MonoBehaviour
 
             adjustedFactionTimer.timer = roundTimer * (Random.Range(1f, 2f));
         }
+
+        List<Faction> factionIndexes = new List<Faction>();
+        factionIndexes.AddRange(levelFactions.Keys);
+
+        for (int i = 0; i < levelFactions.Count; i++)
+        {
+            var adjustedLevelFaction = levelFactions[factionIndexes[i]];
+            adjustedLevelFaction.particleMaterial = new Material(defaultParticleMaterial);
+            adjustedLevelFaction.particleMaterial.color = adjustedLevelFaction.color;
+            adjustedLevelFaction.particleMaterial.SetColor("_EmissionColor", adjustedLevelFaction.color);
+            levelFactions[factionIndexes[i]] = adjustedLevelFaction;
+        }
     }
 
     private void OnDestroy()
@@ -124,6 +136,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private List<factionTimer> factionTimers = new List<factionTimer>();
     [SerializeField] private List<specificFactionSetting> specificFactionSettings = new List<specificFactionSetting>();
 
+    [SerializeField] private Material defaultParticleMaterial;
+
 
 
     public static LevelManager lM;
@@ -136,6 +150,7 @@ public struct levelFaction
     public Color color;
     public Vector2 position;
     public Material lineMaterial;
+    public Material particleMaterial;
     public GameObject actionLine;
 }
 

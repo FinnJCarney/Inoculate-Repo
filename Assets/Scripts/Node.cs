@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Node : MonoBehaviour
 {
@@ -65,8 +68,6 @@ public class Node : MonoBehaviour
                 theorheticalActions++;
                 possibleActions ++;
                 hasAllyNeighbourAvail = true;
-
-                Debug.Log(this + " node has has an available ally due to a connection with " + connectedNode);
 
                 if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
                 {
@@ -172,7 +173,7 @@ public class Node : MonoBehaviour
         accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
     }
 
-    public void ActionResult(ActionType aT, bool playerActivated, Node actingNode)
+    public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer)
     {
         if (aT == ActionType.DM)
         {
@@ -184,35 +185,51 @@ public class Node : MonoBehaviour
             isBanned = true;
         }
 
-        if (aT == ActionType.Left && !userInformation.misinformerHori)
+        if (aT == ActionType.Left || aT == ActionType.Right)
         {
-            if(HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.left))
+            if (userInformation.misinformerHori)
             {
-                userInformation.beliefs += Vector2.left;
+                return;
+            }
+
+            if (actingLayer == connectionLayer.offline)
+            {
+                if (HUDManager.i.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
+                {
+                    userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
+                }
+                else if (HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+                {
+                    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                }
+            }
+            else if (HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+            {
+                userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
             }
         }
 
-        if (aT == ActionType.Right && !userInformation.misinformerHori)
+        if (aT == ActionType.Up || aT == ActionType.Down)
         {
-            if (HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.right))
+            if (userInformation.misinformerVert)
             {
-                userInformation.beliefs += Vector2.right;
+                return;
             }
-        }
 
-        if (aT == ActionType.Up && !userInformation.misinformerVert)
-        {
-            if (HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.up))
+            if (actingLayer == connectionLayer.offline)
             {
-                userInformation.beliefs += Vector2.up;
+                if (HUDManager.i.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
+                {
+                    userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
+                }
+                else if (HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+                {
+                    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                }
             }
-        }
-
-        if (aT == ActionType.Down && !userInformation.misinformerVert)
-        {
-            if (HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.down))
+            else if(HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
             {
-                userInformation.beliefs += Vector2.down;
+                userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
             }
         }
 
@@ -229,14 +246,11 @@ public class Node : MonoBehaviour
         HUDManager.i.SyncPoliticalAxes();
         NodeManager.nM.DrawNodeConnectionLines();
 
-        if (playerActivated)
-        {
-            playerPS.Play();
-        }
-        else
-        {
-            aIPs.Play();
-        }
+        var particleSystemMain = playerPS.main;
+        particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;
+        playerPS.GetComponent<ParticleSystemRenderer>().material = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+        playerPS.GetComponent<ParticleSystemRenderer>().trailMaterial = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+        playerPS.Play();
 
         if(audioSource.isPlaying)
         {
@@ -259,7 +273,7 @@ public class Node : MonoBehaviour
         audioSource.Play();
     }
 
-    public void SetActionAudio(bool playerAction, float amountThrough)
+    public void SetActionAudio(float amountThrough)
     {
         audioSource.pitch = Mathf.Lerp(actionPitch - 0.75f, actionPitch, amountThrough);
         audioSource.volume = Mathf.Lerp(0f, 0.5f, amountThrough);

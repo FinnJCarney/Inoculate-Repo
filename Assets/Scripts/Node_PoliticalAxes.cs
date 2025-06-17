@@ -36,7 +36,7 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                 if (!onClick)
                 {
-                    Vector3 defaultScale = myUserObj.transform.localScale;
+                    Vector3 defaultScale = myUserObj.transform.localScale * 1.25f;
                     myUserObj.transform.localScale = new Vector3(0, defaultScale.y, defaultScale.z);
                     myUserObj.transform.DOScale(defaultScale, 0.5f);
 
@@ -59,7 +59,7 @@ public class Node_PoliticalAxes : MonoBehaviour
             userObjOnBoard.userAudioSource = myUserObj.GetComponent<AudioSource>();
             userObjOnBoard.associatedNode = node;
             userObjOnBoard.userImage.sprite = userObjOnBoard.associatedNode.nodeVisual.sprite;
-            userObjOnBoard.userImage.color = Color.Lerp(LevelManager.lM.GiveAverageColor(node.userInformation.beliefs), Color.white, 0.75f);
+            userObjOnBoard.userImage.color = Color.Lerp(LevelManager.lM.GiveAverageColor(node.userInformation.beliefs), Color.white, 0.5f);
             userObjOnBoard.userFaction.color = LevelManager.lM.levelFactions[node.userInformation.faction].color;
             nodeObjsOnBoard.Add(userObjOnBoard);
 
@@ -104,7 +104,7 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                         if (!onClick)
                         {
-                            Vector3 defaultScale = associatedUserObj.userObj.transform.localScale * 0.75f;
+                            Vector3 defaultScale = associatedUserObj.userObj.transform.localScale * 0.66f;
                             associatedUserObj.userObj.transform.localScale = new Vector3(0, defaultScale.y, defaultScale.z);
                             associatedUserObj.userObj.transform.DOScale(defaultScale, 0.5f);
 
