@@ -37,7 +37,7 @@ public class ActionManager : MonoBehaviour
 
     private void Start()
     {
-        tm = TimeManager.i;
+        tm = TimeManager.tM;
     }
 
     private void Update()
@@ -251,7 +251,7 @@ public class ActionManager : MonoBehaviour
                         float proximityValue = (0.1f / Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs)) + 0.1f;
                         float strategicValue = 0;
 
-                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
+                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Up;
@@ -288,7 +288,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
+                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Down;
@@ -325,7 +325,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
+                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Right;
@@ -361,7 +361,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
+                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Left;
@@ -429,7 +429,7 @@ public class ActionManager : MonoBehaviour
                             continue;
                         }
 
-                        if (HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up) && node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up) && node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y)
                         {
                             if(node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -441,7 +441,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down) && node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down) && node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y)
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -453,7 +453,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right) && node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right) && node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x)
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -465,7 +465,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.i.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left) && node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left) && node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x)
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -484,7 +484,7 @@ public class ActionManager : MonoBehaviour
 
             foreach (PossibleAction possibleAction in possibleActions)
             {
-                Debug.Log("Evaluating " + possibleAction.actionType + " action for " + faction + " faction, with acting node " + possibleAction.actingNode + ", receiving node " + possibleAction.receivingNode + ", and score of " + possibleAction.score);
+                //Debug.Log("Evaluating " + possibleAction.actionType + " action for " + faction + " faction, with acting node " + possibleAction.actingNode + ", receiving node " + possibleAction.receivingNode + ", and score of " + possibleAction.score);
                 if (possibleAction.score > maxPossibleActionValue)
                 {
                     maxPossibleActionValue = possibleAction.score;
@@ -495,7 +495,7 @@ public class ActionManager : MonoBehaviour
             {
                 if (possibleAction.score == maxPossibleActionValue)
                 {
-                    Debug.Log("Performing " + possibleAction.actionType + " action for " + faction + " faction, with acting node " + possibleAction.actingNode);
+                    //Debug.Log("Performing " + possibleAction.actionType + " action for " + faction + " faction, with acting node " + possibleAction.actingNode);
                     MakeNewAction(possibleAction.actionType, possibleAction.actionLayer, possibleAction.actingNode, possibleAction.receivingNode);
                     break;
                 }
@@ -539,7 +539,7 @@ public class ActionManager : MonoBehaviour
         {
             newPossibleAction.score -= 2f;
 
-            if (HUDManager.i.IsSpaceValid(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
+            if (HUDManager.hM.IsSpaceValid(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
             {
 
                 if(Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < Vector2.Distance(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs))

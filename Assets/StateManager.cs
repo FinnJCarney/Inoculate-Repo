@@ -34,25 +34,35 @@ public class StateManager : MonoBehaviour
             FailureScreen.SetActive(true);
         }
 
-        timeManager.SetTimeScale(0.01f);
+        TimeManager.tM.SetTimeScale(0.01f);
     }
 
     private void Update()
     {
-        if(gameOver && Input.GetMouseButtonDown(0))
+        if(LevelManager.lM != null)
+        {
+            gameOverCanvas.transform.position = LevelManager.lM.mapCamera.transform.position + gameOverCanvasLocalPos;
+        }
+
+        if (gameOver && Input.GetMouseButtonDown(0))
         {
             NodeManager.nM.FlushAllLinesAndNodes();
             ActionManager.aM.FlushAllActions();
-            SceneLoader.sL.UnloadScene(currentScene);
+            SceneLoader.sL.UnloadScene(LevelManager.lM.currentScene);
             if (wonOrLost)
             {
-                SceneLoader.sL.LoadSceneAdditive(successScene);
+                SceneLoader.sL.LoadSceneAdditive(LevelManager.lM.SuccessScene);
             }
             else
             {
-                SceneLoader.sL.LoadSceneAdditive(failScene);
+                SceneLoader.sL.LoadSceneAdditive(LevelManager.lM.FailScene);
             }
-            Debug.Log(this.gameObject.scene);
+
+            gameOver = false;
+            SuccessScreen.SetActive(false);
+            FailureScreen.SetActive(false);
+            TimeManager.tM.SetTimeScale(1f);
+            HUDManager.hM.SyncMenu(null);
         }
     }
 
@@ -60,10 +70,12 @@ public class StateManager : MonoBehaviour
 
     private bool gameOver;
     private bool wonOrLost;
-    [SerializeField] private TimeManager timeManager;
     [SerializeField] private GameObject SuccessScreen;
     [SerializeField] private GameObject FailureScreen;
     [SerializeField] private string failScene;
     [SerializeField] private string successScene;
     [SerializeField] private string currentScene;
+
+    [SerializeField] private Canvas gameOverCanvas;
+    [SerializeField] private Vector3 gameOverCanvasLocalPos;
 }

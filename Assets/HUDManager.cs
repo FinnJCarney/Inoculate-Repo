@@ -8,13 +8,13 @@ public class HUDManager : MonoBehaviour
 {
     private void Awake()
     {
-        if(i != null)
+        if(hM != null)
         {
             Destroy(this.gameObject);
         }
         else
         {
-            i = this;
+            hM = this;
         }
     }
 
@@ -24,20 +24,32 @@ public class HUDManager : MonoBehaviour
 
         canvas.worldCamera = Camera.main;
 
-        foreach(UserButton userButton in userButtons)
+        foreach (UserButton userButton in userButtons)
         {
             var UIButton = userButton.GetComponent<Button>();
             UIButton.onClick.AddListener(delegate { ActionManager.aM.PerformButtonAction(userButton); });
         }
 
-        SetMenuBounds();
-
         SyncMenu(null);
     }
 
-    private void SetMenuBounds()
+    public void SetMenuBounds(string levelReferenceString)
     { 
-        string levelReferenceString = LevelManager.lM.levelMap.Replace("\n", string.Empty);
+        if(hiddenSpaces.Count > 0)
+        {
+
+            List<Vector2> hiddenSpaceKeys = new List<Vector2>();
+
+            hiddenSpaceKeys.AddRange(hiddenSpaces.Keys);
+
+            for (int i = hiddenSpaces.Count - 1; i >= 0; i--)
+            {
+                Destroy(hiddenSpaces[hiddenSpaceKeys[i]].gameObject);
+                hiddenSpaces.Remove(hiddenSpaceKeys[i]);
+            }
+        }
+
+        levelReferenceString = levelReferenceString.Replace("\n", string.Empty);
 
         for (int i = 0; i < 25; i++)
         {
@@ -47,7 +59,7 @@ public class HUDManager : MonoBehaviour
                 Vector2 spaceCoords = new Vector2(i - (yCord * 5) - 2, 2 - yCord);
                 var thisSpaceHider = Instantiate(spaceHider, SpaceCoverHolder.transform);
                 thisSpaceHider.transform.localPosition = spaceCoords * 0.9f * 1.5f;
-                hiddenSpaces.Add(spaceCoords);
+                hiddenSpaces.Add(spaceCoords, thisSpaceHider);
             }
         }
     }
@@ -231,7 +243,7 @@ public class HUDManager : MonoBehaviour
         }
         else
         {
-            foreach (Vector2 hiddenSpace in hiddenSpaces)
+            foreach (Vector2 hiddenSpace in hiddenSpaces.Keys)
             {
                 if (hiddenSpace == requestedSpace)
                 {
@@ -243,7 +255,7 @@ public class HUDManager : MonoBehaviour
         return true;
     }
 
-    public static HUDManager i;
+    public static HUDManager hM;
 
     [SerializeField] private Node selectedNode;
 
@@ -265,5 +277,5 @@ public class HUDManager : MonoBehaviour
 
     [SerializeField] private GameObject spaceHider;
 
-    [HideInInspector] public List<Vector2> hiddenSpaces = new List<Vector2>();
+    [HideInInspector] public Dictionary<Vector2, GameObject> hiddenSpaces = new Dictionary<Vector2, GameObject>();
 }

@@ -34,22 +34,15 @@ public class NodeManager : MonoBehaviour
         }
 
         nodeFactions.Clear();
+
+        Debug.Log("Node factions count = " + nodeFactions.Count);
     }
 
     private void Update()
     {
-        if(StateManager.sM == null || LevelManager.lM == null)
+        if (LevelManager.lM == null)
         {
             return;
-        }
-
-        if (nodeFactions.Count == 0)
-        {
-            foreach(Faction faction in LevelManager.lM.levelFactions.Keys)
-            {
-                nodeFactions.Add(faction, null);
-                nodeFactions[faction] = new List<Node>();
-            }
         }
 
         CheckNodeConnections();
@@ -60,6 +53,10 @@ public class NodeManager : MonoBehaviour
 
     public void ManageGameMode(GameMode gameMode)
     {
+        if(nodes.Count < 1)
+        {
+            return;
+        }
 
         if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 1.5f)
         {
@@ -169,7 +166,7 @@ public class NodeManager : MonoBehaviour
                             {
                                 line.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
                                 line.lineFaction = node.userInformation.faction;
-                                HUDManager.i.SyncPoliticalAxes();
+                                HUDManager.hM.SyncPoliticalAxes();
                             }
                             
                         }
@@ -179,7 +176,7 @@ public class NodeManager : MonoBehaviour
                             {
                                 line.lineR.material = neutralLine;
                                 line.lineFaction = Faction.Neutral;
-                                HUDManager.i.SyncPoliticalAxes();
+                                HUDManager.hM.SyncPoliticalAxes();
                             }
                         }
                     }
@@ -253,7 +250,7 @@ public class NodeManager : MonoBehaviour
 
         if (exceptionNode == null)
         {
-            HUDManager.i.SyncMenu(null);
+            HUDManager.hM.SyncMenu(null);
         }
     }
 
@@ -423,6 +420,20 @@ public class NodeManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void AddNodeFactions()
+    {
+        if (nodeFactions.Count == 0)
+        {
+            Debug.Log("Node Factions = 0");
+            foreach (Faction faction in LevelManager.lM.levelFactions.Keys)
+            {
+                nodeFactions.Add(faction, null);
+                nodeFactions[faction] = new List<Node>();
+                Debug.Log("Adding faction " + faction);
+            }
+        }
     }
 
 

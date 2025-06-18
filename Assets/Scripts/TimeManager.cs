@@ -9,19 +9,19 @@ public class TimeManager : MonoBehaviour
     {
         defaultTimeScale = 1.0f;
 
-        if(i != null)
+        if(tM != null)
         {
             Destroy(this);
         }
         else
         {
-            i = this;
+            tM = this;
         }
     }
 
     private void OnDestroy()
     {
-        i = null;
+        tM = null;
     }
 
     private void Update()
@@ -35,7 +35,7 @@ public class TimeManager : MonoBehaviour
         timeMultiplier = timeScale;
     }
 
-    public static TimeManager i;
+    public static TimeManager tM;
 
     private float defaultTimeScale;
     public float adjustedDeltaTime;

@@ -13,7 +13,7 @@ public class ButtonAssigner : MonoBehaviour
 
         if (reqMan == RequestedManager.TimeManager)
         {
-            button.onClick.AddListener(delegate { TimeManager.i.SetTimeScale(value); } );
+            button.onClick.AddListener(delegate { TimeManager.tM.SetTimeScale(value); } );
         }
 
         if(reqMan == RequestedManager.HUDManager)

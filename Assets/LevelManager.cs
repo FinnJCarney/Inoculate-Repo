@@ -41,6 +41,9 @@ public class LevelManager : MonoBehaviour
             adjustedLevelFaction.particleMaterial.SetColor("_EmissionColor", adjustedLevelFaction.color);
             levelFactions[factionIndexes[i]] = adjustedLevelFaction;
         }
+
+        NodeManager.nM.AddNodeFactions();
+        HUDManager.hM.SetMenuBounds(levelMap);
     }
 
     private void OnDestroy()
@@ -135,6 +138,12 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private List<factionTimer> factionTimers = new List<factionTimer>();
     [SerializeField] private List<specificFactionSetting> specificFactionSettings = new List<specificFactionSetting>();
+
+    [SerializeField] public string FailScene;
+    [SerializeField] public string SuccessScene;
+    [SerializeField] public string currentScene;
+
+    [SerializeField] public Camera mapCamera;
 
     [SerializeField] private Material defaultParticleMaterial;
 

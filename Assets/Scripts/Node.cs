@@ -100,22 +100,22 @@ public class Node : MonoBehaviour
 
             if (hasUpNeighbourAvail) //Main Up
             {
-                hasUpNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.up);
+                hasUpNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.up);
             }
 
             if (hasDownNeighbourAvail) //Main Down
             {
-                hasDownNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.down);
+                hasDownNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.down);
             }
 
             if (hasRightNeighbourAvail) //Main Right
             {
-                hasRightNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.right);
+                hasRightNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.right);
             }
 
             if (hasLeftNeighbourAvail) //Main Left
             {
-                hasLeftNeighbourAvail = HUDManager.i.IsSpaceValid(userInformation.beliefs + Vector2.left);
+                hasLeftNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.left);
             }
         }
 
@@ -151,7 +151,7 @@ public class Node : MonoBehaviour
             }
             else
             {
-                float amountThrough = Mathf.Sqrt((Time.time / TimeManager.i.timeMultiplier) % 1.5f);
+                float amountThrough = Mathf.Sqrt((Time.time / TimeManager.tM.timeMultiplier) % 1.5f);
                 allowanceRing.color = Color.Lerp(factionColor, Color.clear, amountThrough);
                 allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
                 allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
@@ -194,16 +194,16 @@ public class Node : MonoBehaviour
 
             if (actingLayer == connectionLayer.offline)
             {
-                if (HUDManager.i.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
+                if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
                 {
                     userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
                 }
-                else if (HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+                else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
                 {
                     userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
                 }
             }
-            else if (HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+            else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
             {
                 userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
             }
@@ -218,16 +218,16 @@ public class Node : MonoBehaviour
 
             if (actingLayer == connectionLayer.offline)
             {
-                if (HUDManager.i.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
+                if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
                 {
                     userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
                 }
-                else if (HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+                else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
                 {
                     userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
                 }
             }
-            else if(HUDManager.i.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+            else if(HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
             {
                 userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
             }
@@ -243,7 +243,7 @@ public class Node : MonoBehaviour
         }
 
         NodeManager.nM.CheckNodeConnections();
-        HUDManager.i.SyncPoliticalAxes();
+        HUDManager.hM.SyncPoliticalAxes();
         NodeManager.nM.DrawNodeConnectionLines();
 
         var particleSystemMain = playerPS.main;
@@ -287,7 +287,7 @@ public class Node : MonoBehaviour
         if (show)
         {
             NodeManager.nM.CloseAllNodeMenus(this);
-            HUDManager.i.SyncMenu(this);
+            HUDManager.hM.SyncMenu(this);
         }
         //Buttons.SetActive(show);
     }
