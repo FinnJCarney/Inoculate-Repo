@@ -155,6 +155,12 @@ public class NodeManager : MonoBehaviour
 
                         if (node.isBanned || connectedNode.isBanned || (node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && LayerManager.lM.activeLayer != line.connectionLayer))
                         {
+                            for (int j = line.arrows.Count - 1; j >= 0; j--)
+                            {
+                                Destroy(line.arrows[j]);
+                                line.arrows.RemoveAt(j);
+                            }
+                            line.arrows.Clear();
                             Destroy(line.lineR.gameObject);
                             lines.Remove(line);
                             continue;
@@ -164,8 +170,12 @@ public class NodeManager : MonoBehaviour
                         {
                             if(line.lineFaction != node.userInformation.faction)
                             {
-                                line.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
                                 line.lineFaction = node.userInformation.faction;
+                                line.lineR.material = LevelManager.lM.GiveLineMaterial(line.lineFaction);
+                                foreach (GameObject arrow in line.arrows)
+                                {
+                                    arrow.GetComponent<SpriteRenderer>().color = LevelManager.lM.levelFactions[line.lineFaction].color;
+                                }
                                 HUDManager.hM.SyncPoliticalAxes();
                             }
                             
@@ -210,6 +220,7 @@ public class NodeManager : MonoBehaviour
                     Line newLine;
                     newLine.lineR = newLineR;
                     newLine.connectedNodes = connectedNodes;
+                    newLine.arrows = new List<GameObject>();
 
                     if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
                     {
@@ -220,6 +231,34 @@ public class NodeManager : MonoBehaviour
                     {
                         newLine.lineR.material = neutralLine;
                         newLine.lineFaction = Faction.Neutral;
+                    }
+
+                    bool influencerConnection = node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy || node.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn;
+
+                    if (influencerConnection)
+                    {
+                        float lengthOfLine = Vector3.Distance(newLineR.GetPosition(0), newLineR.GetPosition(1));
+                        int numberOfArrows = Mathf.FloorToInt(lengthOfLine * arrowsPerUnit);
+                        Vector3 midPoint = (newLineR.GetPosition(0) + newLineR.GetPosition(1)) / 2;
+
+                        for (int i = 0; i < numberOfArrows; i++)
+                        {
+                            float middleProximity = (((i + 1) / (float)numberOfArrows) - 0.5f);
+                            var newArrow = Instantiate<GameObject>(arrow);
+                            newArrow.transform.parent = this.transform;
+                            newArrow.transform.position = Vector3.MoveTowards(midPoint, newLineR.GetPosition(0), middleProximity * lengthOfLine);
+
+                            if (node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy)
+                            {
+                                newArrow.transform.LookAt(newLineR.GetPosition(0));
+                            }
+                            else
+                            {
+                                newArrow.transform.LookAt(newLineR.GetPosition(1));
+                            }
+                            newLine.arrows.Add(newArrow);
+
+                        }
                     }
 
                     newLine.connectionLayer = node.userInformation.connectedNodes[connectedNode].layer;
@@ -451,6 +490,9 @@ public class NodeManager : MonoBehaviour
     [SerializeField] public List<Node> centristNodes = new List<Node>();
 
     [SerializeField] private Sprite[] faceSprites;
+
+    [SerializeField] GameObject arrow;
+    [SerializeField] float arrowsPerUnit;
 }
 
 [System.Serializable]
@@ -460,5 +502,6 @@ public struct Line
     public LineRenderer lineR;
     public Faction lineFaction;
     public List<Node> connectedNodes;
+    public List<GameObject> arrows;
 }
 
