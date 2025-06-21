@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
+  m_Name: MovieKnight
+  m_EditorClassIdentifier: 
+  LevelScene: Level1
+  LevelName: Movie Knight
+  LevelImage: {fileID: 21300000, guid: aaa05df8c57af3341a1921586d022824, type: 3}
+  LevelDescription: 'I''m trying to convince my friends to come watch <b>Crusades:
+    Holy Blood</b> with me tonight, but for <i>some</i> reason some of them want
+    to watch "Moots To Oomfs: An Internet Love Story". Help me convince them to watch
+    Crusades instead!'

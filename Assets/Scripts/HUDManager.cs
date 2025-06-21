@@ -278,4 +278,6 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private GameObject spaceHider;
 
     [HideInInspector] public Dictionary<Vector2, GameObject> hiddenSpaces = new Dictionary<Vector2, GameObject>();
+
+    [SerializeField] public CameraCursor cursor;
 }

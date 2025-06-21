@@ -44,6 +44,7 @@ public class LevelManager : MonoBehaviour
 
         NodeManager.nM.AddNodeFactions();
         HUDManager.hM.SetMenuBounds(levelMap);
+        InputManager.iM.SetMCC(mapCamera);
     }
 
     private void OnDestroy()
@@ -143,7 +144,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] public string SuccessScene;
     [SerializeField] public string currentScene;
 
-    [SerializeField] public Camera mapCamera;
+    [SerializeField] public MapCameraController mapCamera;
 
     [SerializeField] private Material defaultParticleMaterial;
 

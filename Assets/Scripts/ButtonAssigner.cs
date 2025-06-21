@@ -22,9 +22,9 @@ public class ButtonAssigner : MonoBehaviour
         }
     }
 
-    [SerializeField] private RequestedManager reqMan;
+    [SerializeField] public RequestedManager reqMan;
 
-    [SerializeField] private float value;
+    [SerializeField] public float value;
 
     public enum RequestedManager
     { 

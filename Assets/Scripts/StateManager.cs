@@ -63,6 +63,7 @@ public class StateManager : MonoBehaviour
             FailureScreen.SetActive(false);
             TimeManager.tM.SetTimeScale(1f);
             HUDManager.hM.SyncMenu(null);
+            InputManager.iM.SetMCC(null);
         }
     }
 

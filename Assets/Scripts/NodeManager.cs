@@ -58,7 +58,7 @@ public class NodeManager : MonoBehaviour
             return;
         }
 
-        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 1.5f)
+        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 0.9f)
         {
             StateManager.sM.GameOver(false);
             return;
@@ -325,7 +325,7 @@ public class NodeManager : MonoBehaviour
         {
             if (node.userInformation.instigator != Faction.None && nodeFactions.ContainsKey(node.userInformation.instigator))
             {
-                if(Vector2.Distance(node.userInformation.beliefs, LevelManager.lM.levelFactions[node.userInformation.instigator].position) > 1.5f)
+                if(Vector2.Distance(node.userInformation.beliefs, LevelManager.lM.levelFactions[node.userInformation.instigator].position) > 0.9f)
                 {
                     node.userInformation.instigator = Faction.None;
                 }

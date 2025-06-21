@@ -140,8 +140,8 @@ Shader "Hidden/CRTFilter"
 			half vignette(half2 uv)
 			{
 				uv -= .5;
-				uv.x *= 1.33333333333333333333333;
-				uv.x -= 0.175;
+				//uv.x *= 1.33333333333333333333333;
+				//uv.x -= 0.175;
 				uv *= m_vignetteSize;
 				half amount = 1. - sqrt(pow(abs(uv.x), m_vignetteRound) + pow(abs(uv.y), m_vignetteRound));				
 
