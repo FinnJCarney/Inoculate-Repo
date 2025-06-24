@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
@@ -123,20 +124,34 @@ public class InputManager : MonoBehaviour
 
         if (worldRaycastHitInfo.collider.tag == "BigScreen")
         {
-            CameraCursor hudCursor = ScreenPlane.bigScreen.cameraCursor;
+            CameraCursor camCursor = ScreenPlane.bigScreen.cameraCursor;
             prevBigScreenPos = curBigScreenPos;
 
             var screenRelativePos = worldRaycastHitInfo.transform.position - worldRaycastHitInfo.point;
             Vector3 screenBounds = worldRaycastHitInfo.collider.bounds.size / 2;
-            curBigScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 4 / 3, -(screenRelativePos.y / screenBounds.y)); // x is times by 1 / 3 as the map screen has a 1 / 3 ratio
-            Vector3 rayShootPos = curBigScreenPos * hudCursor.camera.orthographicSize * 10f; //previous camera.orthographic
-            hudCursor.MoveCursor(rayShootPos);
-            Debug.DrawRay(hudCursor.cursor.transform.position, hudCursor.camera.transform.forward, Color.red, 10f);
+            curBigScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 4 / 3, -(screenRelativePos.y / screenBounds.y)); // Big screen has a 4/3 ratio
+            Vector3 rayShootPos = Vector3.zero;
+            if (camCursor.ortho)
+            {
+                rayShootPos = curBigScreenPos * camCursor.camera.orthographicSize * 10f;
+            }
+            else
+            {
+                float cameraFrustrumHeight = Mathf.Tan(camCursor.camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+                rayShootPos = curBigScreenPos * cameraFrustrumHeight;
+            }
+
+            camCursor.MoveCursor(rayShootPos);
 
             if (mouseButtonDown)
             {
-                Physics.Raycast(hudCursor.cursor.transform.position, hudCursor.camera.transform.forward, out HUDRayCastHitInfo);
+                Physics.Raycast(camCursor.cursor.transform.position, camCursor.camera.transform.forward, out ScreenRayCastHitInfo);
+            }
 
+            if(mouseButtonHeld)
+            {
+
+                
             }
             
         }
@@ -171,6 +186,8 @@ public class InputManager : MonoBehaviour
     private RaycastHit worldRaycastHitInfo;
     private RaycastHit mapRayCastHitInfo;
     private RaycastHit HUDRayCastHitInfo;
+
+    private RaycastHit ScreenRayCastHitInfo;
 
     private Vector3 curWorldMousePos;
     private Vector3 prevWorldMousePos;

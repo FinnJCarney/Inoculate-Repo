@@ -18,9 +18,10 @@ public class ScreenPlane : MonoBehaviour
         }
     }
 
-    public void SetCameraCursor(CameraCursor cC)
+    public void SetCameraCursor(CameraCursor cC, bool orthoOrPersp)
     {
         cameraCursor = cC;
+        ortho = orthoOrPersp;
     }
 
     [SerializeField] private ScreenType screenType;
@@ -28,6 +29,8 @@ public class ScreenPlane : MonoBehaviour
     public static ScreenPlane bigScreen;
     public static ScreenPlane smallScreen;
     public static ScreenPlane phoneScreen;
+
+    public bool ortho;
 
     public CameraCursor cameraCursor;
 }

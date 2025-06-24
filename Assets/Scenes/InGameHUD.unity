@@ -3838,7 +3838,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d36448f8bf7e7543a04e1ba1584788c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  screenType: 1
   camera: {fileID: 1295211844}
+  ortho: 1
   cursor: {fileID: 1472461709}
 --- !u!1 &1361773223
 GameObject:
@@ -4211,7 +4213,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b,
     type: 3}
-  m_Color: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 1}
+  m_Color: {r: 0.7075472, g: 0.7075472, b: 0.7075472, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

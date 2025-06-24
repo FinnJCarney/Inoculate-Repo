@@ -79,4 +79,6 @@ public class StateManager : MonoBehaviour
 
     [SerializeField] private Canvas gameOverCanvas;
     [SerializeField] private Vector3 gameOverCanvasLocalPos;
+
+    public List<LevelInfo> LevelsToDisplay = new List<LevelInfo>();
 }

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
+  m_Name: Natural Election
+  m_EditorClassIdentifier: 
+  LevelScene: Level2
+  LevelName: Natural Election
+  LevelContact: Riley Proust
+  LevelImage: {fileID: -1827791371, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}
+  LevelDescription: 'Help a DSA member get into city council? '
+  LevelGameMode: 2
+  LevelMoney: 90
+  levelsToAdd:
+  - {fileID: 11400000, guid: 5d7b4d037748a48459d6f60155bc2738, type: 2}
+  levelsToRemove:
+  - {fileID: 11400000, guid: 002d6a5f73640404da44f05018b92501, type: 2}

@@ -891,6 +891,8 @@ MonoBehaviour:
   currentScene: Level1
   gameOverCanvas: {fileID: 255856851}
   gameOverCanvasLocalPos: {x: 0.55, y: -10, z: 10}
+  LevelsToDisplay:
+  - {fileID: 11400000, guid: a814f20f6a616424bb4e257118dc3d3f, type: 2}
 --- !u!1 &1251637672
 GameObject:
   m_ObjectHideFlags: 0

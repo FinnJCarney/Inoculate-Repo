@@ -10,15 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
-  m_Name: MovieKnight
+  m_Name: APostFrancoWorld
   m_EditorClassIdentifier: 
-  LevelScene: Level1
-  LevelName: Movie Knight
-  LevelContact: Chris Craggle
-  LevelImage: {fileID: 21300000, guid: aaa05df8c57af3341a1921586d022824, type: 3}
-  LevelDescription: My friends want Chinese food but <b>I</b> want Vietnamese HELP
+  LevelScene: Level??
+  LevelName: A Post Franco World
+  LevelContact: Harold Drugen
+  LevelImage: {fileID: -1771358411, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}
+  LevelDescription: My daughter and her boyfriend MUST win Prom Queen + King tonight
   LevelGameMode: 2
-  LevelMoney: 30
-  levelsToAdd:
-  - {fileID: 11400000, guid: a98df00c92bb6e745ba76178a26bc948, type: 2}
-  levelsToRemove: []
+  LevelMoney: 250

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
+  m_Name: GetVotesOut
+  m_EditorClassIdentifier: 
+  LevelScene: Level??
+  LevelName: Get Out the Vote
+  LevelContact: Bruno Bruno
+  LevelImage: {fileID: -1545316453, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}
+  LevelDescription: I wanna be da mayor
+  LevelGameMode: 0
+  LevelMoney: 10000
+  levelsToAdd:
+  - {fileID: 11400000, guid: 5d7b4d037748a48459d6f60155bc2738, type: 2}
+  levelsToRemove:
+  - {fileID: 11400000, guid: 7f22b7b935125d644938fd7cec5c9a19, type: 2}

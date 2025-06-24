@@ -8,15 +8,15 @@ public class CameraCursor : MonoBehaviour
     {
         if (screenType == ScreenType.bigScreen)
         {
-            ScreenPlane.bigScreen.SetCameraCursor(this);
+            ScreenPlane.bigScreen.SetCameraCursor(this, ortho);
         }
         else if (screenType == ScreenType.smallScreen)
         {
-            ScreenPlane.smallScreen.SetCameraCursor(this);
+            ScreenPlane.smallScreen.SetCameraCursor(this, ortho);
         }
         else if (screenType == ScreenType.phoneScreen)
         {
-            ScreenPlane.phoneScreen.SetCameraCursor(this);
+            ScreenPlane.phoneScreen.SetCameraCursor(this, ortho);
         }
     }
 
@@ -28,6 +28,8 @@ public class CameraCursor : MonoBehaviour
     [SerializeField] private ScreenType screenType;
 
     public Camera camera;
+
+    public bool ortho;
 
     [SerializeField] public GameObject cursor;
 }
