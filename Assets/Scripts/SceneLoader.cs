@@ -17,8 +17,6 @@ public class SceneLoader : MonoBehaviour
             sL = this;
             DontDestroyOnLoad(this.gameObject);
         }
-
-        FirstLoad();
     }
 
     public void LoadSceneAdditive(string sceneName)

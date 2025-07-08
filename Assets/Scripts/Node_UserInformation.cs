@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
+using TMPro;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -15,6 +16,12 @@ public class Node_UserInformation : MonoBehaviour
             {
                 NodeName = this.name;
             }
+            else
+            {
+                gameObject.name = NodeName;
+            }
+
+            nameTMP.text = NodeName;
 
             foreach(Node connectedNode in connectedNodes.Keys)
             {
@@ -77,6 +84,8 @@ public class Node_UserInformation : MonoBehaviour
     public bool misinformerVert;
 
     public bool toCapture;
+
+    [SerializeField] private TextMeshPro nameTMP;
 
     public SerializableDictionary<Node, connectedNodeInfo> connectedNodes = new SerializableDictionary<Node, connectedNodeInfo>();
 }

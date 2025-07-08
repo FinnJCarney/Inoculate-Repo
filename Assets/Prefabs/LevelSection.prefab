@@ -357,13 +357,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8246579120331904489}
+  - component: {fileID: 2979778884109616655}
   - component: {fileID: 6635591270612337943}
   - component: {fileID: 8135217809019710614}
   - component: {fileID: 6780198121782463637}
-  - component: {fileID: 2979778884109616655}
   m_Layer: 5
   m_Name: Image (3)
-  m_TagString: Untagged
+  m_TagString: UniversalButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -388,6 +388,37 @@ RectTransform:
   m_AnchoredPosition: {x: 1144, y: -65}
   m_SizeDelta: {x: 300, y: 148}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2979778884109616655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5409415618485923847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 952be217f44aafc4b87cdd9f87da7d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonBack: {fileID: 8135217809019710614}
+  reqMan: 0
+  unhoveredColor: {r: 0.105882354, g: 0.1882353, b: 0.09411765, a: 1}
+  hoverColor: {r: 0.20084994, g: 0.33962262, b: 0.18102525, a: 1}
+  buttonEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2229897906658392264}
+        m_TargetAssemblyTypeName: LevelSection, Assembly-CSharp
+        m_MethodName: ShowLevelContactScreen
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!222 &6635591270612337943
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -447,35 +478,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 275, y: 125, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2979778884109616655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5409415618485923847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 952be217f44aafc4b87cdd9f87da7d79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  reqMan: 0
-  hoverColor: {r: 0, g: 0, b: 0, a: 0}
-  buttonEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2229897906658392264}
-        m_TargetAssemblyTypeName: LevelSection, Assembly-CSharp
-        m_MethodName: ShowLevelContactScreen
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &5582582909520908029
 GameObject:
   m_ObjectHideFlags: 0
@@ -1128,10 +1130,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b82236cc1db70e46bd69e8691d10d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelInfo: {fileID: 0}
   levelImage: {fileID: 5184408810950564342}
   levelTitle: {fileID: 497015127701824545}
   levelDesc: {fileID: 1589261608399630918}
-  levelMoney: {fileID: 0}
+  levelMoney: {fileID: 8158300650368379977}
 --- !u!114 &8047336498038813859
 MonoBehaviour:
   m_ObjectHideFlags: 0

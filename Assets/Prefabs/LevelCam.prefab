@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 13274730644916300}
+  - component: {fileID: 1845197892503182309}
   - component: {fileID: 8973160864104191959}
   - component: {fileID: 7984276303466277699}
   - component: {fileID: 9124620280043977191}
@@ -34,6 +35,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!114 &1845197892503182309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095892968634877568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d36448f8bf7e7543a04e1ba1584788c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screenType: 0
+  camera: {fileID: 7984276303466277699}
+  ortho: 0
+  cursor: {fileID: 0}
 --- !u!114 &8973160864104191959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46,10 +63,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 170903c73f378194db3d11712af541f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapCamera: {fileID: 0}
-  cursor: {fileID: 0}
-  zoomMagnitude: 0
-  speed: 0
+  zoomMagnitude: 60
+  speed: 0.3333333
 --- !u!20 &7984276303466277699
 Camera:
   m_ObjectHideFlags: 0
@@ -139,9 +154,9 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0

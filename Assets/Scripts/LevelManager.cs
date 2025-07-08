@@ -122,6 +122,8 @@ public class LevelManager : MonoBehaviour
         return levelFactions[faction].lineMaterial;
     }
 
+    [SerializeField] public LevelInfo levelInfo;
+
     public Node playerNode;
     public Faction playerAllyFaction;
 

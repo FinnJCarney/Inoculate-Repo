@@ -69,54 +69,45 @@ public class Node : MonoBehaviour
                 possibleActions ++;
                 hasAllyNeighbourAvail = true;
 
-                if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
-                {
-                    hasLeftNeighbourAvail = true;
-                    hasRightNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.x > this.userInformation.beliefs.x)
-                {
-                    hasRightNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.x < this.userInformation.beliefs.x)
-                {
-                    hasLeftNeighbourAvail = true;
-                }
-
-                if (connectedNode.userInformation.beliefs.y == this.userInformation.beliefs.y)
-                {
-                    hasUpNeighbourAvail = true;
-                    hasDownNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.y > this.userInformation.beliefs.y)
-                {
-                    hasUpNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.y < this.userInformation.beliefs.y)
-                {
-                    hasDownNeighbourAvail = true;
-                }
+                //if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
+                //{
+                //    hasLeftNeighbourAvail = true;
+                //    hasRightNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.x > this.userInformation.beliefs.x)
+                //{
+                //    hasRightNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.x < this.userInformation.beliefs.x)
+                //{
+                //    hasLeftNeighbourAvail = true;
+                //}
+                //
+                //if (connectedNode.userInformation.beliefs.y == this.userInformation.beliefs.y)
+                //{
+                //    hasUpNeighbourAvail = true;
+                //    hasDownNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.y > this.userInformation.beliefs.y)
+                //{
+                //    hasUpNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.y < this.userInformation.beliefs.y)
+                //{
+                //    hasDownNeighbourAvail = true;
+                //}
             }
+        }
 
-            if (hasUpNeighbourAvail) //Main Up
-            {
-                hasUpNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.up);
-            }
+        if (hasAllyNeighbourAvail)
+        {
+            hasUpNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.up);
 
-            if (hasDownNeighbourAvail) //Main Down
-            {
-                hasDownNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.down);
-            }
+            hasDownNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.down);
 
-            if (hasRightNeighbourAvail) //Main Right
-            {
-                hasRightNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.right);
-            }
+            hasRightNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.right);
 
-            if (hasLeftNeighbourAvail) //Main Left
-            {
-                hasLeftNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.left);
-            }
+            hasLeftNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.left);
         }
 
         but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);

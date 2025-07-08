@@ -5,7 +5,7 @@ using UnityEngine;
 public class StateManager : MonoBehaviour
 {
 
-    private void Start()
+    private void Awake()
     {
         sM = this;
     }
@@ -13,6 +13,11 @@ public class StateManager : MonoBehaviour
     private void OnDestroy()
     {
         sM = null;
+    }
+
+    private void Start()
+    {
+        RoomManager.rM.AdjustVisualsToGameState(gameState, 0f);
     }
 
     public void GameOver(bool won)
@@ -46,25 +51,51 @@ public class StateManager : MonoBehaviour
 
         if (gameOver && Input.GetMouseButtonDown(0))
         {
+            TimeManager.tM.SetTimeScale(1f);
             NodeManager.nM.FlushAllLinesAndNodes();
             ActionManager.aM.FlushAllActions();
             SceneLoader.sL.UnloadScene(LevelManager.lM.currentScene);
             if (wonOrLost)
             {
-                SceneLoader.sL.LoadSceneAdditive(LevelManager.lM.SuccessScene);
+                LevelsToDisplay.Remove(LevelManager.lM.levelInfo);
+
+                foreach(LevelInfo levelToAdd in LevelManager.lM.levelInfo.levelsToAdd)
+                {
+                    LevelsToDisplay.Add(levelToAdd);
+                }
+
+                foreach (LevelInfo levelToRemove in LevelManager.lM.levelInfo.levelsToRemove)
+                {
+                    LevelsToDisplay.Remove(levelToRemove);
+                }
+                StateManager.sM.gameState = GameState.LevelSelect;
+                SceneLoader.sL.UnloadScene("InGameHUD");
+                SceneLoader.sL.LoadSceneAdditive("LevelSelect");
             }
             else
             {
-                SceneLoader.sL.LoadSceneAdditive(LevelManager.lM.FailScene);
+                SceneLoader.sL.LoadSceneAdditive(LevelManager.lM.levelInfo.LevelScene);
             }
 
             gameOver = false;
             SuccessScreen.SetActive(false);
             FailureScreen.SetActive(false);
-            TimeManager.tM.SetTimeScale(1f);
             HUDManager.hM.SyncMenu(null);
             InputManager.iM.SetMCC(null);
+            RoomManager.rM.AdjustVisualsToGameState(gameState, 1.5f);
         }
+    }
+
+    public void LoadLevelFromLevelSelect(LevelInfo levelInfo)
+    {
+        gameState = GameState.Mission;
+        NodeManager.nM.FlushAllLinesAndNodes();
+        ActionManager.aM.FlushAllActions();
+        InputManager.iM.ClearCSV();  
+        SceneLoader.sL.UnloadScene(LevelSelectManager.lsm.gameObject.scene.name);
+        SceneLoader.sL.LoadSceneAdditive(levelInfo.LevelScene);
+        SceneLoader.sL.LoadSceneAdditive("InGameHUD");
+        RoomManager.rM.AdjustVisualsToGameState(gameState, 1.5f);
     }
 
     public static StateManager sM;
@@ -81,4 +112,15 @@ public class StateManager : MonoBehaviour
     [SerializeField] private Vector3 gameOverCanvasLocalPos;
 
     public List<LevelInfo> LevelsToDisplay = new List<LevelInfo>();
+
+    public GameState gameState;
 }
+
+public enum GameState
+{ 
+    Mission,
+    LevelSelect,
+    TitleScreen,
+    None
+}
+

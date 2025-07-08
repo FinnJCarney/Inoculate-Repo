@@ -18,13 +18,13 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 1.04
+    m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 15.29
+    m_Value: 54.9
   scatter:
     m_OverrideState: 1
-    m_Value: 0.672
+    m_Value: 0.497
   clamp:
     m_OverrideState: 0
     m_Value: 65472
@@ -62,13 +62,13 @@ MonoBehaviour:
   active: 1
   lift:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.9285149, z: 0.96423537, w: -0.026469031}
+    m_Value: {x: 1, y: 0.89573234, z: 0.94872254, w: -0.004750593}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: 0.11646373}
+    m_Value: {x: 0.94943726, y: 0.98966527, z: 1, w: -0.15907072}
   gain:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: 0.06352567}
+    m_Value: {x: 1, y: 0.8963272, z: 0.9066024, w: -0.042755343}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

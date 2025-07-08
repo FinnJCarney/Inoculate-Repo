@@ -1,6 +1,6 @@
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
@@ -31,6 +31,8 @@ public class ActionManager : MonoBehaviour
     {
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
+            Destroy(currentActions[i].actionLine.gameObject);
+            Destroy(currentActions[i].actionRing);
             currentActions.Remove(currentActions[i]);
         }
     }
@@ -58,7 +60,7 @@ public class ActionManager : MonoBehaviour
             adjustedCurAction.timer -= tm.adjustedDeltaTime;
             currentActions[i] = adjustedCurAction;
 
-            if ((currentActions[i].faction == LevelManager.lM.playerAllyFaction || currentActions[i].actingNode.showMenu || currentActions[i].receivingNode.showMenu) && LayerManager.lM.activeLayer == currentActions[i].actionLayer)
+            if ((currentActions[i].faction == LevelManager.lM.playerAllyFaction || currentActions[i].receivingNode.userInformation.faction == LevelManager.lM.playerAllyFaction || currentActions[i].actingNode.showMenu || currentActions[i].receivingNode.showMenu) && LayerManager.lM.activeLayer == currentActions[i].actionLayer)
             {
 
                 currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
@@ -429,7 +431,7 @@ public class ActionManager : MonoBehaviour
                             continue;
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up) && node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
                         {
                             if(node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -441,7 +443,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down) && node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -453,7 +455,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right) && node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -465,7 +467,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left) && node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x)
+                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -514,13 +516,15 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.timer = actionLayer == connectionLayer.online ? actionInformation[newActionType].actionLength.x : actionInformation[newActionType].actionLength.y;
         newCurrentAction.timerMax = newCurrentAction.timer;
         newCurrentAction.faction = actingNode.userInformation.faction;
-        newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine).GetComponent<ActionLine>();
+        newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine, this.transform).GetComponent<ActionLine>();
         newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
         newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position);
-        newCurrentAction.actionRing = Instantiate<GameObject>(actionRing);
+        newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
         newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
         SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction);
         currentActions.Add(newCurrentAction);
+
+        Debug.Log("Performing action type " + newActionType + " for faction " + newCurrentAction.faction + ", from " + actingNode + " to " + receivingNode);
     }
 
     private PossibleAction MakePossibleAction(ActionType actionType, connectionLayer actionLayer, Node actingNode, Node receivingNode)
@@ -532,22 +536,23 @@ public class ActionManager : MonoBehaviour
         newPossibleAction.actionLayer = actionLayer;
 
         Vector2 factionPos = LevelManager.lM.levelFactions[actingNode.userInformation.faction].position;
+        factionPos.x = factionPos.x == 3 ? receivingNode.userInformation.beliefs.x : factionPos.x;
+        factionPos.y = factionPos.y == 3 ? receivingNode.userInformation.beliefs.y : factionPos.y;
 
-       newPossibleAction.score += actingNode.userInformation.faction == receivingNode.userInformation.faction ? 0f : 2.5f; //If node is in another faction, more valuable to grab
+        newPossibleAction.score += actingNode.userInformation.faction == receivingNode.userInformation.faction ? 0f : 2.5f; //If node is in another faction, more valuable to grab
 
         if (actionLayer == connectionLayer.offline)
         {
-            newPossibleAction.score -= 2f;
+            newPossibleAction.score -= 1f;
 
             if (HUDManager.hM.IsSpaceValid(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
             {
-
-                if(Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < Vector2.Distance(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs))
+                if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
                 {
                     newPossibleAction.score += 5f;
                 }
 
-                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), factionPos) < Vector2.Distance(receivingNode.userInformation.beliefs, factionPos))
+                if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), factionPos) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, factionPos)) //If distance between receiving node and faction center is closer due to action
                 {
                     newPossibleAction.score += 3f;
                 }
@@ -579,18 +584,19 @@ public class ActionManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("For action type" + actionType + " with starting position " + receivingNode.userInformation.beliefs + ", distance with action " + MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, actingNode.userInformation.beliefs) + " vs distance without " + MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs));
+            if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
+            {
+                newPossibleAction.score += 4f;
+            }
+
+            if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, factionPos) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, factionPos)) //If distance between receiving node and faction center is closer due to action
+            {
+                newPossibleAction.score += 2f;
+            }
+
             foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
             {
-                if (Vector2.Distance(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, actingNode.userInformation.beliefs) < Vector2.Distance(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs))
-                {
-                    newPossibleAction.score += 4f;
-                }
-
-                if (Vector2.Distance(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, factionPos) < Vector2.Distance(receivingNode.userInformation.beliefs, factionPos))
-                {
-                    newPossibleAction.score += 2f;
-                }
-
                 if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), cNConnectedNode.userInformation.beliefs) < 1.45f)
                 {
                     if (cNConnectedNode.userInformation.faction == Faction.Neutral)
@@ -603,39 +609,121 @@ public class ActionManager : MonoBehaviour
                     }
                 }
 
-                if(cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
+                if (cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
                 {
                     newPossibleAction.score += 2f;
+
+
+                    if (cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
+                    {
+                        newPossibleAction.score += 2f;
+                    }
                 }
             }
         }
 
-
-
         newPossibleAction.score += Random.Range(0f, 1f);
         return newPossibleAction;
-
     }
+
+
+    private float MinDistanceBetweenTwoVector2sOnMap(Vector2 startingPos, Vector2 endingPos)
+    {
+
+        List<Vector2> positionsToCheck = new List<Vector2>();
+        Dictionary<Vector2, List<Vector2>> possiblePaths = new Dictionary<Vector2, List<Vector2>>();
+
+        positionsToCheck.Add(startingPos);
+
+        List<Vector2> startingPath = new List<Vector2>();
+        startingPath.Add(startingPos);
+        possiblePaths.Add(startingPos, startingPath);
+
+        //Debug.Log("Checking for path from " + startingPos + " to " + endingPos);
+
+        for (int i = 0; i < positionsToCheck.Count; i++)
+        {
+            Vector2 positionToCheck = positionsToCheck[i];
+
+            List<Vector2> positionsToAdd = new List<Vector2>();
+
+            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.up))
+            {
+                positionsToAdd.Add(positionToCheck + Vector2.up);
+            }
+
+            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.down))
+            {
+                positionsToAdd.Add(positionToCheck + Vector2.down);
+            }
+
+            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.right))
+            {
+                positionsToAdd.Add(positionToCheck + Vector2.right);
+            }
+
+            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.left))
+            {
+                positionsToAdd.Add(positionToCheck + Vector2.left);
+            }
+
+            foreach (Vector2 positionToAdd in positionsToAdd)
+            {
+                List<Vector2> newPossiblePath = new List<Vector2>();
+
+                if (possiblePaths.ContainsKey(positionToCheck))
+                {
+                    //Debug.Log("Possible paths contains " + positionToCheck);
+                    foreach (Vector2 pathPos in possiblePaths[positionToCheck])
+                    {
+                        newPossiblePath.Add(pathPos);
+                    }
+                    newPossiblePath.Add(positionToAdd);
+                }
+                else
+                {
+                    //Debug.Log("Possible paths does not contain " + positionToCheck);
+                    newPossiblePath.Add(positionToCheck);
+                    newPossiblePath.Add(positionToAdd);
+                }
+
+                //Debug.Log("Possible Path between " + newPossiblePath[0] + " and " + positionToAdd + " is " + newPossiblePath.Count);
+
+                if (!possiblePaths.ContainsKey(positionToAdd))
+                {
+                    //Debug.Log("Possible paths does not contain " + positionToAdd);
+                    possiblePaths.Add(positionToAdd, newPossiblePath);
+                    positionsToCheck.Add(positionToAdd);
+                }
+                else
+                {
+                    //Debug.Log("Possible paths does contain " + positionToAdd + "with length " + possiblePaths[positionToAdd].Count);
+                    if (newPossiblePath.Count < possiblePaths[positionToAdd].Count)
+                    {
+                        //Debug.Log(newPossiblePath.Count + " is smaller than " + possiblePaths[positionToAdd].Count);
+                        possiblePaths[positionToAdd].Clear();
+
+                        foreach (Vector2 pathPos in newPossiblePath)
+                        {
+                            possiblePaths[positionToAdd].Add(pathPos);
+                        }
+
+                        positionsToCheck.Add(positionToAdd);
+                    }
+                }
+
+                //Debug.Log("New smallest path between " + startingPos + " and " + positionToAdd + " is " + possiblePaths[positionToAdd].Count);
+            }
+        }
+
+        //Debug.Log("Shortest Path between " + startingPos + " and " + endingPos + " is " + possiblePaths[endingPos].Count);
+
+        return possiblePaths[endingPos].Count;
+    }
+
 
     [SerializeField] public List<CurrentAction> currentActions = new List<CurrentAction>();
     [SerializeField] public List<Node> previousNodes = new List<Node>();
-
-    [SerializeField] float dMActionLength;
-    [SerializeField] float educationActionLength;
-
-    [SerializeField] float shortOnlineActionLength;
-    [SerializeField] float mediumOnlineActionLength;
-    [SerializeField] float longOnlineActionLength;
-    
-    [SerializeField] float shortOfflineActionLength;
-    [SerializeField] float mediumOfflineActionLength;
-    [SerializeField] float longOfflineActionLength;
-
-    [SerializeField] GameObject ActionLineObj_Blue;
-    [SerializeField] GameObject ActionLineObj_Yellow;
-    [SerializeField] GameObject ActionLineObj_Red;
-    [SerializeField] GameObject ActionLineObj_Green;
-    [SerializeField] GameObject ActionLineObj_Neutral;
 
     [SerializeField] GameObject actionRing;
     [SerializeField] Vector3 outerActionRingScale;

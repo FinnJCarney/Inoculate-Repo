@@ -8,8 +8,11 @@ TagManager:
   - Button
   - MapScreen
   - HUDScreen
-  - NewButton
   - BigScreen
+  - ScrollbarHandle
+  - ScrollView
+  - UniversalButton
+  - NewButton
   layers:
   - Default
   - TransparentFX

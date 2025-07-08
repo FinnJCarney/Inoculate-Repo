@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NodeManager : MonoBehaviour
 {
@@ -174,7 +175,7 @@ public class NodeManager : MonoBehaviour
                                 line.lineR.material = LevelManager.lM.GiveLineMaterial(line.lineFaction);
                                 foreach (GameObject arrow in line.arrows)
                                 {
-                                    arrow.GetComponent<SpriteRenderer>().color = LevelManager.lM.levelFactions[line.lineFaction].color;
+                                    arrow.GetComponentInChildren<SpriteRenderer>().color = LevelManager.lM.levelFactions[line.lineFaction].color;
                                 }
                                 HUDManager.hM.SyncPoliticalAxes();
                             }
@@ -186,6 +187,10 @@ public class NodeManager : MonoBehaviour
                             {
                                 line.lineR.material = neutralLine;
                                 line.lineFaction = Faction.Neutral;
+                                foreach (GameObject arrow in line.arrows)
+                                {
+                                    arrow.GetComponentInChildren<SpriteRenderer>().color = LevelManager.lM.levelFactions[line.lineFaction].color;
+                                }
                                 HUDManager.hM.SyncPoliticalAxes();
                             }
                         }
@@ -325,9 +330,13 @@ public class NodeManager : MonoBehaviour
         {
             if (node.userInformation.instigator != Faction.None && nodeFactions.ContainsKey(node.userInformation.instigator))
             {
-                if(Vector2.Distance(node.userInformation.beliefs, LevelManager.lM.levelFactions[node.userInformation.instigator].position) > 0.9f)
+                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[node.userInformation.instigator].position;
+                factionBeliefCheck.x = factionBeliefCheck.x == 3 ? node.userInformation.beliefs.x : factionBeliefCheck.x;
+                factionBeliefCheck.y = factionBeliefCheck.y == 3 ? node.userInformation.beliefs.y : factionBeliefCheck.y;
+
+                if (Vector2.Distance(node.userInformation.beliefs, factionBeliefCheck) > 0.9f)
                 {
-                    node.userInformation.instigator = Faction.None;
+                    //node.userInformation.instigator = Faction.None;
                 }
                 else
                 {
@@ -356,7 +365,7 @@ public class NodeManager : MonoBehaviour
 
                 if (connectedNode.userInformation.connectedNodes[node].layer != node.userInformation.connectedNodes[connectedNode].layer)
                 {
-                    Debug.LogWarning(node + " has a connection layer discrepancy with " + connectedNode);
+                    Debug.LogWarning(node + " has a connection layer discrepancy with " + connectedNode + " of " + connectedNode.userInformation.connectedNodes[node].layer + " and " + node.userInformation.connectedNodes[connectedNode].layer);
                     continue;
                 }
 
@@ -444,7 +453,18 @@ public class NodeManager : MonoBehaviour
 
             if(nodesToCheck[i].userInformation.instigator == faction)
             {
-                return true;
+                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[nodesToCheck[i].userInformation.instigator].position;
+                factionBeliefCheck.x = factionBeliefCheck.x == 3 ? nodesToCheck[i].userInformation.beliefs.x : factionBeliefCheck.x;
+                factionBeliefCheck.y = factionBeliefCheck.y == 3 ? nodesToCheck[i].userInformation.beliefs.y : factionBeliefCheck.y;
+
+                if (Vector2.Distance(nodesToCheck[i].userInformation.beliefs, factionBeliefCheck) > 0.9f)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
 
             nodesChecked.Add(nodesToCheck[i]);

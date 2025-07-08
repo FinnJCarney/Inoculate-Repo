@@ -19,6 +19,88 @@ MonoBehaviour:
   LevelDescription: 'We need help turning a local influencer onto our side. '
   LevelGameMode: 1
   LevelMoney: 75
+  clientColor: {r: 0.19602099, g: 0.4528302, b: 0.19437523, a: 0}
+  chatMessages:
+  - Text: Who are we trying to turn?
+    clientText: 0
+    timeAfterText: 0
+  - Text: 'Oh! Hey! '
+    clientText: 1
+    timeAfterText: 0
+  - Text: I wasn't really sure you'd respond tbh. This is very exciting!
+    clientText: 1
+    timeAfterText: 0
+  - Text: Basically, there's this guy, Palmer Scranton. He's a local food influencer,
+      mainly focuses on cafes, coffee, that sort of thing.
+    clientText: 1
+    timeAfterText: 0
+  - Text: Also he SUCKS.
+    clientText: 1
+    timeAfterText: 0
+  - Text: I assumed... why do we care about him?
+    clientText: 0
+    timeAfterText: 0
+  - Text: "Oh right! Sorry, I'm working with a new cafe, <b><i>Sm\xFCth</b></i>,
+      on their marketing strategy (they specialize in german coffee)."
+    clientText: 1
+    timeAfterText: 0
+  - Text: Is it good?
+    clientText: 0
+    timeAfterText: 0
+  - Text: 'It''s <i>fine</i>, mostly unremarkable really. But cheap, and ok with
+      you being on your laptop, but also not like, <i>too</i> ok with you being on
+      your laptop? '
+    clientText: 1
+    timeAfterText: 0
+  - Text: But there's like... 50 cafes in the area that are also <i>fine</i>, and
+      we want to be at the top of that list. And a good review from Palmer could
+      help us get there.
+    clientText: 1
+    timeAfterText: 0
+  - Text: It's just not <i>usually</i> the kind of thing he'd cover... or like...
+      and he's pretty hard to get in contact with.
+    clientText: 1
+    timeAfterText: 0
+  - Text: But! We've managed to track down a guy who knows him.
+    clientText: 1
+    timeAfterText: 0
+  - Text: Or like... a guy who knows a guy who knows a guy who knows a guy who knows
+      him.
+    clientText: 1
+    timeAfterText: 0
+  - Text: And you need me to use them to get to him, to convince him that this place
+      is worth checking out.
+    clientText: 0
+    timeAfterText: 0
+  - Text: 'Exactly! '
+    clientText: 1
+    timeAfterText: 0
+  - Text: 'First you''re gonna need to help teach these people this place actually
+      exists ofcourse, lol. '
+    clientText: 1
+    timeAfterText: 0
+  - Text: 'And then convince them it''s worth checking out... which they won''t exaclty
+      be keen on. '
+    clientText: 1
+    timeAfterText: 0
+  - Text: "But do it and it'll help <b><i>Sm\xFCth</b></i> out massively. "
+    clientText: 1
+    timeAfterText: 0
+  - Text: And we'll pay you, obviously.
+    clientText: 1
+    timeAfterText: 0
+  - Text: Does that all make sense?
+    clientText: 1
+    timeAfterText: 0
+  - Text: 'For sure. To sumarize:'
+    clientText: 0
+    timeAfterText: 0
+  - Text: "I'll need to teach <b>Palmer Scranton</i> that Sm\xFCth exists, and that
+      it's worth his time, making this an isolation mission. I'll do this via both
+      digital and physical methods, using a known associate of the client to work
+      through a group of people so that I can eventually reach Scranton. "
+    clientText: 0
+    timeAfterText: 0
   levelsToAdd:
   - {fileID: 11400000, guid: 002d6a5f73640404da44f05018b92501, type: 2}
   - {fileID: 11400000, guid: 7f22b7b935125d644938fd7cec5c9a19, type: 2}

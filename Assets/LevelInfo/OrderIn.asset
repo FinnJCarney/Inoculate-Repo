@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
+  m_Name: OrderIn
+  m_EditorClassIdentifier: 
+  LevelScene: Level1
+  LevelName: Order In
+  LevelContact: Chris Craggle
+  LevelImage: {fileID: 485467334, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}
+  LevelDescription: My friends want Chinese food but <b>I</b> want Vietnamese HELP
+  LevelGameMode: 2
+  LevelMoney: 30
+  clientColor: {r: 0.4245283, g: 0.14217694, b: 0.3454288, a: 1}
+  chatMessages:
+  - Text: Give me more info
+    clientText: 0
+    timeAfterText: 0
+  - Text: oh thank god you responded
+    clientText: 1
+    timeAfterText: 0
+  - Text: I ate Chinese food like... two nights ago.
+    clientText: 1
+    timeAfterText: 0
+  - Text: That's too RECENT. I do NOT want to have it again
+    clientText: 1
+    timeAfterText: 0
+  - Text: And you'd prefer it be Vietnamese instead?
+    clientText: 0
+    timeAfterText: 0
+  - Text: Yeah pretty much
+    clientText: 1
+    timeAfterText: 0
+  - Text: Ok.
+    clientText: 0
+    timeAfterText: 0
+  - Text: Are you gonna hack my phone
+    clientText: 1
+    timeAfterText: 0
+  - Text: No
+    clientText: 0
+    timeAfterText: 0
+  - Text: You're going to <i>allow</i> me to spoof your phone for the duration of
+      the gig, which I'll use just to send texts or make posts.
+    clientText: 0
+    timeAfterText: 0
+  - Text: You can cut me off anytime if you feel uncomfortable
+    clientText: 0
+    timeAfterText: 0
+  - Text: Ok good lol I don't want you looking at my PENIS
+    clientText: 1
+    timeAfterText: 0
+  - Text: same here buddy
+    clientText: 0
+    timeAfterText: 0
+  - Text: Anymore info?
+    clientText: 0
+    timeAfterText: 0
+  - Text: Uhhhh there's 7 of us, all in a Group Chat.
+    clientText: 1
+    timeAfterText: 0
+  - Text: Some of them don't listen to me much though :( You'll probably need to
+      convince the others first
+    clientText: 1
+    timeAfterText: 0
+  - Text: 'Sounds good. To Sumarize:'
+    clientText: 0
+    timeAfterText: 0
+  - Text: I need to convince 7 people to get Vietnamese food instead of Chinese food.
+      This is what we calla <b>Saturation</b> gig. This is a <b>digital only</b>
+      job.
+    clientText: 0
+    timeAfterText: 0
+  levelsToAdd:
+  - {fileID: 11400000, guid: a98df00c92bb6e745ba76178a26bc948, type: 2}
+  levelsToRemove: []

@@ -107,54 +107,43 @@ public class HUDManager : MonoBehaviour
                 possibleActions++;
                 hasAllyNeighbourAvail = true;
 
-                if (connectedNode.userInformation.beliefs.x == selectedNode.userInformation.beliefs.x)
-                {
-                    hasLeftNeighbourAvail = true;
-                    hasRightNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.x > selectedNode.userInformation.beliefs.x)
-                {
-                    hasRightNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.x < selectedNode.userInformation.beliefs.x)
-                {
-                    hasLeftNeighbourAvail = true;
-                }
-
-                if (connectedNode.userInformation.beliefs.y == selectedNode.userInformation.beliefs.y)
-                {
-                    hasUpNeighbourAvail = true;
-                    hasDownNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.y > selectedNode.userInformation.beliefs.y)
-                {
-                    hasUpNeighbourAvail = true;
-                }
-                else if (connectedNode.userInformation.beliefs.y < selectedNode.userInformation.beliefs.y)
-                {
-                    hasDownNeighbourAvail = true;
-                }
+                //if (connectedNode.userInformation.beliefs.x == selectedNode.userInformation.beliefs.x)
+                //{
+                //    hasLeftNeighbourAvail = true;
+                //    hasRightNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.x > selectedNode.userInformation.beliefs.x)
+                //{
+                //    hasRightNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.x < selectedNode.userInformation.beliefs.x)
+                //{
+                //    hasLeftNeighbourAvail = true;
+                //}
+                //
+                //if (connectedNode.userInformation.beliefs.y == selectedNode.userInformation.beliefs.y)
+                //{
+                //    hasUpNeighbourAvail = true;
+                //    hasDownNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.y > selectedNode.userInformation.beliefs.y)
+                //{
+                //    hasUpNeighbourAvail = true;
+                //}
+                //else if (connectedNode.userInformation.beliefs.y < selectedNode.userInformation.beliefs.y)
+                //{
+                //    hasDownNeighbourAvail = true;
+                //}
             }
 
-            if (hasUpNeighbourAvail) //Main Up
+            if (hasAllyNeighbourAvail) //Main Up
             {
                 hasUpNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.up);
-            }
-
-            if (hasDownNeighbourAvail) //Main Down
-            {
                 hasDownNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.down);
-            }
-
-            if (hasRightNeighbourAvail) //Main Right
-            {
                 hasRightNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.right);
-            }
-
-            if (hasLeftNeighbourAvail) //Main Left
-            {
                 hasLeftNeighbourAvail = IsSpaceValid(selectedNode.userInformation.beliefs + Vector2.left);
             }
+            
         }
     
         bool connectActionAvailable = false;
