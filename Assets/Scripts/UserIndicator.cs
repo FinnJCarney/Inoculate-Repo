@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class UserIndicator : MonoBehaviour
 {
+    [SerializeField] public Node node;
     [SerializeField] public Image profile;
     [SerializeField] public Image faction;
 }

@@ -5,6 +5,22 @@ using DG.Tweening;
 
 public class UniversalButton : MonoBehaviour
 {
+    private void Start()
+    {
+        if (buttonEvent == null) { buttonEvent = new UnityEvent(); }
+
+        if (reqMan == RequestedManager.LayerManager)
+        {
+            LayerManager.lM.buttonImage = buttonIcon;
+            buttonEvent.AddListener(delegate { LayerManager.lM.ChangeLayer(); });
+        }
+
+        if (reqMan == RequestedManager.NodeManager)
+        {
+            buttonEvent.AddListener(delegate { this.gameObject.GetComponent<UserIndicator>().node.ShowMenu(true); });
+        }
+    }
+
     public void PerformAction()
     {
         if(buttonEvent != null)
@@ -15,6 +31,11 @@ public class UniversalButton : MonoBehaviour
 
     public void OnHover(bool hovered)
     {
+        if(buttonBack == null)
+        {
+            return;
+        }
+
         if(hovered)
         {
             buttonBack.color = hoverColor;
@@ -26,6 +47,7 @@ public class UniversalButton : MonoBehaviour
     }
 
     [SerializeField] private Image buttonBack;
+    [SerializeField] private Image buttonIcon;
 
     public RequestedManager reqMan;
 
@@ -41,6 +63,8 @@ public enum RequestedManager
     TimeManager,
     StateManager,
     LevelSelectManager,
+    LayerManager,
+    NodeManager,
     None
 }
 

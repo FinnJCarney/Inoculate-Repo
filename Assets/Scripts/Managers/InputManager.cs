@@ -106,7 +106,31 @@ public class InputManager : MonoBehaviour
                         }
                     }
 
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                    {
+                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                        universalButton.PerformAction();
+                    }
                 }
+
+                if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                {
+                    if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag != "UniversalButton") || prevScreenRayCastHitInfo.collider == null)
+                    {
+                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                        universalButton.OnHover(true);
+                    }
+                }
+                else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
+                {
+                    var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                    universalButton.OnHover(false);
+                }
+            }
+            else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
+            {
+                var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                universalButton.OnHover(false);
             }
         }
 

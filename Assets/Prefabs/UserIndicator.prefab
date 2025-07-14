@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.8, y: 0.8}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1152728194973074592
 CanvasRenderer:
@@ -87,6 +87,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
+  m_Resource: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
@@ -182,13 +183,15 @@ GameObject:
   m_Component:
   - component: {fileID: 7093546105295080429}
   - component: {fileID: 5280186853081723150}
+  - component: {fileID: 6582996474204408176}
   - component: {fileID: 2555514840709908463}
   - component: {fileID: 3474354357936810876}
   - component: {fileID: 4969918511571744299}
   - component: {fileID: 3999468936505722766}
+  - component: {fileID: 6543425187166349892}
   m_Layer: 5
   m_Name: UserIndicator
-  m_TagString: Untagged
+  m_TagString: UniversalButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -212,7 +215,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 1.35, y: 0}
-  m_SizeDelta: {x: 0.8, y: 0.8}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5280186853081723150
 MonoBehaviour:
@@ -226,8 +229,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e670180bd745b7498b676d1befebe34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  node: {fileID: 0}
   profile: {fileID: 5709032267334628389}
   faction: {fileID: 7874578473944306620}
+--- !u!114 &6582996474204408176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244104774461840099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 952be217f44aafc4b87cdd9f87da7d79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonBack: {fileID: 0}
+  buttonIcon: {fileID: 0}
+  reqMan: 5
+  unhoveredColor: {r: 0, g: 0, b: 0, a: 0}
+  hoverColor: {r: 0, g: 0, b: 0, a: 0}
+  buttonEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!222 &2555514840709908463
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -291,6 +315,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
+  m_Resource: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1
@@ -376,6 +401,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!135 &6543425187166349892
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244104774461840099}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.6
+  m_Center: {x: 0, y: 0, z: -0.17}
 --- !u!1 &4390541042761677570
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,7 +458,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.8, y: 0.8}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2313742607001416334
 CanvasRenderer:
@@ -464,6 +510,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
+  m_Resource: {fileID: 8300000, guid: e0eb71a8cb83c7b438e976fb4fbf796e, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1

@@ -36,6 +36,10 @@ public class LevelManager : MonoBehaviour
         for (int i = 0; i < levelFactions.Count; i++)
         {
             var adjustedLevelFaction = levelFactions[factionIndexes[i]];
+            if (levelFactions[factionIndexes[i]].name == null)
+            {
+                adjustedLevelFaction.name = "<b>GIVE THIS FACTION A NAME</b>";
+            }
             adjustedLevelFaction.particleMaterial = new Material(defaultParticleMaterial);
             adjustedLevelFaction.particleMaterial.color = adjustedLevelFaction.color;
             adjustedLevelFaction.particleMaterial.SetColor("_EmissionColor", adjustedLevelFaction.color);
@@ -131,6 +135,7 @@ public class LevelManager : MonoBehaviour
     public float amountRequiredForControl;
 
     public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
+    public SerializableDictionary<ActionType, TweetInfo> tweetsForActions = new SerializableDictionary<ActionType, TweetInfo>();
 
     [TextArea(5, 5)]
     public string levelMap = "11111\n11111\n11111\n11111\n11111";
@@ -142,8 +147,6 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private List<factionTimer> factionTimers = new List<factionTimer>();
     [SerializeField] private List<specificFactionSetting> specificFactionSettings = new List<specificFactionSetting>();
 
-    [SerializeField] public string FailScene;
-    [SerializeField] public string SuccessScene;
     [SerializeField] public string currentScene;
 
     [SerializeField] public MapCameraController mapCamera;
@@ -159,6 +162,7 @@ public class LevelManager : MonoBehaviour
 [System.Serializable]
 public struct levelFaction
 {
+    public string name;
     public Color color;
     public Vector2 position;
     public Material lineMaterial;

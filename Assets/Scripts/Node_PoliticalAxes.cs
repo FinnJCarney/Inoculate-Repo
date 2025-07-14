@@ -33,6 +33,7 @@ public class Node_PoliticalAxes : MonoBehaviour
             if (myUserObj == null)
             {
                 myUserObj = Instantiate(userObj, userObjsHolder);
+                myUserObj.GetComponent<UserIndicator>().node = node;
 
                 if (!onClick)
                 {
@@ -97,6 +98,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                         associatedUserObj.userObj = Instantiate(userObj, userObjsHolder);
                         associatedUserObj.userImage = associatedUserObj.userObj.GetComponent<UserIndicator>().profile;
                         associatedUserObj.userFaction = associatedUserObj.userObj.GetComponent<UserIndicator>().faction;
+                        associatedUserObj.userObj.GetComponent<UserIndicator>().node = connectedNode;
                         associatedUserObj.userAudioSource = associatedUserObj.userObj.GetComponent<AudioSource>();
                         associatedUserObj.associatedNode = connectedNode;
                         associatedUserObj.userImage.sprite = connectedNode.nodeVisual.sprite;
@@ -104,7 +106,7 @@ public class Node_PoliticalAxes : MonoBehaviour
 
                         if (!onClick)
                         {
-                            Vector3 defaultScale = associatedUserObj.userObj.transform.localScale * 0.66f;
+                            Vector3 defaultScale = associatedUserObj.userObj.transform.localScale * 0.5f;
                             associatedUserObj.userObj.transform.localScale = new Vector3(0, defaultScale.y, defaultScale.z);
                             associatedUserObj.userObj.transform.DOScale(defaultScale, 0.5f);
 
@@ -115,7 +117,7 @@ public class Node_PoliticalAxes : MonoBehaviour
                         }
                         else
                         {
-                            associatedUserObj.userObj.transform.localScale *= 0.75f;
+                            associatedUserObj.userObj.transform.localScale *= 0.5f;
                             associatedUserObj.userObj.transform.localPosition = connectedNode.userInformation.beliefs * 1.4f;
                         }
                     }

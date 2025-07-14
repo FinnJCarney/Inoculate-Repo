@@ -104,9 +104,6 @@ public class StateManager : MonoBehaviour
     private bool wonOrLost;
     [SerializeField] private GameObject SuccessScreen;
     [SerializeField] private GameObject FailureScreen;
-    [SerializeField] private string failScene;
-    [SerializeField] private string successScene;
-    [SerializeField] private string currentScene;
 
     [SerializeField] private Canvas gameOverCanvas;
     [SerializeField] private Vector3 gameOverCanvasLocalPos;

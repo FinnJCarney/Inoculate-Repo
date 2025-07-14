@@ -12,18 +12,26 @@ public class Node : MonoBehaviour
     {
         userInformation = GetComponent<Node_UserInformation>();
 
-        nodeHandle = userInformation.NodeName != "" ? userInformation.NodeName : this.gameObject.name;
-
         NodeManager.nM.AddNodeToList(this);
 
         audioSource = GetComponent<AudioSource>();
 
-        handleText.text = nodeHandle;
+        handleText.text = userInformation.name;
+
+        if(userInformation.toCapture)
+        {
+            handleText.color = Color.lightGoldenRodYellow;
+        }
 
         menu.SetActive(false);
         bannedCover.SetActive(isBanned);
 
         actionPitch = Random.Range(1.25f, 1.5f);
+
+        if(!HUDManager.hM.IsSpaceValid(userInformation.beliefs))
+        {
+            Debug.Log(userInformation.name + " has an invalid starting position");
+        }
     }
 
     private void Update()
@@ -166,6 +174,8 @@ public class Node : MonoBehaviour
 
     public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer)
     {
+        bool actionSuccessful = false;
+
         if (aT == ActionType.DM)
         {
             userInformation.userInfoHidden = false;
@@ -188,15 +198,18 @@ public class Node : MonoBehaviour
                 if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
                 {
                     userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
+                    actionSuccessful = true;
                 }
                 else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
                 {
                     userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                    actionSuccessful = true;
                 }
             }
             else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
             {
                 userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                actionSuccessful = true;
             }
         }
 
@@ -212,15 +225,18 @@ public class Node : MonoBehaviour
                 if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
                 {
                     userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
+                    actionSuccessful = true;
                 }
                 else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
                 {
                     userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                    actionSuccessful = true;
                 }
             }
             else if(HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
             {
                 userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                actionSuccessful = true;
             }
         }
 
@@ -246,6 +262,11 @@ public class Node : MonoBehaviour
         if(audioSource.isPlaying)
         {
             audioSource.Stop();
+        }
+
+        if(actionSuccessful)
+        {
+            TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[aT], actingNode.userInformation, this.userInformation, actingFaction);
         }
 
         audioSource.volume = 0.5f;

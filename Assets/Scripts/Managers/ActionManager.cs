@@ -127,7 +127,23 @@ public class ActionManager : MonoBehaviour
                     connectedNode.nodePrio -= 1000;
                 }
 
-                connectedNode.nodePrio -= connectedNode.userInformation.connectedNodes.Count * 5;
+                foreach(Node cNCN in connectedNode.userInformation.connectedNodes.Keys)
+                {
+                    if (connectedNode.userInformation.connectedNodes[cNCN].type == connectionType.influencedBy)
+                    {
+                        continue;
+                    }
+
+                    if (cNCN.userInformation.faction == connectedNode.userInformation.faction)
+                    {
+                        connectedNode.nodePrio += 5;
+                    }
+                    else
+                    {
+                        connectedNode.nodePrio -= 5;
+                    }
+
+                }
 
                 if (buttonInfo.type == ActionType.Left)
                 {
@@ -584,7 +600,6 @@ public class ActionManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("For action type" + actionType + " with starting position " + receivingNode.userInformation.beliefs + ", distance with action " + MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, actingNode.userInformation.beliefs) + " vs distance without " + MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs));
             if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
             {
                 newPossibleAction.score += 4f;
@@ -641,12 +656,13 @@ public class ActionManager : MonoBehaviour
 
         //Debug.Log("Checking for path from " + startingPos + " to " + endingPos);
 
-        for (int i = 0; i < positionsToCheck.Count; i++)
+        for (int i = 0; i < positionsToCheck.Count; i++) //Check list of Vector2s that are valid
         {
             Vector2 positionToCheck = positionsToCheck[i];
 
             List<Vector2> positionsToAdd = new List<Vector2>();
 
+            //Check all adjacent Vector2, if they are available, we should look at them
             if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.up))
             {
                 positionsToAdd.Add(positionToCheck + Vector2.up);
@@ -669,8 +685,10 @@ public class ActionManager : MonoBehaviour
 
             foreach (Vector2 positionToAdd in positionsToAdd)
             {
+                //We're gonna see what a path to this new Vector2 looks like
                 List<Vector2> newPossiblePath = new List<Vector2>();
 
+                //Have we been to our Vector2 before? If so, grab the current path there now
                 if (possiblePaths.ContainsKey(positionToCheck))
                 {
                     //Debug.Log("Possible paths contains " + positionToCheck);
@@ -680,22 +698,24 @@ public class ActionManager : MonoBehaviour
                     }
                     newPossiblePath.Add(positionToAdd);
                 }
-                else
+                else //Else, we have no record of how to get here, which probably means it's very close
                 {
                     //Debug.Log("Possible paths does not contain " + positionToCheck);
                     newPossiblePath.Add(positionToCheck);
                     newPossiblePath.Add(positionToAdd);
                 }
 
+                //We have established a path to this new vector2 we're checking
                 //Debug.Log("Possible Path between " + newPossiblePath[0] + " and " + positionToAdd + " is " + newPossiblePath.Count);
 
+                //We've never been to this Vector2 before! Whatever path we've developed to it is currently our best one, so let's add that path and check what's around it in future
                 if (!possiblePaths.ContainsKey(positionToAdd))
                 {
                     //Debug.Log("Possible paths does not contain " + positionToAdd);
                     possiblePaths.Add(positionToAdd, newPossiblePath);
                     positionsToCheck.Add(positionToAdd);
                 }
-                else
+                else //We have been to this vector 2 before, so check how long it previously took to get here vs our new path. Save whichever one is shorter
                 {
                     //Debug.Log("Possible paths does contain " + positionToAdd + "with length " + possiblePaths[positionToAdd].Count);
                     if (newPossiblePath.Count < possiblePaths[positionToAdd].Count)
@@ -716,6 +736,7 @@ public class ActionManager : MonoBehaviour
             }
         }
 
+        //At this stage, we should have checked essentially every point on the board, and in that process found the shortest path to our ideal end point, so return that
         //Debug.Log("Shortest Path between " + startingPos + " and " + endingPos + " is " + possiblePaths[endingPos].Count);
 
         return possiblePaths[endingPos].Count;

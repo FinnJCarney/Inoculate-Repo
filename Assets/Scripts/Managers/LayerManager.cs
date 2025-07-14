@@ -21,7 +21,7 @@ public class LayerManager : MonoBehaviour
     public static LayerManager lM;
 
     public bool online;
-    [SerializeField] private Image buttonImage;
+    [SerializeField] public Image buttonImage;
     [SerializeField] private Sprite offlineSpr;
     [SerializeField] private Sprite onlineSpr;
 

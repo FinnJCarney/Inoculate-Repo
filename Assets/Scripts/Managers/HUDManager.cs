@@ -161,13 +161,18 @@ public class HUDManager : MonoBehaviour
 
         if (!selectedNode.isBanned)
         {
-            but_DM.EnableButton(selectedNode.userInformation.userInfoHidden && hasAllyNeighbourAvail);
-            but_Accuse.EnableButton(!selectedNode.userInformation.userInfoHidden && hasAllyNeighbourAvail);
             but_Left.EnableButton(hasLeftNeighbourAvail && !selectedNode.userInformation.userInfoHidden);
             but_Right.EnableButton(hasRightNeighbourAvail && !selectedNode.userInformation.userInfoHidden);
             but_Up.EnableButton(hasUpNeighbourAvail && !selectedNode.userInformation.userInfoHidden);
             but_Down.EnableButton(hasDownNeighbourAvail && !selectedNode.userInformation.userInfoHidden);
-            but_Connect.EnableButton(connectActionAvailable);
+
+            but_DM.EnableButton(false);
+            but_Accuse.EnableButton(false);
+            but_Connect.EnableButton(false);
+
+            //but_DM.EnableButton(selectedNode.userInformation.userInfoHidden && hasAllyNeighbourAvail);
+            //but_Accuse.EnableButton(!selectedNode.userInformation.userInfoHidden && hasAllyNeighbourAvail);
+            //but_Connect.EnableButton(connectActionAvailable);
         }
         else
         {

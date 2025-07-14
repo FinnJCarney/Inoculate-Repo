@@ -125,3 +125,28 @@ public enum connectionType
     influenceOn
 }
 
+public enum Personality_NO
+{
+    Any,
+    Intuitive,
+    Observant
+}
+
+public enum Personality_TF
+{
+    Any,
+    Thinking,
+    Feeling
+}
+
+public enum Personality_Special
+{ 
+    None,
+    Special1,
+    Special2,
+    Special3,
+    Special4
+}
+
+
+
