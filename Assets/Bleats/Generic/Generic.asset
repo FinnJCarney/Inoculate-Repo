@@ -17,23 +17,77 @@ MonoBehaviour:
     pNO: 0
     pTF: 0
     pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Thinking about getting into it too!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
   - Text: Calling out [RECEIVER] here, you should like [FACTION]!
     pNO: 0
     pTF: 0
     pSpecial: 0
-  - Text: I'll give it to [FACTION] lovers... y'all make good points
+    responses:
+    - Text: Alright alright alright
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Send me a link!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+  - Text: Us [FACTION] lovers... we know what's up!
     pNO: 1
     pTF: 0
     pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: ...y'all make good points
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
   - Text: Been diving deep into [FACTION], liking what I'm seeing!
     pNO: 2
     pTF: 0
     pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Send me some!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
   - Text: The more I think about [FACTION], the more I like it!
     pNO: 0
     pTF: 1
     pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Interested in your thoughts!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
   - Text: Getting the vibe that [FACTION] is where it's at?
     pNO: 0
     pTF: 2
     pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Getting that vibe too!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0

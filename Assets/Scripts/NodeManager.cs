@@ -277,7 +277,9 @@ public class NodeManager : MonoBehaviour
     public void AddNodeToList(Node node)
     {
         nodes.Add(node);
-        node.nodeVisual.sprite = faceSprites[Mathf.RoundToInt(Random.Range(0, faceSprites.Length - 1))];
+        Sprite newSprite = faceSprites[Mathf.RoundToInt(Random.Range(0, faceSprites.Length - 1))];
+        node.nodeVisual.sprite = newSprite;
+        node.userInformation.NodeImage = newSprite;
     }
 
     public void CloseAllNodeMenus(Node exceptionNode)

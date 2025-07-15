@@ -172,7 +172,7 @@ public class Node : MonoBehaviour
         accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
     }
 
-    public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer)
+    public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer, Bleat bleat)
     {
         bool actionSuccessful = false;
 
@@ -266,7 +266,7 @@ public class Node : MonoBehaviour
 
         if(actionSuccessful)
         {
-            TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[aT], actingNode.userInformation, this.userInformation, actingFaction);
+            bleat.CreateResponse(this.userInformation);
         }
 
         audioSource.volume = 0.5f;

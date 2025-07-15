@@ -50,6 +50,7 @@ public class ActionManager : MonoBehaviour
             {
                 currentActions[i].actingNode.performingAction = false;
                 currentActions[i].receivingNode.receivingActions--;
+                currentActions[i].bleat.CancelBleat();
                 Destroy(currentActions[i].actionLine.gameObject);
                 Destroy(currentActions[i].actionRing);
                 currentActions.Remove(currentActions[i]);
@@ -75,7 +76,7 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].timer < 0f)
             {
-                currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].actingNode.userInformation.faction, currentActions[i].actingNode, currentActions[i].actionLayer);
+                currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].actingNode.userInformation.faction, currentActions[i].actingNode, currentActions[i].actionLayer, currentActions[i].bleat);
                 currentActions[i].actingNode.performingAction = false;
                 currentActions[i].receivingNode.receivingActions--;
                 Destroy(currentActions[i].actionLine.gameObject);
@@ -537,6 +538,7 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position);
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
         newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
+        newCurrentAction.bleat = TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[newActionType], actingNode.userInformation, receivingNode.userInformation, newCurrentAction.faction);
         SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction);
         currentActions.Add(newCurrentAction);
 
@@ -780,6 +782,7 @@ public struct CurrentAction
     public ActionLine actionLine;
     public GameObject actionRing;
     public Faction faction;
+    public Bleat bleat;
 }
 
 [System.Serializable]

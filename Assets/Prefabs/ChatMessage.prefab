@@ -80,9 +80,6 @@ MonoBehaviour:
   chatPage: {fileID: 0}
   chatBackground: {fileID: 3888224566835751709}
   chatText: {fileID: 178540426115896696}
-  text: 
-  timeToPost: 0.5
-  timeAfterPost: 0.5
 --- !u!114 &8679193258512080028
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -23,6 +23,7 @@ public class InputManager : MonoBehaviour
         mouseButtonDown = Input.GetMouseButtonDown(0);
         mouseButtonHeld = Input.GetMouseButton(0);
         mouseButtonRightDown = Input.GetMouseButtonDown(1);
+        phoneInput = Input.GetButtonDown("Tab");
 
         curWorldMousePos = Input.mousePosition;
         curWorldMousePos.z = 1f;
@@ -32,6 +33,11 @@ public class InputManager : MonoBehaviour
 
     private void FunctionUpdate()
     {
+        if(phoneInput)
+        {
+            RoomManager.rM.LookAtPhone();
+        }
+
         if (worldRaycastHitInfo.collider == null)
         {
             ClearCSV();
@@ -46,11 +52,7 @@ public class InputManager : MonoBehaviour
             }
 
             CameraCursor camCursor = ScreenPlane.smallScreen.cameraCursor;
-
-            if (camCursor == null)
-            {
-                return;
-            }
+            
 
             prevSmallScreenPos = curSmallScreenPos;
             prevScreenRayCastHitInfo = ScreenRayCastHitInfo;
@@ -272,6 +274,132 @@ public class InputManager : MonoBehaviour
 
             prevWorldMousePos = curWorldMousePos;
         }
+
+        if(worldRaycastHitInfo.collider.tag == "PhoneScreen")
+        {
+            CameraCursor camCursor = ScreenPlane.phoneScreen.cameraCursor;
+
+            if (camCursor == null)
+            {
+                return;
+            }
+
+            prevPhoneScreenPos = curPhoneScreenPos;
+            prevScreenRayCastHitInfo = ScreenRayCastHitInfo;
+
+            var screenRelativePos = worldRaycastHitInfo.transform.position - worldRaycastHitInfo.point;
+            Vector3 screenBounds = worldRaycastHitInfo.collider.bounds.size / 2;
+            curPhoneScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 0.5f, -(screenRelativePos.y / screenBounds.y)); // x is times by 1 / 3 as the map screen has a 1 / 3 ratio
+            Vector3 rayShootPos = Vector3.zero;
+
+            if (camCursor.ortho)
+            {
+                rayShootPos = curPhoneScreenPos * camCursor.camera.orthographicSize * 10f;
+            }
+            else
+            {
+                float cameraFrustrumHeight = Mathf.Tan(camCursor.camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+                rayShootPos = curPhoneScreenPos * cameraFrustrumHeight;
+            }
+
+            camCursor.MoveCursor(rayShootPos);
+
+            if (camCursor.ortho)
+            {
+                Physics.Raycast(camCursor.cursor.transform.position, camCursor.camera.transform.forward, out ScreenRayCastHitInfo);
+                Debug.DrawRay(camCursor.cursor.transform.position, camCursor.camera.transform.forward, Color.red, 2f);
+            }
+            else
+            {
+                Physics.Raycast(camCursor.transform.position, Vector3.Normalize(camCursor.cursor.transform.position - camCursor.camera.transform.position), out ScreenRayCastHitInfo);
+                Debug.DrawRay(camCursor.transform.position, Vector3.Normalize(camCursor.cursor.transform.position - camCursor.camera.transform.position), Color.red, 2f);
+            }
+
+            if (ScreenRayCastHitInfo.collider != null)
+            {
+                if (ScreenRayCastHitInfo.collider.tag == "ScrollView")
+                {
+                    currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollView>();
+                }
+
+                if (ScreenRayCastHitInfo.collider.tag == "ScrollbarHandle")
+                {
+                    currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollHandle>().cSV;
+                }
+
+                if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                {
+                    if (prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag != "UniversalButton")
+                    {
+                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                        universalButton.OnHover(true);
+                    }
+                }
+                else if (prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                {
+                    var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                    universalButton.OnHover(false);
+                }
+
+                if (mouseButtonDown)
+                {
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Node")
+                    {
+                        //NodeManager.nM.CloseAllNodeMenus();
+                        ScreenRayCastHitInfo.collider.transform.parent.GetComponent<Node>().ShowMenu(true);
+                    }
+
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
+                    {
+                        var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
+                        ActionManager.aM.PerformButtonAction(buttonInfo);
+                    }
+
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                    {
+                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                        universalButton.PerformAction();
+                    }
+
+                    //MAKE NEW BUTTON TYPE HERE FOR TRIGERRING THE CONTACT BUTTON, SO THAT IT CAN SEND THE INFO FROM ITSELF TO THE SECTION MANAGER AND THEN DISPLAY THE CHAT LOG
+
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "ScrollbarHandle")
+                    {
+                        interactingWithScrollBar = true;
+                        currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollHandle>().cSV;
+                    }
+                }
+            }
+
+            if (interactingWithScrollBar)
+            {
+                if (!mouseButtonHeld && !mouseButtonDown)
+                {
+                    interactingWithScrollBar = false;
+                }
+                else
+                {
+                    currentCSV.MoveHandle((curPhoneScreenPos.y - prevPhoneScreenPos.y) * 500f);
+                }
+            }
+
+            if (Input.GetAxis("Mouse ScrollWheel") != 0)
+            {
+                if (currentCSV != null)
+                {
+                    currentCSV.MoveHandle(Input.GetAxis("Mouse ScrollWheel") * 200f);
+                }
+            }
+
+
+            if (worldRaycastHitInfo.collider.gameObject.tag == "Button")
+            {
+                var buttonInfo = worldRaycastHitInfo.collider.gameObject.GetComponent<UserButton>();
+                ActionManager.aM.PerformButtonAction(buttonInfo);
+            }
+
+            prevWorldMousePos = curWorldMousePos;
+        }
     }
 
     public void ClearCSV()
@@ -297,6 +425,9 @@ public class InputManager : MonoBehaviour
     private bool mouseButtonDown;
     private bool mouseButtonHeld;
     private bool mouseButtonRightDown;
+    private bool phoneInput; 
+
+
     private RaycastHit worldRaycastHitInfo;
     private RaycastHit HUDRayCastHitInfo;
 
@@ -311,6 +442,9 @@ public class InputManager : MonoBehaviour
 
     private Vector3 curBigScreenPos;
     private Vector3 prevBigScreenPos;
+
+    private Vector3 curPhoneScreenPos;
+    private Vector3 prevPhoneScreenPos;
 
     private CustomScrollView currentCSV;
 

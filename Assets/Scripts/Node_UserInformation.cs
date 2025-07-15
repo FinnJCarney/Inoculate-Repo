@@ -70,6 +70,7 @@ public class Node_UserInformation : MonoBehaviour
 
     [Header("Basic Information")]
     public string NodeName;
+    public Sprite NodeImage;
 
     public Vector2 beliefs;
     public bool userInfoHidden;

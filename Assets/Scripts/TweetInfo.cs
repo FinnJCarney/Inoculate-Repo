@@ -14,5 +14,16 @@ public struct Tweet
     public string Text;
     public Personality_NO pNO;
     public Personality_TF pTF;
-    public Personality_Special pSpecial; 
+    public Personality_Special pSpecial;
+    public Response[] responses;
 }
+
+[System.Serializable]
+public struct Response
+{
+    public string Text;
+    public Personality_NO pNO;
+    public Personality_TF pTF;
+    public Personality_Special pSpecial;
+}
+
