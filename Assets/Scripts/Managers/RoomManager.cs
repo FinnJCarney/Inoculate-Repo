@@ -20,19 +20,19 @@ public class RoomManager : MonoBehaviour
 
     public void LookAtPhone()
     {
+        phonePivot.transform.DOKill();
+        mainCamera.transform.DOKill();
         lookingAtPhone = !lookingAtPhone;
         if (lookingAtPhone)
         {
-            TimeManager.tM.SetTimeScale(0.25f);
-            phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.3f);
+            phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.33f);
             mainCamera.transform.DORotate(phoneCamLoc.rotation.eulerAngles, 0.25f);
             mainCamera.transform.DOMove(phoneCamLoc.position, 0.25f);
         }
         else
         {
-            TimeManager.tM.SetTimeScale(1f);
             phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.8f);
-            AdjustVisualsToGameState(gameState, 1f);
+            AdjustVisualsToGameState(gameState, 0.33f);
         }
     }
     

@@ -26,4 +26,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level3.unity
     guid: f8c587070d0cca64d8954ba9dedad417
+  - enabled: 1
+    path: Assets/Scenes/Environment_Room.unity
+    guid: e39c4b8042e0a854cb981fa7b8eb472b
+  - enabled: 1
+    path: Assets/Scenes/BleatScene.unity
+    guid: bb2aebb569c2aaf48ba535887ac1a893
+  - enabled: 1
+    path: Assets/Scenes/FaceOfTheFuture.unity
+    guid: 32b189601f0ded14b9c75c503b1e6d46
+  - enabled: 1
+    path: Assets/Scenes/LevelSelect.unity
+    guid: df832431ae3ffea4d823ed2537d6855b
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0

@@ -791,6 +791,11 @@ PrefabInstance:
       propertyPath: m_TargetTexture
       value: 
       objectReference: {fileID: 8400000, guid: f3b3c8b1d099e704da3aa745ccef60e8, type: 2}
+    - target: {fileID: 7984276303466277699, guid: c4049d7aea11cad44b245522bce877df,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 55
+      objectReference: {fileID: 0}
     - target: {fileID: 8973160864104191959, guid: c4049d7aea11cad44b245522bce877df,
         type: 3}
       propertyPath: cursor

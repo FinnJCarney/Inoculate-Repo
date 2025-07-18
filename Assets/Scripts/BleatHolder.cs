@@ -6,15 +6,20 @@ public class BleatHolder : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        vlg = GetComponent<VerticalLayoutGroup>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        GetComponent<VerticalLayoutGroup>().spacing = 1f;
-        GetComponent<VerticalLayoutGroup>().padding.top = 1;
-        GetComponent<VerticalLayoutGroup>().spacing = 0f;
-        GetComponent<VerticalLayoutGroup>().padding.top = 0;
+        vlg.spacing = 1f;
+        vlg.padding.top = 1;
+        vlg.spacing = spacing;
+        vlg.padding.top = padding;
     }
+
+    private VerticalLayoutGroup vlg;
+
+    [SerializeField] private float spacing;
+    [SerializeField] private int padding;
 }

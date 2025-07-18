@@ -3871,6 +3871,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2095892968634877568, guid: c4049d7aea11cad44b245522bce877df,
         type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2095892968634877568, guid: c4049d7aea11cad44b245522bce877df,
+        type: 3}
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
@@ -3908,6 +3913,11 @@ PrefabInstance:
         type: 3}
       propertyPath: orthographic size
       value: 54.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 7984276303466277699, guid: c4049d7aea11cad44b245522bce877df,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 7984276303466277699, guid: c4049d7aea11cad44b245522bce877df,
         type: 3}
@@ -4259,7 +4269,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1472461710}
   - component: {fileID: 1472461711}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Cursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

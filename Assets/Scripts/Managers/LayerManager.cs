@@ -14,7 +14,10 @@ public class LayerManager : MonoBehaviour
     {
         online = !online;
         activeLayer = online ? connectionLayer.online : connectionLayer.offline;
-        buttonImage.sprite = online ? onlineSpr : offlineSpr;
+        if (buttonImage != null)
+        {
+            buttonImage.sprite = online ? onlineSpr : offlineSpr;
+        }
         VisualsManager.vM.SwapLayer(online);
     }
 

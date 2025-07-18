@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5371660303058266289}
   - component: {fileID: 8490442559282627757}
   - component: {fileID: 6879125703018737461}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: ProfilePicture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 8514813830927812568}
   - component: {fileID: 5120327289109990386}
   - component: {fileID: 918422666675639061}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Image (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184, y: -68.1}
+  m_AnchoredPosition: {x: 184, y: -83}
   m_SizeDelta: {x: 368, y: 168}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8514813830927812568
@@ -220,7 +220,9 @@ GameObject:
   - component: {fileID: 6764989227183779087}
   - component: {fileID: 3553178679479263483}
   - component: {fileID: 8679193258512080028}
-  m_Layer: 5
+  - component: {fileID: 4777805551543844477}
+  - component: {fileID: 4964884753371448568}
+  m_Layer: 6
   m_Name: Bleat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,10 +282,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 32
-    m_Bottom: -16
+    m_Left: 16
+    m_Right: 16
+    m_Top: 48
+    m_Bottom: 16
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
@@ -307,6 +309,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 1
   m_VerticalFit: 1
+--- !u!222 &4777805551543844477
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3947513321882578129}
+  m_CullTransparentMesh: 1
+--- !u!114 &4964884753371448568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3947513321882578129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.2544945, g: 0.27868104, b: 0.4056604, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 97587b9f791fb9e44ac4b93732b8f83e, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &5190429290983953332
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +359,7 @@ GameObject:
   - component: {fileID: 2053759473907414859}
   - component: {fileID: 5216227658382994830}
   - component: {fileID: 6655438974885484086}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Text (TMP) (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -475,7 +515,7 @@ GameObject:
   - component: {fileID: 6182197147931147182}
   - component: {fileID: 4902206280202252416}
   - component: {fileID: 178540426115896696}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -613,7 +653,7 @@ GameObject:
   - component: {fileID: 3888224566835751709}
   - component: {fileID: 2254522746111017450}
   - component: {fileID: 246807025501957917}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Image (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -638,7 +678,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 222, y: -122}
+  m_AnchoredPosition: {x: 238, y: -138}
   m_SizeDelta: {x: 444, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5830986856351424434
@@ -730,7 +770,7 @@ GameObject:
   - component: {fileID: 3839528304591914894}
   - component: {fileID: 8129754852222965064}
   - component: {fileID: 977063245709799888}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: LevelImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}

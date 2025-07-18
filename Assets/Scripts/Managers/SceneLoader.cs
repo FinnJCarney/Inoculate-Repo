@@ -50,6 +50,11 @@ public class SceneLoader : MonoBehaviour
         LoadSceneAdditive("InGameHUD");
     }
 
+    public void LoadBleatManager()
+    {
+        LoadSceneAdditive("BleatScene");
+    }
+
     public void Update()
     {
         if(Input.GetKeyDown(KeyCode.Escape))

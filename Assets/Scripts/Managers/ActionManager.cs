@@ -48,6 +48,10 @@ public class ActionManager : MonoBehaviour
         {
             if (currentActions[i].faction != currentActions[i].actingNode.userInformation.faction)
             {
+                if (currentActions[i].faction == LevelManager.lM.playerAllyFaction)
+                {
+                    TimeManager.tM.AddTimeScale(-0.5f);
+                }
                 currentActions[i].actingNode.performingAction = false;
                 currentActions[i].receivingNode.receivingActions--;
                 currentActions[i].bleat.CancelBleat();
@@ -76,6 +80,10 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].timer < 0f)
             {
+                if (currentActions[i].faction == LevelManager.lM.playerAllyFaction)
+                {
+                    TimeManager.tM.AddTimeScale(-0.5f);
+                }
                 currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].actingNode.userInformation.faction, currentActions[i].actingNode, currentActions[i].actionLayer, currentActions[i].bleat);
                 currentActions[i].actingNode.performingAction = false;
                 currentActions[i].receivingNode.receivingActions--;
@@ -215,7 +223,8 @@ public class ActionManager : MonoBehaviour
         receivingNode.receivingActions++;
 
         MakeNewAction(buttonInfo.type, LayerManager.lM.activeLayer, actingNode, receivingNode);
-        
+
+        TimeManager.tM.AddTimeScale(0.5f);
     }
 
     public void PerformAIAction(int NumOfActions, Faction faction)
