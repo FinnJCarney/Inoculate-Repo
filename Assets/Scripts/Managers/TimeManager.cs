@@ -30,6 +30,7 @@ public class TimeManager : MonoBehaviour
     private void Update()
     {
         Time.timeScale = defaultTimeScale + timeMultiplier;
+        realTimeElapsed += Time.deltaTime / Time.timeScale;
         adjustedDeltaTime = Time.deltaTime * Time.timeScale;
     }
 
@@ -62,4 +63,5 @@ public class TimeManager : MonoBehaviour
     private float defaultTimeScale;
     public float adjustedDeltaTime;
     [SerializeField][Range(0f, 16f)] public float timeMultiplier;
+    public float realTimeElapsed;
 }

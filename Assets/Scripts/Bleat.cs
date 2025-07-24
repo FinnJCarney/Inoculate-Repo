@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class Bleat : MonoBehaviour
 {
+    private void Start()
+    {
+        AudioManager.aM.PlayOneShot(bleatCreated, ScreenPlane.phoneScreen.transform);
+    }
+
     public void SetBleatText(Sprite profImage, string bleater, string text)
     {
         bleaterProfile.sprite = profImage;
@@ -15,6 +20,7 @@ public class Bleat : MonoBehaviour
 
     public void CancelBleat()
     {
+        AudioManager.aM.PlayOneShot(bleatFailed, ScreenPlane.phoneScreen.transform);
         bleatText.text = "Message Deleted";
     }
 
@@ -26,6 +32,8 @@ public class Bleat : MonoBehaviour
         newResponse.bleaterProfile.sprite = respondingNode.NodeImage;
         newResponse.bleaterName.text = respondingNode.NodeName;
         newResponse.bleatText.text = bleatResponses[Mathf.FloorToInt(Random.Range(0, bleatResponses.Length))].Text;
+
+        AudioManager.aM.PlayOneShot(bleatCompleted, ScreenPlane.phoneScreen.transform);
     }
 
     [SerializeField] private Image bleaterProfile;
@@ -36,6 +44,10 @@ public class Bleat : MonoBehaviour
 
     [SerializeField] GameObject ResponsePrefab;
     [SerializeField] Transform responseHolder;
+
+    [SerializeField] AudioClip bleatCreated;
+    [SerializeField] AudioClip bleatCompleted;
+    [SerializeField] AudioClip bleatFailed;
 
 }
 

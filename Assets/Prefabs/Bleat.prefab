@@ -269,6 +269,9 @@ MonoBehaviour:
   ResponsePrefab: {fileID: 1529456886585399201, guid: 11d27f94996d63540b663831fc58a93e,
     type: 3}
   responseHolder: {fileID: 7459404144371670564}
+  bleatCreated: {fileID: 8300000, guid: 2147e8bb2971f1f4faf88baab6cc5804, type: 3}
+  bleatCompleted: {fileID: 8300000, guid: 043bd41a9df6e3b48bbf3c4adfbc704f, type: 3}
+  bleatFailed: {fileID: 8300000, guid: ac3f583c2261b9c44833b104a3cfc2b4, type: 3}
 --- !u!114 &3553178679479263483
 MonoBehaviour:
   m_ObjectHideFlags: 0

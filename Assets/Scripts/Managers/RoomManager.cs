@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviour
@@ -13,9 +14,18 @@ public class RoomManager : MonoBehaviour
     public void AdjustVisualsToGameState(GameState newGameState, float timeForTransition)
     {
         gameState = newGameState;
-        smallScreenPivot.transform.DORotate(smallScreenPivotLocations[newGameState], timeForTransition);
+        //smallScreenPivot.transform.DORotate(smallScreenPivotLocations[newGameState], timeForTransition);
         mainCamera.transform.DORotate(cameraLocations[newGameState].rotation.eulerAngles, timeForTransition);
-        mainCamera.transform.DOMove(cameraLocations[newGameState].position, timeForTransition);
+        DOTween.To(() => idealCamPos, x => idealCamPos = x, cameraLocations[newGameState].position, timeForTransition);
+
+        if(newGameState == GameState.Mission)
+        {
+            smallScreenAnimator.SetTrigger("Reveal");
+        }
+        else
+        {
+            //smallScreenAnimator.SetTrigger("Hide");
+        }
     }
 
     public void LookAtPhone()
@@ -25,17 +35,32 @@ public class RoomManager : MonoBehaviour
         lookingAtPhone = !lookingAtPhone;
         if (lookingAtPhone)
         {
-            phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.33f);
-            mainCamera.transform.DORotate(phoneCamLoc.rotation.eulerAngles, 0.25f);
+            phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.3f);
+            phonePivot.transform.DORotate(new Vector3(270f, 0f, -19.696f), 0.4f);
+            mainCamera.transform.DORotate(phoneCamLoc.rotation.eulerAngles, 0.2f);
             mainCamera.transform.DOMove(phoneCamLoc.position, 0.25f);
+            DOTween.To(() => idealCamPos, x => idealCamPos = x, phoneCamLoc.position, 0.25f);
         }
         else
         {
-            phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.8f);
+            phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.4f);
+            phonePivot.transform.DORotate(new Vector3(355f, 0f, -19.696f), 0.4f);
             AdjustVisualsToGameState(gameState, 0.33f);
         }
     }
-    
+
+    public void Update()
+    {
+        //Vector2 newCamDriftVel = new Vector2(Random.Range(-maxCamDriftSpeed, maxCamDriftSpeed), Random.Range(-maxCamDriftSpeed, maxCamDriftSpeed));
+        //newCamDriftVel += -camDriftPos * Mathf.Pow((camDriftPos.magnitude / camDriftRadius), 3f);
+
+        //camDriftVel += newCamDriftVel;
+        //camDriftPos = Vector2.Max(Vector2.Min(camDriftPos + (camDriftVel * Time.deltaTime), new Vector2(camDriftRadius, camDriftRadius)), new Vector2(-camDriftRadius, -camDriftRadius));
+        float realTime = TimeManager.tM.realTimeElapsed * maxCamDriftSpeed;
+        camDriftPos = new Vector2((Mathf.PerlinNoise(realTime, realTime + 1f) * 2f) - 1f, (Mathf.PerlinNoise(realTime + 1f, realTime) * 2f) - 1f) * camDriftRadius;
+        mainCamera.transform.position = idealCamPos + new Vector3(camDriftPos.x, camDriftPos.y, 0);
+    }
+
     //IEnumerator MoveSmallScreen(GameState newGameState)
     //{
     //    if(smallScreenPivot.transform.rotation.eulerAngles == smallScreenPivotLocations[newGameState])
@@ -52,9 +77,14 @@ public class RoomManager : MonoBehaviour
     //}
 
     [SerializeField] private GameObject smallScreenPivot;
+    [SerializeField] private Animator smallScreenAnimator;
     [SerializeField] SerializableDictionary<GameState, Vector3> smallScreenPivotLocations = new SerializableDictionary<GameState, Vector3>();
 
     [SerializeField] private Camera mainCamera;
+    private Vector3 idealCamPos;
+    private Vector2 camDriftPos;
+    [SerializeField] private float camDriftRadius;
+    [SerializeField] private float maxCamDriftSpeed;
     [SerializeField] SerializableDictionary<GameState, Transform> cameraLocations = new SerializableDictionary<GameState, Transform>();
 
     private bool lookingAtPhone = false;
