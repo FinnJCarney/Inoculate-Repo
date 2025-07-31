@@ -49,6 +49,7 @@ public class LevelManager : MonoBehaviour
         NodeManager.nM.AddNodeFactions();
         HUDManager.hM.SetMenuBounds(levelMap);
         InputManager.iM.SetMCC(mapCamera);
+        LayerManager.lM.SetLayer(startingLayer, allowedLayers);
     }
 
     private void OnDestroy()
@@ -139,6 +140,9 @@ public class LevelManager : MonoBehaviour
 
     [TextArea(5, 5)]
     public string levelMap = "11111\n11111\n11111\n11111\n11111";
+
+    [SerializeField] public connectionLayer allowedLayers;
+    [SerializeField] connectionLayer startingLayer;
 
     [SerializeField] int numOfActionsPerTurn;
 

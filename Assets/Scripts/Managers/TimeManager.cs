@@ -29,7 +29,7 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        Time.timeScale = defaultTimeScale + timeMultiplier;
+        Time.timeScale = defaultTimeScale + Mathf.Sqrt(timeMultiplier);
         realTimeElapsed += Time.deltaTime / Time.timeScale;
         adjustedDeltaTime = Time.deltaTime * Time.timeScale;
     }

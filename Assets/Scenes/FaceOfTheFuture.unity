@@ -502,6 +502,8 @@ MonoBehaviour:
     00011
 
     00001'
+  allowedLayers: 0
+  startingLayer: 1
   numOfActionsPerTurn: 1
   roundTimer: 10
   factionTimers:

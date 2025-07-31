@@ -11,8 +11,15 @@ public class UniversalButton : MonoBehaviour
 
         if (reqMan == RequestedManager.LayerManager)
         {
-            LayerManager.lM.buttonImage = buttonIcon;
-            buttonEvent.AddListener(delegate { LayerManager.lM.ChangeLayer(); });
+            if (LevelManager.lM.allowedLayers != connectionLayer.onlineOffline)
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                LayerManager.lM.buttonImage = buttonIcon;
+                buttonEvent.AddListener(delegate { LayerManager.lM.ChangeLayer(); });
+            }
         }
 
         if (reqMan == RequestedManager.NodeManager)

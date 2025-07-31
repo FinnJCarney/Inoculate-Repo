@@ -101,6 +101,16 @@ public class HUDManager : MonoBehaviour
                 continue;
             }
 
+            if (selectedNode.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && selectedNode.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+            {
+                continue;
+            }
+
+            if (selectedNode.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.userInformation.connectedNodes[selectedNode].type == connectionType.influencedBy)
+            {
+                continue;
+            }
+
             if (connectedNode.userInformation.faction == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;

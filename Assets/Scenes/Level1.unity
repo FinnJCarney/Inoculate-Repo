@@ -136,12 +136,12 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: NodeName
-      value: xx_BlexyWorp_xx
+      value: Biff Craggle
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: syncInfo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -302,7 +302,7 @@ PrefabInstance:
     - target: {fileID: 7559115712013899185, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: m_Name
-      value: xx_BlexyWorp_xx
+      value: Biff Craggle
       objectReference: {fileID: 0}
     - target: {fileID: 7653668461068370184, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -399,10 +399,10 @@ MonoBehaviour:
   tweetsForActions:
     m_keys: 02000000030000000400000005000000
     m_values:
-    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
-    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
-    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
-    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
+    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
+    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
+    - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
+    - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
   levelMap: '00000
 
     01110
@@ -412,6 +412,8 @@ MonoBehaviour:
     01110
 
     00000'
+  allowedLayers: 1
+  startingLayer: 1
   numOfActionsPerTurn: 1
   roundTimer: 5
   factionTimers:
@@ -647,6 +649,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
+      propertyPath: NodeName
+      value: Lester Neuman
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
+      propertyPath: syncInfo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
+        type: 3}
       propertyPath: beliefs.x
       value: 1
       objectReference: {fileID: 0}
@@ -829,7 +841,7 @@ PrefabInstance:
     - target: {fileID: 7559115712013899185, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: m_Name
-      value: ThunderFunk
+      value: Lester Neuman
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -908,12 +920,12 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: NodeName
-      value: Mr Blimps :)
+      value: Jimmy Cranks
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: syncInfo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1114,7 +1126,7 @@ PrefabInstance:
     - target: {fileID: 7559115712013899185, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: m_Name
-      value: Mr Blimps :)
+      value: Jimmy Cranks
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1171,12 +1183,12 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: NodeName
-      value: MCrassle
+      value: Wyatt Boye
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: syncInfo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1387,7 +1399,7 @@ PrefabInstance:
     - target: {fileID: 7559115712013899185, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: m_Name
-      value: MCrassle
+      value: Wyatt Boye
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1420,12 +1432,12 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: NodeName
-      value: KingBling_87
+      value: Jeremy Toost
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: syncInfo
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1616,7 +1628,7 @@ PrefabInstance:
     - target: {fileID: 7559115712013899185, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: m_Name
-      value: KingBling_87
+      value: Jeremy Toost
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1816,7 +1828,7 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: NodeName
-      value: Player
+      value: Chris Craggle
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -1957,7 +1969,7 @@ PrefabInstance:
     - target: {fileID: 7559115712013899185, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: m_Name
-      value: Player
+      value: Chris Craggle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

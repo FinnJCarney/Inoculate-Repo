@@ -38,5 +38,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelSelect.unity
     guid: df832431ae3ffea4d823ed2537d6855b
+  - enabled: 1
+    path: Assets/Scenes/Gemini.unity
+    guid: ee51650261369f64fbb0be3e11f5c0a1
+  - enabled: 1
+    path: Assets/Scenes/LooseScrews.unity
+    guid: 7fa9bdd2d8482004494bba99211268f3
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

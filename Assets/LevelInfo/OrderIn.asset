@@ -21,19 +21,17 @@ MonoBehaviour:
   LevelMoney: 30
   clientColor: {r: 0.4245283, g: 0.14217694, b: 0.3454288, a: 1}
   chatMessages:
-  - Text: Give me more info
+  - Text: What's up?
     clientText: 0
     timeAfterText: 0
-  - Text: oh thank god you responded
+  - Text: 'I ate Chinese food two nights ago, but some of my friends want to have
+      it again tonight. '
     clientText: 1
     timeAfterText: 0
-  - Text: I ate Chinese food like... two nights ago.
+  - Text: That's too RECENT. I DONT want to have it again!
     clientText: 1
     timeAfterText: 0
-  - Text: That's too RECENT. I do NOT want to have it again
-    clientText: 1
-    timeAfterText: 0
-  - Text: And you'd prefer it be Vietnamese instead?
+  - Text: And you'd prefer Vietnamese instead?
     clientText: 0
     timeAfterText: 0
   - Text: Yeah pretty much
@@ -42,7 +40,10 @@ MonoBehaviour:
   - Text: Ok.
     clientText: 0
     timeAfterText: 0
-  - Text: Are you gonna hack my phone
+  - Text: Are you gonna hack my phone :(
+    clientText: 1
+    timeAfterText: 0
+  - Text: Please don't look at my photo gallary
     clientText: 1
     timeAfterText: 0
   - Text: No
@@ -52,19 +53,25 @@ MonoBehaviour:
       the gig, which I'll use just to send texts or make posts.
     clientText: 0
     timeAfterText: 0
-  - Text: You can cut me off anytime if you feel uncomfortable
-    clientText: 0
-    timeAfterText: 0
-  - Text: Ok good lol I don't want you looking at my PENIS
+  - Text: Ok
     clientText: 1
     timeAfterText: 0
-  - Text: same here buddy
+  - Text: Good!
+    clientText: 1
+    timeAfterText: 0
+  - Text: Please don't look at my penis
+    clientText: 1
+    timeAfterText: 0
+  - Text: You have my word
     clientText: 0
     timeAfterText: 0
   - Text: Anymore info?
     clientText: 0
     timeAfterText: 0
-  - Text: Uhhhh there's 7 of us, all in a Group Chat.
+  - Text: Uhhhh
+    clientText: 1
+    timeAfterText: 0
+  - Text: there's 7 of us that you'll need to convince
     clientText: 1
     timeAfterText: 0
   - Text: Some of them don't listen to me much though :( You'll probably need to
@@ -80,5 +87,5 @@ MonoBehaviour:
     clientText: 0
     timeAfterText: 0
   levelsToAdd:
-  - {fileID: 11400000, guid: a98df00c92bb6e745ba76178a26bc948, type: 2}
+  - {fileID: 11400000, guid: 2d1da9f52a625cd458a22a417b48930f, type: 2}
   levelsToRemove: []

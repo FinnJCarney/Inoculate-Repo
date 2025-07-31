@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
   m_Name: Face of the Future
   m_EditorClassIdentifier: 
-  LevelScene: Level3
+  LevelScene: FaceOfTheFuture
   LevelName: Face of the Future
   LevelContact: Riley Proust
   LevelImage: {fileID: -1827791371, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}

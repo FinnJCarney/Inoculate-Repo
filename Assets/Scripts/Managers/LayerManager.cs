@@ -10,6 +10,27 @@ public class LayerManager : MonoBehaviour
         LayerManager.lM = this;
     }
 
+    public void SetLayer(connectionLayer startingLayer, connectionLayer layerOptions)
+    {
+        if(startingLayer == connectionLayer.online)
+        {
+            online = true;
+        }
+        else if(startingLayer == connectionLayer.offline)
+        {
+            online = false;
+        }
+
+        activeLayer = online ? connectionLayer.online : connectionLayer.offline;
+
+        if (buttonImage != null)
+        {
+            buttonImage.sprite = online ? onlineSpr : offlineSpr;
+        }
+
+        VisualsManager.vM.SwapLayer(online);
+    }
+
     public void ChangeLayer()
     {
         online = !online;

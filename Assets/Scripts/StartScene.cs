@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,10 +8,13 @@ public class StartScene : MonoBehaviour
 {
     void Start()
     {
-        
-        SceneManager.LoadScene(1, LoadSceneMode.Additive);
-        SceneManager.LoadScene(2, LoadSceneMode.Additive);
-        SceneManager.LoadScene(3, LoadSceneMode.Additive);
-        SceneManager.UnloadScene(0);
+        foreach(string sceneToLoad in scenesToLoad)
+        {
+            SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Additive);
+        }
+        //SceneManager.SetActiveScene(SceneManager.GetSceneByName("Environment_Room"));
+        SceneManager.UnloadSceneAsync("StartScene");
     }
+
+    [SerializeField] string[] scenesToLoad;
 }

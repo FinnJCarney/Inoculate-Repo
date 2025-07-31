@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
+  m_Name: LooseScrews
+  m_EditorClassIdentifier: 
+  LevelScene: LooseScrews
+  LevelName: LooseScrews
+  LevelContact: Tina
+  LevelImage: {fileID: 491592820, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}
+  LevelDescription: Make our parents take us to the Loose Screws concert!
+  LevelGameMode: 2
+  LevelMoney: 125
+  clientColor: {r: 0.16064437, g: 0.3584906, b: 0.22076502, a: 1}
+  chatMessages:
+  - Text: Make them take me and my friends to Loose Screws!
+    clientText: 1
+    timeAfterText: 0
+  levelsToAdd:
+  - {fileID: 11400000, guid: bf3b3245feefced47b62af74a996fadb, type: 2}
+  levelsToRemove: []

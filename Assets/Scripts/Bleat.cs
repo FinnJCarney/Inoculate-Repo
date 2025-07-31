@@ -33,7 +33,7 @@ public class Bleat : MonoBehaviour
         newResponse.bleaterName.text = respondingNode.NodeName;
         newResponse.bleatText.text = bleatResponses[Mathf.FloorToInt(Random.Range(0, bleatResponses.Length))].Text;
 
-        AudioManager.aM.PlayOneShot(bleatCompleted, ScreenPlane.phoneScreen.transform);
+        //AudioManager.aM.PlayOneShot(bleatCompleted, ScreenPlane.phoneScreen.transform);
     }
 
     [SerializeField] private Image bleaterProfile;

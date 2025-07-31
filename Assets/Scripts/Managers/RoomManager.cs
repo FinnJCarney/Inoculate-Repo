@@ -11,6 +11,11 @@ public class RoomManager : MonoBehaviour
         rM = this;
     }
 
+    private void Start()
+    {
+        SceneManager.SetActiveScene(this.gameObject.scene);
+    }
+
     public void AdjustVisualsToGameState(GameState newGameState, float timeForTransition)
     {
         gameState = newGameState;
@@ -20,11 +25,12 @@ public class RoomManager : MonoBehaviour
 
         if(newGameState == GameState.Mission)
         {
-            smallScreenAnimator.SetTrigger("Reveal");
+            smallScreenAnimator.SetInteger("RevealOrHide", 2);
         }
         else
         {
-            //smallScreenAnimator.SetTrigger("Hide");
+            Debug.Log("Is this being called");
+            smallScreenAnimator.SetInteger("RevealOrHide", 1);
         }
     }
 
@@ -47,6 +53,11 @@ public class RoomManager : MonoBehaviour
             phonePivot.transform.DORotate(new Vector3(355f, 0f, -19.696f), 0.4f);
             AdjustVisualsToGameState(gameState, 0.33f);
         }
+    }
+
+    public void AdjustDonutHolder(int newNumOfActions)
+    {
+        donutHolder.UpdateDonuts(newNumOfActions);
     }
 
     public void Update()
@@ -94,4 +105,6 @@ public class RoomManager : MonoBehaviour
 
     public static RoomManager rM;
     private GameState gameState;
+
+    [SerializeField] DonutHolder donutHolder;
 }

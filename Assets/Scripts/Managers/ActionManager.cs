@@ -1,9 +1,6 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class ActionManager : MonoBehaviour
@@ -35,6 +32,9 @@ public class ActionManager : MonoBehaviour
             Destroy(currentActions[i].actionRing);
             currentActions.Remove(currentActions[i]);
         }
+
+        numOfPlayerActions = 0;
+        RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
     private void Start()
@@ -50,7 +50,9 @@ public class ActionManager : MonoBehaviour
             {
                 if (currentActions[i].faction == LevelManager.lM.playerAllyFaction)
                 {
-                    TimeManager.tM.AddTimeScale(-0.5f);
+                    TimeManager.tM.AddTimeScale(-0.75f);
+                    numOfPlayerActions--;
+                    RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
                 }
                 currentActions[i].actingNode.performingAction = false;
                 currentActions[i].receivingNode.receivingActions--;
@@ -65,14 +67,28 @@ public class ActionManager : MonoBehaviour
             adjustedCurAction.timer -= tm.adjustedDeltaTime;
             currentActions[i] = adjustedCurAction;
 
-            if ((currentActions[i].faction == LevelManager.lM.playerAllyFaction || currentActions[i].receivingNode.userInformation.faction == LevelManager.lM.playerAllyFaction || currentActions[i].actingNode.showMenu || currentActions[i].receivingNode.showMenu) && LayerManager.lM.activeLayer == currentActions[i].actionLayer)
-            {
+            //Old functionality
+            //if ((currentActions[i].faction == LevelManager.lM.playerAllyFaction || currentActions[i].receivingNode.userInformation.faction == LevelManager.lM.playerAllyFaction || currentActions[i].actingNode.showMenu || currentActions[i].receivingNode.showMenu) && LayerManager.lM.activeLayer == currentActions[i].actionLayer)
+            //{
+            //
+            //    currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
+            //}
+            //else
+            //{
+            //    currentActions[i].actionLine.SyncLine(0, currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
+            //}
 
-                currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
-            }
-            else
+            if (!currentActions[i].receivingNode.userInformation.userInfoHidden)
             {
-                currentActions[i].actionLine.SyncLine(0, currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
+                if (LayerManager.lM.activeLayer == currentActions[i].actionLayer)
+                {
+
+                    currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, false);
+                }
+                else
+                {
+                    currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position, true);
+                }
             }
 
             SetActionRing(currentActions[i].actionRing, (currentActions[i].timerMax - currentActions[i].timer) / currentActions[i].timerMax, currentActions[i].faction);
@@ -82,7 +98,9 @@ public class ActionManager : MonoBehaviour
             {
                 if (currentActions[i].faction == LevelManager.lM.playerAllyFaction)
                 {
-                    TimeManager.tM.AddTimeScale(-0.5f);
+                    TimeManager.tM.AddTimeScale(-0.75f);
+                    numOfPlayerActions--;
+                    RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
                 }
                 currentActions[i].receivingNode.ActionResult(currentActions[i].actionType, currentActions[i].actingNode.userInformation.faction, currentActions[i].actingNode, currentActions[i].actionLayer, currentActions[i].bleat);
                 currentActions[i].actingNode.performingAction = false;
@@ -136,7 +154,12 @@ public class ActionManager : MonoBehaviour
                     connectedNode.nodePrio -= 1000;
                 }
 
-                foreach(Node cNCN in connectedNode.userInformation.connectedNodes.Keys)
+                if (receivingNode.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+                {
+                    connectedNode.nodePrio -= 1000;
+                }
+
+                foreach (Node cNCN in connectedNode.userInformation.connectedNodes.Keys)
                 {
                     if (connectedNode.userInformation.connectedNodes[cNCN].type == connectionType.influencedBy)
                     {
@@ -224,7 +247,10 @@ public class ActionManager : MonoBehaviour
 
         MakeNewAction(buttonInfo.type, LayerManager.lM.activeLayer, actingNode, receivingNode);
 
-        TimeManager.tM.AddTimeScale(0.5f);
+        TimeManager.tM.AddTimeScale(0.75f);
+
+        numOfPlayerActions++;
+        RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
     public void PerformAIAction(int NumOfActions, Faction faction)
@@ -544,7 +570,7 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.faction = actingNode.userInformation.faction;
         newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine, this.transform).GetComponent<ActionLine>();
         newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
-        newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position);
+        newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position, actionLayer != LayerManager.lM.activeLayer);
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
         newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
         newCurrentAction.bleat = TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[newActionType], actingNode.userInformation, receivingNode.userInformation, newCurrentAction.faction);
@@ -584,6 +610,11 @@ public class ActionManager : MonoBehaviour
                     newPossibleAction.score += 3f;
                 }
 
+                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < 1.45f)
+                {
+                    newPossibleAction.score += 5f;
+                }
+
                 foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
                 {
                     if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), cNConnectedNode.userInformation.beliefs) < 1.45f)
@@ -619,6 +650,11 @@ public class ActionManager : MonoBehaviour
             if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, factionPos) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, factionPos)) //If distance between receiving node and faction center is closer due to action
             {
                 newPossibleAction.score += 2f;
+            }
+
+            if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), actingNode.userInformation.beliefs) < 1.45f)
+            {
+                newPossibleAction.score += 4f;
             }
 
             foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
@@ -753,6 +789,7 @@ public class ActionManager : MonoBehaviour
         return possiblePaths[endingPos].Count;
     }
 
+    private int numOfPlayerActions = 0;
 
     [SerializeField] public List<CurrentAction> currentActions = new List<CurrentAction>();
     [SerializeField] public List<Node> previousNodes = new List<Node>();

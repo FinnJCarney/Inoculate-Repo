@@ -365,7 +365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   adjustedDeltaTime: 0
-  timeMultiplier: 0
+  timeMultiplier: 0.1
   realTimeElapsed: 0
 --- !u!4 &418542473
 Transform:
@@ -439,10 +439,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You have Suceeded, Moderator
+  m_text: 'You have Suceeded, Influencer!
 
 
-    Click to Advance to the Next Level'
+    Click to return to your chat client'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -491,7 +491,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -571,7 +571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5849056, g: 0.03034888, b: 0.03034888, a: 0.30588236}
+  m_Color: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0.59607846}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -843,7 +843,7 @@ MonoBehaviour:
   gameOverCanvasLocalPos: {x: -0.55, y: -10, z: 10}
   LevelsToDisplay:
   - {fileID: 11400000, guid: a814f20f6a616424bb4e257118dc3d3f, type: 2}
-  - {fileID: 11400000, guid: a98df00c92bb6e745ba76178a26bc948, type: 2}
+  - {fileID: 11400000, guid: bf3b3245feefced47b62af74a996fadb, type: 2}
   gameState: 1
 --- !u!1 &1251637672
 GameObject:
@@ -895,7 +895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.10590956, g: 0.109276384, b: 0.26415092, a: 0.30588236}
+  m_Color: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0.59607846}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1051,7 +1051,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'You have Failed, Moderator
+  m_text: 'You have Failed, Influencer
 
 
     Click to Try Again'
@@ -1103,7 +1103,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

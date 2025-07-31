@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 146326e36ff1d534498bec4957a3077f, type: 3}
+  m_Name: Gemini
+  m_EditorClassIdentifier: 
+  LevelScene: Gemini
+  LevelName: Gemini
+  LevelContact: Rea Palor
+  LevelImage: {fileID: -606483910, guid: 0ff7f0168c7178847834ebea5f6de7f4, type: 3}
+  LevelDescription: The Von Sons have broken up, help me get them back together?
+  LevelGameMode: 1
+  LevelMoney: 125
+  clientColor: {r: 0.16064437, g: 0.3584906, b: 0.22076502, a: 1}
+  chatMessages:
+  - Text: Give me more info
+    clientText: 0
+    timeAfterText: 0
+  - Text: omg thank you
+    clientText: 1
+    timeAfterText: 0
+  - Text: theyre the hosts of this truly dogshit podcast
+    clientText: 1
+    timeAfterText: 0
+  - Text: mostly they just talk about which female celebrities they think are ugly
+    clientText: 1
+    timeAfterText: 0
+  - Text: and they're actual brothers which makes it worse???
+    clientText: 1
+    timeAfterText: 0
+  - Text: anyways
+    clientText: 1
+    timeAfterText: 0
+  - Text: I couldnt give a shit about them as people
+    clientText: 1
+    timeAfterText: 0
+  - Text: BUT
+    clientText: 1
+    timeAfterText: 0
+  - Text: I am their podcast editor
+    clientText: 1
+    timeAfterText: 0
+  - Text: So they pay my bills
+    clientText: 1
+    timeAfterText: 0
+  - Text: And I would like money
+    clientText: 1
+    timeAfterText: 0
+  - Text: Valid so far
+    clientText: 0
+    timeAfterText: 0
+  - Text: 'Why''d they break up? '
+    clientText: 0
+    timeAfterText: 0
+  - Text: turns out the "Sonz" don't agree about whether abortion is good or not
+    clientText: 1
+    timeAfterText: 0
+  - Text: both of their rationales are terrible
+    clientText: 1
+    timeAfterText: 0
+  - Text: obvi
+    clientText: 1
+    timeAfterText: 0
+  - Text: but i don't care
+    clientText: 1
+    timeAfterText: 0
+  - Text: sorry I obvs care about abortion
+    clientText: 1
+    timeAfterText: 0
+  - Text: I just don't care about them
+    clientText: 1
+    timeAfterText: 0
+  - Text: or their opinions
+    clientText: 1
+    timeAfterText: 0
+  - Text: 're: abortion'
+    clientText: 1
+    timeAfterText: 0
+  - Text: Just convince them to get along again?
+    clientText: 1
+    timeAfterText: 0
+  - Text: or that'd it be great podcast content to argue about it every week
+    clientText: 1
+    timeAfterText: 0
+  - Text: again I really don't care
+    clientText: 1
+    timeAfterText: 0
+  - Text: I would just like to pay my rent this month
+    clientText: 1
+    timeAfterText: 0
+  - Text: understood Rea. I'll get on it
+    clientText: 0
+    timeAfterText: 0
+  levelsToAdd:
+  - {fileID: 11400000, guid: a98df00c92bb6e745ba76178a26bc948, type: 2}
+  levelsToRemove: []

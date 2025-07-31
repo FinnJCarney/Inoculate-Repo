@@ -39,7 +39,7 @@ public class StateManager : MonoBehaviour
             FailureScreen.SetActive(true);
         }
 
-        TimeManager.tM.SetTimeScale(0.01f);
+        TimeManager.tM.SetTimeScale(0.02f);
     }
 
     private void Update()
@@ -96,6 +96,7 @@ public class StateManager : MonoBehaviour
         SceneLoader.sL.LoadSceneAdditive(levelInfo.LevelScene);
         SceneLoader.sL.LoadSceneAdditive("InGameHUD");
         RoomManager.rM.AdjustVisualsToGameState(gameState, 1.5f);
+        TimeManager.tM.SetTimeScale(0.1f);
     }
 
     public static StateManager sM;

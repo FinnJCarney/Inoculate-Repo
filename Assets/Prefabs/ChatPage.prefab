@@ -720,6 +720,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonBack: {fileID: 3827821414058169061}
+  buttonIcon: {fileID: 0}
   reqMan: 0
   unhoveredColor: {r: 0.30980393, g: 0.09411765, b: 0.105882354, a: 1}
   hoverColor: {r: 0.49056602, g: 0.15966536, b: 0.17771447, a: 1}
@@ -850,7 +851,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonBack: {fileID: 8947215834888383075}
-  reqMan: 4
+  buttonIcon: {fileID: 0}
+  reqMan: 6
   unhoveredColor: {r: 0.147793, g: 0.30980393, b: 0.094117634, a: 1}
   hoverColor: {r: 0.23307471, g: 0.46226418, b: 0.1548149, a: 1}
   buttonEvent:

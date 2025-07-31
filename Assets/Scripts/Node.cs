@@ -150,7 +150,7 @@ public class Node : MonoBehaviour
             }
             else
             {
-                float amountThrough = Mathf.Sqrt((Time.time / Time.timeScale) % 1.5f);
+                float amountThrough = Mathf.Sqrt(Time.unscaledTime % 2f);
                 allowanceRing.color = Color.Lerp(factionColor, Color.clear, amountThrough);
                 allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
                 allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
