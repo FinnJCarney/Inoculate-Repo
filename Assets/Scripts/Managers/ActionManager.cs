@@ -154,7 +154,7 @@ public class ActionManager : MonoBehaviour
                     connectedNode.nodePrio -= 1000;
                 }
 
-                if (receivingNode.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+                if (receivingNode.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && receivingNode.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
                 {
                     connectedNode.nodePrio -= 1000;
                 }
