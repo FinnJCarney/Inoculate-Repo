@@ -843,7 +843,6 @@ MonoBehaviour:
   gameOverCanvasLocalPos: {x: -0.55, y: -10, z: 10}
   LevelsToDisplay:
   - {fileID: 11400000, guid: a814f20f6a616424bb4e257118dc3d3f, type: 2}
-  - {fileID: 11400000, guid: bf3b3245feefced47b62af74a996fadb, type: 2}
   gameState: 1
 --- !u!1 &1251637672
 GameObject:
