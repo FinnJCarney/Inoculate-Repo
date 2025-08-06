@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class LayerManager : MonoBehaviour
 {
-    private void Start()
+    private void Awake()
     {
         LayerManager.lM = this;
     }

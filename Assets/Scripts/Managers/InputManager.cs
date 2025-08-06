@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 public class InputManager : MonoBehaviour
 {
 
-    private void Start()
+    private void Awake()
     {
         iM = this;
     }

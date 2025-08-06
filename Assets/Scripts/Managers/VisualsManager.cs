@@ -11,7 +11,7 @@ using Unity.Mathematics;
 public class VisualsManager : MonoBehaviour
 {
 
-    private void Start()
+    private void Awake()
     {
         vM = this;
 

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.ShaderData;
 
 public class NodeManager : MonoBehaviour
 {
@@ -48,6 +50,7 @@ public class NodeManager : MonoBehaviour
 
         CheckNodeConnections();
         CheckNodeAbilities();
+        UpdateLinePositions();
         DrawNodeConnectionLines();
         ManageGameMode(LevelManager.lM.gameMode);
     }
@@ -59,7 +62,7 @@ public class NodeManager : MonoBehaviour
             return;
         }
 
-        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 0.9f)
+        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 12f)
         {
             StateManager.sM.GameOver(false);
             return;
@@ -167,7 +170,7 @@ public class NodeManager : MonoBehaviour
                             continue;
                         }
 
-                        if (node.userInformation.faction == connectedNode.userInformation.faction && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
+                        if (node.userInformation.faction == connectedNode.userInformation.faction)
                         {
                             if(line.lineFaction != node.userInformation.faction)
                             {
@@ -227,7 +230,7 @@ public class NodeManager : MonoBehaviour
                     newLine.connectedNodes = connectedNodes;
                     newLine.arrows = new List<GameObject>();
 
-                    if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral && Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
+                    if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral)
                     {
                         newLine.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
                         newLine.lineFaction = node.userInformation.faction;
@@ -271,6 +274,15 @@ public class NodeManager : MonoBehaviour
                     lines.Add(newLine);
                 }
             }
+        }
+    }
+
+    private void UpdateLinePositions()
+    {
+        foreach(Line line in lines)
+        {
+            line.lineR.SetPosition(0, line.connectedNodes[0].transform.position - (Vector3.up * 0.25f));
+            line.lineR.SetPosition(1, line.connectedNodes[1].transform.position - (Vector3.up * 0.25f));
         }
     }
 
@@ -343,7 +355,6 @@ public class NodeManager : MonoBehaviour
                 else
                 {
                     node.userInformation.faction = node.userInformation.instigator;
-                    nodeFactions[node.userInformation.faction].Add(node);
 
                     continue;
                 }
@@ -355,11 +366,9 @@ public class NodeManager : MonoBehaviour
                 continue;
             }
 
-            List<Node> alliedNodes = new List<Node>();
-
             foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
             {
-                if(!connectedNode.userInformation.connectedNodes.ContainsKey(node))
+                if (!connectedNode.userInformation.connectedNodes.ContainsKey(node))
                 {
                     Debug.LogWarning(node + "is not properly connected to " + connectedNode);
                     continue;
@@ -379,50 +388,33 @@ public class NodeManager : MonoBehaviour
                         continue;
                     }
                 }
+            }
 
-                if (connectedNode.userInformation.faction != Faction.Neutral && Vector2.Distance(connectedNode.userInformation.beliefs, node.userInformation.beliefs) < 1.1f)
+            List<Faction> possibleAlliedFactions = new List<Faction>();
+
+            foreach (Faction lFac in LevelManager.lM.levelFactions.Keys)
+            {
+                if (lFac != Faction.Neutral && Vector2.Distance(node.userInformation.beliefs, LevelManager.lM.levelFactions[lFac].position) < 12.1f)
                 {
-                    alliedNodes.Add(connectedNode);
+                    possibleAlliedFactions.Add(lFac);
                 }
             }
 
-            Faction possibleAlliedFaction = Faction.None;
+            Faction possibleAlliedFaction = Faction.Neutral;
 
-            if (alliedNodes.Count > 0)
+            if (possibleAlliedFactions.Count == 1)
             {
-                foreach (Node alliedNode in alliedNodes)
-                {
-                    if (alliedNode.userInformation.faction == Faction.Neutral)
-                    {
-                        continue;
-                    }
-
-                    if (possibleAlliedFaction == Faction.None)
-                    {
-                        possibleAlliedFaction = alliedNode.userInformation.faction;
-                        continue;
-                    }
-
-                    if(possibleAlliedFaction != alliedNode.userInformation.faction)
-                    {
-                        possibleAlliedFaction = Faction.Neutral;
-                        break;
-                    }
-                }
+                possibleAlliedFaction = possibleAlliedFactions[0];
             }
 
-            if (possibleAlliedFaction == Faction.None)
-            {
-                possibleAlliedFaction = Faction.Neutral;
-            }
 
-            else if (possibleAlliedFaction != Faction.Neutral)
-            {
-                if (!CheckIfConnectedToInstigator(node, possibleAlliedFaction))
-                {
-                    possibleAlliedFaction = Faction.Neutral;
-                }
-            }
+            //else if (possibleAlliedFaction != Faction.Neutral)
+            //{
+            //    if (!CheckIfConnectedToInstigator(node, possibleAlliedFaction))
+            //    {
+            //        possibleAlliedFaction = Faction.Neutral;
+            //    }
+            //}
 
             node.userInformation.faction = possibleAlliedFaction;
             nodeFactions[possibleAlliedFaction].Add(node);
@@ -440,7 +432,12 @@ public class NodeManager : MonoBehaviour
 
         foreach(Node connectedNode in node.userInformation.connectedNodes.Keys)
         {
-            if (Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 1.1f)
+            if (node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy)
+            {
+                continue;
+            }
+
+            if (Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs) < 12.1f)
             {
                 nodesToCheck.Add(connectedNode);
             }
@@ -459,7 +456,7 @@ public class NodeManager : MonoBehaviour
                 factionBeliefCheck.x = factionBeliefCheck.x == 3 ? nodesToCheck[i].userInformation.beliefs.x : factionBeliefCheck.x;
                 factionBeliefCheck.y = factionBeliefCheck.y == 3 ? nodesToCheck[i].userInformation.beliefs.y : factionBeliefCheck.y;
 
-                if (Vector2.Distance(nodesToCheck[i].userInformation.beliefs, factionBeliefCheck) > 0.9f)
+                if (Vector2.Distance(nodesToCheck[i].userInformation.beliefs, factionBeliefCheck) > 12f)
                 {
                     return false;
                 }
@@ -473,7 +470,7 @@ public class NodeManager : MonoBehaviour
 
             foreach(Node nodeToAdd in nodesToCheck[i].userInformation.connectedNodes.Keys)
             {
-                if(!nodesChecked.Contains(nodeToAdd) && Vector2.Distance(nodesToCheck[i].userInformation.beliefs, nodeToAdd.userInformation.beliefs) < 1.1f)
+                if(!nodesChecked.Contains(nodeToAdd) && Vector2.Distance(nodesToCheck[i].userInformation.beliefs, nodeToAdd.userInformation.beliefs) < 12.1f)
                 {
                     nodesToCheck.Add(nodeToAdd);
                 }

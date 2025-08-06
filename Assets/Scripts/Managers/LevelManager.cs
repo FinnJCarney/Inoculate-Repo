@@ -46,6 +46,8 @@ public class LevelManager : MonoBehaviour
             levelFactions[factionIndexes[i]] = adjustedLevelFaction;
         }
 
+        AssembleValidSpaces();
+
         NodeManager.nM.AddNodeFactions();
         HUDManager.hM.SetMenuBounds(levelMap);
         InputManager.iM.SetMCC(mapCamera);
@@ -127,6 +129,31 @@ public class LevelManager : MonoBehaviour
         return levelFactions[faction].lineMaterial;
     }
 
+    private void AssembleValidSpaces()
+    {
+        List<GridMarker> gridMarkers = new List<GridMarker>();
+        gridMarkers.AddRange(GetComponentsInChildren<GridMarker>());
+
+        foreach(GridMarker gridMarker in gridMarkers)
+        {
+            validSpaces.Add(new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z)));
+        }
+
+        for (int i = gridMarkers.Count - 1; i >= 0; i--)
+        {
+            GridMarker gridMarker = gridMarkers[i];
+
+            validSpaces.Add(new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z)));
+
+            Destroy(gridMarker.gameObject);
+        }
+    }
+
+    public bool CheckValidSpace(Vector2 spotToCheck)
+    {
+        return validSpaces.Contains(spotToCheck);
+    }
+
     [SerializeField] public LevelInfo levelInfo;
 
     public Node playerNode;
@@ -156,6 +183,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] public MapCameraController mapCamera;
 
     [SerializeField] private Material defaultParticleMaterial;
+
+    private List<Vector2> validSpaces = new List<Vector2>();
 
 
 

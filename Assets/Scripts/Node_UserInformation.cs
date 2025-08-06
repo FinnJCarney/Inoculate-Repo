@@ -10,6 +10,8 @@ public class Node_UserInformation : MonoBehaviour
 {
     private void Update()
     {
+        beliefs = new Vector2(Mathf.Round(this.transform.position.x), Mathf.Round(this.transform.position.z));
+
         if(syncInfo)
         {
             if(NodeName == "")

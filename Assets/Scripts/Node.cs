@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -109,13 +110,14 @@ public class Node : MonoBehaviour
 
         if (hasAllyNeighbourAvail)
         {
-            hasUpNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.up);
+            Vector2 movement = new Vector2(12f, 12f);
+            hasUpNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0, 12f));
 
-            hasDownNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.down);
+            hasDownNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0, -12f));
 
-            hasRightNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.right);
+            hasRightNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + (Vector2.right * movement));
 
-            hasLeftNeighbourAvail = HUDManager.hM.IsSpaceValid(userInformation.beliefs + Vector2.left);
+            hasLeftNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + (Vector2.left * movement));
         }
 
         but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);
@@ -172,6 +174,7 @@ public class Node : MonoBehaviour
         accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
     }
 
+
     public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer, Bleat bleat)
     {
         bool actionSuccessful = false;
@@ -193,51 +196,70 @@ public class Node : MonoBehaviour
                 return;
             }
 
-            if (actingLayer == connectionLayer.offline)
+            //if (actingLayer == connectionLayer.offline)
+            //{
+            //    if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
+            //    {
+            //        userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
+            //        actionSuccessful = true;
+            //    }
+            //    else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+            //    {
+            //        userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+            //        actionSuccessful = true;
+            //    }
+            //}
+            //else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+            //{
+            //    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+            //    actionSuccessful = true;
+            //}
+
+            if (aT == ActionType.Right)
             {
-                if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
-                {
-                    userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
-                    actionSuccessful = true;
-                }
-                else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-                {
-                    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-                    actionSuccessful = true;
-                }
+                transform.DOLocalMove(this.transform.position + new Vector3(12f, 0f, 0f), 1f);
             }
-            else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+            else
             {
-                userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-                actionSuccessful = true;
+                transform.DOLocalMove(this.transform.position + new Vector3(-12f, 0f, 0f), 1f);
             }
         }
 
-        if (aT == ActionType.Up || aT == ActionType.Down)
-        {
-            if (userInformation.misinformerVert)
+            if (aT == ActionType.Up || aT == ActionType.Down)
             {
-                return;
+                if (userInformation.misinformerVert)
+                {
+                    return;
+                }
+
+                //if (actingLayer == connectionLayer.offline)
+                //{
+                //    if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
+                //    {
+                //        userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
+                //        actionSuccessful = true;
+                //    }
+                //    else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+                //    {
+                //        userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                //        actionSuccessful = true;
+                //    }
+                //}
+                //else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
+                //{
+                //    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
+                //    actionSuccessful = true;
+                //}
+
+            if (aT == ActionType.Up)
+            {
+                transform.DOLocalMove(this.transform.position + new Vector3(0f, 0f, 12f), 1f);
+            }
+            else
+            {
+                transform.DOLocalMove(this.transform.position + new Vector3(0f, 0f, -12f), 1f);
             }
 
-            if (actingLayer == connectionLayer.offline)
-            {
-                if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
-                {
-                    userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
-                    actionSuccessful = true;
-                }
-                else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-                {
-                    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-                    actionSuccessful = true;
-                }
-            }
-            else if(HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-            {
-                userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-                actionSuccessful = true;
-            }
         }
 
         if (aT == ActionType.Connect)
@@ -303,7 +325,6 @@ public class Node : MonoBehaviour
         }
         //Buttons.SetActive(show);
     }
-
     [HideInInspector] public Node_UserInformation userInformation;
     [HideInInspector] public Node_PoliticalAxes politicalAxes;
 
@@ -340,6 +361,6 @@ public class Node : MonoBehaviour
 
     [SerializeField] public SpriteRenderer nodeVisual;
 
-    [SerializeField] SpriteRenderer accessRing;
-    [SerializeField] SpriteRenderer allowanceRing;
+    [SerializeField] private SpriteRenderer accessRing;
+    [SerializeField] private SpriteRenderer allowanceRing;
 }
