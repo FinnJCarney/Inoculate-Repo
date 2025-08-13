@@ -29,7 +29,7 @@ public class Node : MonoBehaviour
 
         actionPitch = Random.Range(1.25f, 1.5f);
 
-        if(!HUDManager.hM.IsSpaceValid(userInformation.beliefs))
+        if(!LevelManager.lM.CheckValidSpace(userInformation.beliefs))
         {
             Debug.Log(userInformation.name + " has an invalid starting position");
         }
@@ -217,11 +217,19 @@ public class Node : MonoBehaviour
 
             if (aT == ActionType.Right)
             {
-                transform.DOLocalMove(this.transform.position + new Vector3(12f, 0f, 0f), 1f);
+                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(12f, 0f)))
+                {
+                    userInformation.beliefs += new Vector2(12f, 0f);
+                    actionSuccessful = true;
+                }
             }
             else
             {
-                transform.DOLocalMove(this.transform.position + new Vector3(-12f, 0f, 0f), 1f);
+                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(-12f, 0f)))
+                {
+                    userInformation.beliefs += new Vector2(-12f, 0f);
+                    actionSuccessful = true;
+                }
             }
         }
 
@@ -253,11 +261,19 @@ public class Node : MonoBehaviour
 
             if (aT == ActionType.Up)
             {
-                transform.DOLocalMove(this.transform.position + new Vector3(0f, 0f, 12f), 1f);
+                if(LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, 12f)))
+                {
+                    userInformation.beliefs += new Vector2(0f, 12f);
+                    actionSuccessful = true;
+                }
             }
             else
             {
-                transform.DOLocalMove(this.transform.position + new Vector3(0f, 0f, -12f), 1f);
+                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, -12f)))
+                {
+                    userInformation.beliefs += new Vector2(0f, -12f);
+                    actionSuccessful = true;
+                }
             }
 
         }

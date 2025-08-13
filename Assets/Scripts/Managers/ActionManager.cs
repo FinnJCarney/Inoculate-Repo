@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 
@@ -91,7 +92,7 @@ public class ActionManager : MonoBehaviour
                 }
             }
 
-            SetActionRing(currentActions[i].actionRing, (currentActions[i].timerMax - currentActions[i].timer) / currentActions[i].timerMax, currentActions[i].faction);
+            SetActionRing(currentActions[i].actionRing, (currentActions[i].timerMax - currentActions[i].timer) / currentActions[i].timerMax, currentActions[i].faction, currentActions[i].receivingNode.transform.position);
             currentActions[i].receivingNode.SetActionAudio((currentActions[i].timerMax - currentActions[i].timer) / currentActions[i].timerMax);
 
             if (currentActions[i].timer < 0f)
@@ -113,8 +114,10 @@ public class ActionManager : MonoBehaviour
         }
     }
 
-    private void SetActionRing(GameObject actionRing, float amountThrough, Faction faction)
+    private void SetActionRing(GameObject actionRing, float amountThrough, Faction faction, Vector3 nodePosition)
     {
+        actionRing.transform.position = nodePosition;
+
         actionRing.transform.localScale = Vector3.Lerp(outerActionRingScale, new Vector3(0.1f, 0.1f, 0.1f), amountThrough);
         
         Color idealColor = Color.clear;
@@ -124,7 +127,10 @@ public class ActionManager : MonoBehaviour
         actionRing.GetComponent<SpriteRenderer>().color = Color.Lerp(Color.clear, idealColor, amountThrough);
     }
 
+    public void NewPerformButtonAction(ActionType aT, Node_UserInformation receivingNode)
+    {
 
+    }
 
     public void PerformButtonAction(UserButton buttonInfo)
     {
@@ -282,7 +288,7 @@ public class ActionManager : MonoBehaviour
             float ideologicalDistance = 0;
 
 
-            ideologicalDistance = Vector2.Distance(averagePos, LevelManager.lM.levelFactions[faction].position);
+            ideologicalDistance = Vector2.Distance(averagePos, LevelManager.lM.levelFactions[faction].mainPosition);
 
             //Acting on "Inoculate"
             if (ideologicalDistance > 100) //Ignoring this for now
@@ -305,7 +311,7 @@ public class ActionManager : MonoBehaviour
                         float proximityValue = (0.1f / Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs)) + 0.1f;
                         float strategicValue = 0;
 
-                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
+                        if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.up))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Up;
@@ -332,7 +338,7 @@ public class ActionManager : MonoBehaviour
                             }
 
                             //Temp version of "Value add for move also pulling node towards factions ideological center"
-                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
                             {
                                 strategicValue += 2f;
                             }
@@ -342,7 +348,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
+                        if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.down))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Down;
@@ -369,7 +375,7 @@ public class ActionManager : MonoBehaviour
                             }
 
                             //Temp version of "Value add for move also pulling node towards factions ideological center"
-                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
                             {
                                 strategicValue += 2f;
                             }
@@ -379,7 +385,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
+                        if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.right))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Right;
@@ -405,7 +411,7 @@ public class ActionManager : MonoBehaviour
                                 }
                             }
 
-                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
                             {
                                 strategicValue += 2f;
                             }
@@ -415,7 +421,7 @@ public class ActionManager : MonoBehaviour
                             possibleActions.Add(newPossibleAction);
                         }
 
-                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
+                        if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.left))
                         {
                             PossibleAction newPossibleAction = new PossibleAction();
                             newPossibleAction.actionType = ActionType.Left;
@@ -441,7 +447,7 @@ public class ActionManager : MonoBehaviour
                                 }
                             }
 
-                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, LevelManager.lM.levelFactions[faction].position) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].position))
+                            if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
                             {
                                 strategicValue += 2f;
                             }
@@ -458,6 +464,7 @@ public class ActionManager : MonoBehaviour
             //Acting on "Expand"
             else
             {
+                Vector2 movement = new Vector2(12f, 12f);
                 Debug.Log("Performing Expand action for " + faction);
                 foreach (Node node in possibleActingNodes)
                 {
@@ -483,7 +490,7 @@ public class ActionManager : MonoBehaviour
                             continue;
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.up))
+                        if (LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + (Vector2.up * movement)))
                         {
                             if(node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -495,7 +502,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.down))
+                        if (LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + (Vector2.down * movement)))
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -507,7 +514,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.right))
+                        if (LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + (Vector2.right * movement)))
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -519,7 +526,7 @@ public class ActionManager : MonoBehaviour
                             }
                         }
 
-                        if (HUDManager.hM.IsSpaceValid(connectedNode.userInformation.beliefs + Vector2.left))
+                        if (LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + (Vector2.left * movement)))
                         {
                             if (node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.online || node.userInformation.connectedNodes[connectedNode].layer == connectionLayer.onlineOffline)
                             {
@@ -574,7 +581,7 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
         newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
         newCurrentAction.bleat = TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[newActionType], actingNode.userInformation, receivingNode.userInformation, newCurrentAction.faction);
-        SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction);
+        SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction, receivingNode.transform.position);
         currentActions.Add(newCurrentAction);
 
         Debug.Log("Performing action type " + newActionType + " for faction " + newCurrentAction.faction + ", from " + actingNode + " to " + receivingNode);
@@ -588,7 +595,7 @@ public class ActionManager : MonoBehaviour
         newPossibleAction.receivingNode = receivingNode;
         newPossibleAction.actionLayer = actionLayer;
 
-        Vector2 factionPos = LevelManager.lM.levelFactions[actingNode.userInformation.faction].position;
+        Vector2 factionPos = LevelManager.lM.levelFactions[actingNode.userInformation.faction].mainPosition;
         factionPos.x = factionPos.x == 3 ? receivingNode.userInformation.beliefs.x : factionPos.x;
         factionPos.y = factionPos.y == 3 ? receivingNode.userInformation.beliefs.y : factionPos.y;
 
@@ -598,7 +605,7 @@ public class ActionManager : MonoBehaviour
         {
             newPossibleAction.score -= 1f;
 
-            if (HUDManager.hM.IsSpaceValid(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
+            if (LevelManager.lM.CheckValidSpace(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
             {
                 if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
                 {
@@ -610,14 +617,14 @@ public class ActionManager : MonoBehaviour
                     newPossibleAction.score += 3f;
                 }
 
-                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < 1.45f)
+                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < 12.1f)
                 {
                     newPossibleAction.score += 5f;
                 }
 
                 foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
                 {
-                    if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), cNConnectedNode.userInformation.beliefs) < 1.45f)
+                    if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), cNConnectedNode.userInformation.beliefs) < 12.1f)
                     {
                         if (cNConnectedNode.userInformation.faction == Faction.Neutral)
                         {
@@ -652,14 +659,14 @@ public class ActionManager : MonoBehaviour
                 newPossibleAction.score += 2f;
             }
 
-            if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), actingNode.userInformation.beliefs) < 1.45f)
+            if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), actingNode.userInformation.beliefs) < 12.1f)
             {
                 newPossibleAction.score += 4f;
             }
 
             foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
             {
-                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), cNConnectedNode.userInformation.beliefs) < 1.45f)
+                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), cNConnectedNode.userInformation.beliefs) < 12.1f)
                 {
                     if (cNConnectedNode.userInformation.faction == Faction.Neutral)
                     {
@@ -691,7 +698,7 @@ public class ActionManager : MonoBehaviour
 
     private float MinDistanceBetweenTwoVector2sOnMap(Vector2 startingPos, Vector2 endingPos)
     {
-
+        Vector2 movement = new Vector2(12f, 12f);
         List<Vector2> positionsToCheck = new List<Vector2>();
         Dictionary<Vector2, List<Vector2>> possiblePaths = new Dictionary<Vector2, List<Vector2>>();
 
@@ -710,24 +717,24 @@ public class ActionManager : MonoBehaviour
             List<Vector2> positionsToAdd = new List<Vector2>();
 
             //Check all adjacent Vector2, if they are available, we should look at them
-            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.up))
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.up * movement)))
             {
-                positionsToAdd.Add(positionToCheck + Vector2.up);
+                positionsToAdd.Add(positionToCheck + (Vector2.up * movement));
             }
 
-            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.down))
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.down * movement)))
             {
-                positionsToAdd.Add(positionToCheck + Vector2.down);
+                positionsToAdd.Add(positionToCheck + (Vector2.down * movement));
             }
 
-            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.right))
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.right * movement)))
             {
-                positionsToAdd.Add(positionToCheck + Vector2.right);
+                positionsToAdd.Add(positionToCheck + (Vector2.right * movement));
             }
 
-            if (HUDManager.hM.IsSpaceValid(positionToCheck + Vector2.left))
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.left * movement)))
             {
-                positionsToAdd.Add(positionToCheck + Vector2.left);
+                positionsToAdd.Add(positionToCheck + (Vector2.left * movement));
             }
 
             foreach (Vector2 positionToAdd in positionsToAdd)

@@ -200,6 +200,21 @@ public class InputManager : MonoBehaviour
                     universalButton.OnHover(false);
                 }
 
+                if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                {
+                    if (prevScreenRayCastHitInfo.collider == null)
+                    {
+                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                    }
+                    else
+                    {
+                        if(prevScreenRayCastHitInfo.collider.gameObject.tag != "NodeGroupButton")
+                        {
+                            ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                        }
+                    }
+                }
+
                 if (mouseButtonDown)
                 {
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Node")
@@ -212,6 +227,11 @@ public class InputManager : MonoBehaviour
                     {
                         var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
                         ActionManager.aM.PerformButtonAction(buttonInfo);
+                    }
+
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                    {
+                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().PerformAction();
                     }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
@@ -227,6 +247,13 @@ public class InputManager : MonoBehaviour
                         interactingWithScrollBar = true;
                         currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollHandle>().cSV;
                     }
+                }
+            }
+            else if (prevScreenRayCastHitInfo.collider != null)
+            {
+                if (prevScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                {
+                    prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
                 }
             }
 

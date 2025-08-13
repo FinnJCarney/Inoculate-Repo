@@ -40,6 +40,8 @@ public class LevelManager : MonoBehaviour
             {
                 adjustedLevelFaction.name = "<b>GIVE THIS FACTION A NAME</b>";
             }
+            adjustedLevelFaction.positions = new List<Vector2>();
+            adjustedLevelFaction.positions.Add(adjustedLevelFaction.mainPosition);
             adjustedLevelFaction.particleMaterial = new Material(defaultParticleMaterial);
             adjustedLevelFaction.particleMaterial.color = adjustedLevelFaction.color;
             adjustedLevelFaction.particleMaterial.SetColor("_EmissionColor", adjustedLevelFaction.color);
@@ -47,6 +49,7 @@ public class LevelManager : MonoBehaviour
         }
 
         AssembleValidSpaces();
+        LayoutFactionGrid();
 
         NodeManager.nM.AddNodeFactions();
         HUDManager.hM.SetMenuBounds(levelMap);
@@ -61,6 +64,9 @@ public class LevelManager : MonoBehaviour
 
     private void Update()
     {
+        CheckFactionSpaces();
+        UpdateFactionGrid();
+
         for (int i = 0; i < factionTimers.Count; i++)
         {
             if (!NodeManager.nM.nodeFactions.ContainsKey(factionTimers[i].faction))
@@ -83,7 +89,6 @@ public class LevelManager : MonoBehaviour
 
             if (adjustedFactionTimer.timer < 0f)
             {
-
                 ActionManager.aM.PerformAIAction(numOfActionsPerTurn, factionTimers[i].faction);
 
                 bool specificTimerFound = false;
@@ -113,12 +118,12 @@ public class LevelManager : MonoBehaviour
 
         foreach (levelFaction lvlFaction in levelFactions.Values)
         {
-            if(lvlFaction.position == Vector2.zero)
+            if(lvlFaction.mainPosition == Vector2.zero)
             {
                 continue;
             }
 
-            outputColor = Color.Lerp(lvlFaction.color, outputColor, (Vector2.Distance(pos, lvlFaction.position) / 5f));
+            outputColor = Color.Lerp(lvlFaction.color, outputColor, (Vector2.Distance(pos, lvlFaction.mainPosition) / 5f));
         }
 
         return outputColor;
@@ -134,24 +139,173 @@ public class LevelManager : MonoBehaviour
         List<GridMarker> gridMarkers = new List<GridMarker>();
         gridMarkers.AddRange(GetComponentsInChildren<GridMarker>());
 
-        foreach(GridMarker gridMarker in gridMarkers)
-        {
-            validSpaces.Add(new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z)));
-        }
-
         for (int i = gridMarkers.Count - 1; i >= 0; i--)
         {
             GridMarker gridMarker = gridMarkers[i];
+            Vector2 gridPos = new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z));
 
-            validSpaces.Add(new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z)));
+            validSpaces.Add(gridPos, Instantiate<GameObject>(NodeGroupObj, new Vector3(gridPos.x, 0, gridPos.y), Quaternion.identity).GetComponent<NodeGroup>());
 
             Destroy(gridMarker.gameObject);
+        }
+    }
+
+    private void LayoutFactionGrid()
+    {
+        foreach(Vector2 validSpace in validSpaces.Keys)
+        {
+            for (int i = 0; i < 225; i++)
+            {
+                float zVal = validSpace.y + (((Mathf.Floor(i / 15f) - 7f)) * 3f);
+                float xVal = validSpace.x + ((i - ((Mathf.Floor(i / 15f) * 15f) + 7f)) * 3f);
+                Vector2 possiblePosition = new Vector2(xVal, zVal);
+
+                if (Vector2.Distance(possiblePosition, validSpace) > 24f)
+                {
+                    continue;
+                }
+
+                if (!factionGridMarkers.ContainsKey(possiblePosition))
+                {
+                    var newFacGridMarker = Instantiate<GameObject>(factionGridMarker, new Vector3(possiblePosition.x, -1f, possiblePosition.y), Quaternion.Euler(90f, 0f, 0f), this.transform);
+                    factionGridMarkers.Add(possiblePosition, newFacGridMarker.GetComponent<FactionGridMarker>());
+                    factionGridMarkers[possiblePosition].SetFaction(Faction.Neutral);
+                }
+            }
+        }
+
+    }
+
+    public void UpdateFactionGrid()
+    {
+        foreach(Vector2 factionGridMarkerPos in factionGridMarkers.Keys)
+        {
+            List<Faction> possibleAlliedFaction = new List<Faction>();
+
+            foreach(Faction faction in levelFactions.Keys)
+            {
+                if(faction == Faction.Neutral)
+                {
+                    continue;
+                }
+
+                foreach(Vector2 factionPositions in levelFactions[faction].positions)
+                {
+                    if(possibleAlliedFaction.Contains(faction))
+                    {
+                        continue;
+                    }
+
+                    if(Vector2.Distance(factionPositions, factionGridMarkerPos) < 13.5f)
+                    {
+                        possibleAlliedFaction.Add(faction);
+                    }
+                    //Use distance to control speed?
+                }
+            }
+
+            if(possibleAlliedFaction.Count == 1)
+            {
+                factionGridMarkers[factionGridMarkerPos].SetFaction(possibleAlliedFaction[0]);
+            }
+
+            else if(possibleAlliedFaction.Count == 0)
+            {
+                factionGridMarkers[factionGridMarkerPos].SetFaction(Faction.Neutral);
+            }
+
+            else if (possibleAlliedFaction.Count > 1)
+            {
+                factionGridMarkers[factionGridMarkerPos].SetFaction(Faction.Clashing);
+            }
         }
     }
 
     public bool CheckValidSpace(Vector2 spotToCheck)
     {
         return validSpaces.Contains(spotToCheck);
+    }
+
+    public void CheckFactionSpaces()
+    {
+        foreach(Faction faction in levelFactions.Keys)
+        {
+            if(faction == Faction.Neutral)
+            {
+                continue;
+            }
+
+            for(int i = levelFactions[faction].positions.Count - 1; i >= 0; i--)
+            {
+                bool hasCorrespondingAllliedNode = false;
+
+                if (levelFactions[faction].positions[i] == levelFactions[faction].mainPosition)
+                {
+                    hasCorrespondingAllliedNode = true;
+                }
+
+                foreach(Node node in NodeManager.nM.nodeFactions[faction])
+                {
+                    if (levelFactions[faction].positions[i] == node.userInformation.beliefs && CheckIfFactionSpaceConnectedToInstigator(faction, levelFactions[faction].positions[i]))
+                    {
+                        hasCorrespondingAllliedNode = true;
+                    }
+                }
+
+                if(hasCorrespondingAllliedNode == false)
+                {
+                    levelFactions[faction].positions.RemoveAt(i);
+                }
+            }
+        }
+    }
+
+    public bool CheckIfFactionSpaceConnectedToInstigator(Faction faction, Vector2 position)
+    {
+        List<Vector2> positionsToCheck = new List<Vector2>();
+
+        List<Vector2> positionsChecked = new List<Vector2>();
+
+        positionsToCheck.Add(position);
+
+        Vector2 movement = new Vector2(12f, 12f);
+
+        for (int i = 0; i < positionsToCheck.Count; i++)
+        {
+            if (positionsToCheck[i] == levelFactions[faction].mainPosition)
+            {
+                return true;
+            }
+
+            if(positionsChecked.Contains(positionsToCheck[i]))
+            {
+                continue;
+            }
+
+            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.up)))
+            {
+                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.up));
+            }
+
+            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.right)))
+            {
+                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.right));
+            }
+
+            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.left)))
+            {
+                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.left));
+            }
+
+            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.down)))
+            {
+                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.down));
+            }
+
+            positionsChecked.Add(positionsToCheck[i]);
+        }
+
+        return false;
     }
 
     [SerializeField] public LevelInfo levelInfo;
@@ -184,9 +338,11 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private Material defaultParticleMaterial;
 
-    private List<Vector2> validSpaces = new List<Vector2>();
+    [SerializeField] private GameObject NodeGroupObj;
+    [SerializeField] private GameObject factionGridMarker;
 
-
+    private SerializableDictionary<Vector2, NodeGroup> validSpaces = new SerializableDictionary<Vector2, NodeGroup>();
+    private Dictionary<Vector2, FactionGridMarker> factionGridMarkers = new Dictionary<Vector2, FactionGridMarker>();
 
     public static LevelManager lM;
 
@@ -197,7 +353,8 @@ public struct levelFaction
 {
     public string name;
     public Color color;
-    public Vector2 position;
+    public Vector2 mainPosition;
+    public List<Vector2> positions;
     public Material lineMaterial;
     public Material particleMaterial;
     public GameObject actionLine;

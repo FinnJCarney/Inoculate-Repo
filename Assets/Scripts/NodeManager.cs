@@ -12,7 +12,7 @@ public class NodeManager : MonoBehaviour
 
     private void Awake()
     {
-        if(nM == null)
+        if (nM == null)
         {
             nM = this;
         }
@@ -57,12 +57,12 @@ public class NodeManager : MonoBehaviour
 
     public void ManageGameMode(GameMode gameMode)
     {
-        if(nodes.Count < 1)
+        if (nodes.Count < 1)
         {
             return;
         }
 
-        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].position) > 12f)
+        if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].mainPosition) > 12f)
         {
             StateManager.sM.GameOver(false);
             return;
@@ -133,7 +133,7 @@ public class NodeManager : MonoBehaviour
                 }
             }
 
-            if(nodesRequired == nodesCaptured)
+            if (nodesRequired == nodesCaptured)
             {
                 StateManager.sM.GameOver(true);
             }
@@ -172,7 +172,7 @@ public class NodeManager : MonoBehaviour
 
                         if (node.userInformation.faction == connectedNode.userInformation.faction)
                         {
-                            if(line.lineFaction != node.userInformation.faction)
+                            if (line.lineFaction != node.userInformation.faction)
                             {
                                 line.lineFaction = node.userInformation.faction;
                                 line.lineR.material = LevelManager.lM.GiveLineMaterial(line.lineFaction);
@@ -182,7 +182,7 @@ public class NodeManager : MonoBehaviour
                                 }
                                 HUDManager.hM.SyncPoliticalAxes();
                             }
-                            
+
                         }
                         else
                         {
@@ -209,7 +209,7 @@ public class NodeManager : MonoBehaviour
                         continue;
                     }
 
-                    if(node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && node.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+                    if (node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && node.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
                     {
                         continue;
                     }
@@ -264,6 +264,7 @@ public class NodeManager : MonoBehaviour
                             {
                                 newArrow.transform.LookAt(newLineR.GetPosition(1));
                             }
+
                             newLine.arrows.Add(newArrow);
 
                         }
@@ -279,7 +280,7 @@ public class NodeManager : MonoBehaviour
 
     private void UpdateLinePositions()
     {
-        foreach(Line line in lines)
+        foreach (Line line in lines)
         {
             line.lineR.SetPosition(0, line.connectedNodes[0].transform.position - (Vector3.up * 0.25f));
             line.lineR.SetPosition(1, line.connectedNodes[1].transform.position - (Vector3.up * 0.25f));
@@ -292,13 +293,14 @@ public class NodeManager : MonoBehaviour
         Sprite newSprite = faceSprites[Mathf.RoundToInt(Random.Range(0, faceSprites.Length - 1))];
         node.nodeVisual.sprite = newSprite;
         node.userInformation.NodeImage = newSprite;
+        nodeFactions[node.userInformation.faction].Add(node);
     }
 
     public void CloseAllNodeMenus(Node exceptionNode)
     {
-        foreach(Node node in nodes)
+        foreach (Node node in nodes)
         {
-            if(exceptionNode != null && node == exceptionNode)
+            if (exceptionNode != null && node == exceptionNode)
             {
                 continue;
             }
@@ -316,9 +318,9 @@ public class NodeManager : MonoBehaviour
     {
         foreach (Node node in nodes)
         {
-            if(node.userInformation.faction != LevelManager.lM.playerAllyFaction && node.userInformation.beliefs.x == 0 && node.userInformation.beliefs.y == 0)
+            if (node.userInformation.faction != LevelManager.lM.playerAllyFaction && node.userInformation.beliefs.x == 0 && node.userInformation.beliefs.y == 0)
             {
-                if(!centristNodes.Contains(node))
+                if (!centristNodes.Contains(node))
                 {
                     centristNodes.Add(node);
                 }
@@ -344,7 +346,7 @@ public class NodeManager : MonoBehaviour
         {
             if (node.userInformation.instigator != Faction.None && nodeFactions.ContainsKey(node.userInformation.instigator))
             {
-                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[node.userInformation.instigator].position;
+                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[node.userInformation.instigator].mainPosition;
                 factionBeliefCheck.x = factionBeliefCheck.x == 3 ? node.userInformation.beliefs.x : factionBeliefCheck.x;
                 factionBeliefCheck.y = factionBeliefCheck.y == 3 ? node.userInformation.beliefs.y : factionBeliefCheck.y;
 
@@ -355,8 +357,6 @@ public class NodeManager : MonoBehaviour
                 else
                 {
                     node.userInformation.faction = node.userInformation.instigator;
-
-                    continue;
                 }
             }
 
@@ -394,9 +394,18 @@ public class NodeManager : MonoBehaviour
 
             foreach (Faction lFac in LevelManager.lM.levelFactions.Keys)
             {
-                if (lFac != Faction.Neutral && Vector2.Distance(node.userInformation.beliefs, LevelManager.lM.levelFactions[lFac].position) < 12.1f)
+                if (lFac == Faction.Neutral)
+                { 
+                    continue;
+                }
+                
+                foreach(Vector2 factionPosition in LevelManager.lM.levelFactions[lFac].positions)
                 {
-                    possibleAlliedFactions.Add(lFac);
+                    if(Vector2.Distance(node.userInformation.beliefs, factionPosition) < 12.1f)
+                    {
+                        possibleAlliedFactions.Add(lFac);
+                        break;
+                    }
                 }
             }
 
@@ -416,12 +425,36 @@ public class NodeManager : MonoBehaviour
             //    }
             //}
 
+            if(node.userInformation.faction != possibleAlliedFaction)
+            {
+                RemoveNodePosition(node.userInformation.faction, node.userInformation.beliefs);
+            }
+
             node.userInformation.faction = possibleAlliedFaction;
             nodeFactions[possibleAlliedFaction].Add(node);
-
+            AddNodePosition(possibleAlliedFaction, node.userInformation.beliefs);
         }
     }
 
+    private void AddNodePosition(Faction faction, Vector2 position)
+    {
+        if (!LevelManager.lM.levelFactions[faction].positions.Contains(position))
+        {
+            LevelManager.lM.levelFactions[faction].positions.Add(position);
+            LevelManager.lM.CheckFactionSpaces();
+            LevelManager.lM.UpdateFactionGrid();
+        }
+    }
+
+    private void RemoveNodePosition(Faction faction, Vector2 position)
+    {
+        if (LevelManager.lM.levelFactions[faction].positions.Contains(position))
+        {
+            LevelManager.lM.levelFactions[faction].positions.Add(position);
+            LevelManager.lM.CheckFactionSpaces();
+            LevelManager.lM.UpdateFactionGrid();
+        }
+    }
     public bool CheckIfConnectedToInstigator(Node node, Faction faction)
     {
         List<Node> nodesToCheck = new List<Node>();
@@ -452,7 +485,7 @@ public class NodeManager : MonoBehaviour
 
             if(nodesToCheck[i].userInformation.instigator == faction)
             {
-                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[nodesToCheck[i].userInformation.instigator].position;
+                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[nodesToCheck[i].userInformation.instigator].mainPosition;
                 factionBeliefCheck.x = factionBeliefCheck.x == 3 ? nodesToCheck[i].userInformation.beliefs.x : factionBeliefCheck.x;
                 factionBeliefCheck.y = factionBeliefCheck.y == 3 ? nodesToCheck[i].userInformation.beliefs.y : factionBeliefCheck.y;
 

@@ -322,13 +322,13 @@ MonoBehaviour:
     m_keys: 02000000030000000400000005000000000000000100000006000000
     m_values:
     - actionLength: {x: 10, y: 15}
-      actionPosition: {x: -1, y: 0}
+      actionPosition: {x: -12, y: 0}
     - actionLength: {x: 10, y: 15}
-      actionPosition: {x: 1, y: 0}
+      actionPosition: {x: 12, y: 0}
     - actionLength: {x: 10, y: 15}
-      actionPosition: {x: 0, y: 1}
+      actionPosition: {x: 0, y: 12}
     - actionLength: {x: 10, y: 15}
-      actionPosition: {x: 0, y: -1}
+      actionPosition: {x: 0, y: -12}
     - actionLength: {x: 5, y: 7.5}
       actionPosition: {x: 0, y: 0}
     - actionLength: {x: 20, y: 30}

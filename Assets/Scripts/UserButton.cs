@@ -30,6 +30,6 @@ public class UserButton : MonoBehaviour
             image.color = disabledColor;
         }
     }
-       
+
 
 }

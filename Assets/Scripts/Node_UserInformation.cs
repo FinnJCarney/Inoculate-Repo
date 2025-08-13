@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
@@ -8,9 +9,26 @@ using UnityEngine;
 
 public class Node_UserInformation : MonoBehaviour
 {
+    private void Awake()
+    {
+        nodeCore = GetComponent<Node>();
+        beliefs = new Vector2(this.transform.position.x, this.transform.position.z);
+    }
+
     private void Update()
     {
-        beliefs = new Vector2(Mathf.Round(this.transform.position.x), Mathf.Round(this.transform.position.z));
+        if(new Vector2(this.transform.position.x, this.transform.position.z) != beliefs)
+        {
+            if (movementTween == null || !movementTween.active)
+            {
+                movementTween = this.transform.DOMove(new Vector3(beliefs.x, 0f, beliefs.y), 0.5f);
+            }
+            else if(movementTween.PathGetPoint(1f) != new Vector3(beliefs.x, 0f, beliefs.y))
+            {
+                movementTween.Kill();
+                movementTween = this.transform.DOMove(new Vector3(beliefs.x, 0f, beliefs.y), 0.5f);
+            }
+        }
 
         if(syncInfo)
         {
@@ -91,6 +109,10 @@ public class Node_UserInformation : MonoBehaviour
     [SerializeField] private TextMeshPro nameTMP;
 
     public SerializableDictionary<Node, connectedNodeInfo> connectedNodes = new SerializableDictionary<Node, connectedNodeInfo>();
+
+    private Tween movementTween;
+
+    public Node nodeCore;
 }
 
 public enum Faction
@@ -104,6 +126,7 @@ public enum Faction
     DownCenter,
     CenterRight,
     CenterLeft,
+    Clashing,
     None
 }
 
