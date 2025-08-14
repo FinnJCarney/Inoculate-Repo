@@ -36,7 +36,7 @@ public class TimeManager : MonoBehaviour
 
     public void SetTimeScale(float timeScale)
     {
-        desiredTimeScale = timeScale;
+        desiredTimeScale = timeScale + 0.025f;
         if(timeScaleTween != null)
         {
             timeScaleTween.Kill();

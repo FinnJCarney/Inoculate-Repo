@@ -48,7 +48,8 @@ public class NodeManager : MonoBehaviour
             return;
         }
 
-        CheckNodeConnections();
+        //CheckNodeConnections();
+        CheckNodeGroupFactions();
         CheckNodeAbilities();
         UpdateLinePositions();
         DrawNodeConnectionLines();
@@ -314,6 +315,19 @@ public class NodeManager : MonoBehaviour
         }
     }
 
+    public void CloseAllNodeGroupMenus(NodeGroup exceptionNodeGroup)
+    {
+        foreach (NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
+        {
+            if (exceptionNodeGroup != null && exceptionNodeGroup == nodeGroup)
+            {
+                continue;
+            }
+
+            nodeGroup.ShowMenu(false);
+        }
+    }
+
     private void CheckNodeAbilities()
     {
         foreach (Node node in nodes)
@@ -436,8 +450,239 @@ public class NodeManager : MonoBehaviour
         }
     }
 
+    public void CheckNodeGroupFactions()
+    {
+        foreach (Faction faction in nodeFactions.Keys)
+        {
+            nodeFactions[faction].Clear();
+        }
+
+        foreach (NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
+        {
+            List<Faction> possibleAlliedFactions = new List<Faction>();
+            bool instigatorInGroup = false;
+
+            if(nodeGroup.nodesInGroup.Count == 0)
+            {
+                nodeGroup.groupFaction = Faction.Neutral;
+                AddNodePosition(Faction.Neutral, nodeGroup.groupBelief);
+                continue;
+            }
+
+            foreach (Node_UserInformation node in nodeGroup.nodesInGroup)
+            {
+                if (node.instigator != Faction.None && nodeFactions.ContainsKey(node.instigator))
+                {
+                    instigatorInGroup = true;
+                    Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[node.instigator].mainPosition;
+                    factionBeliefCheck.x = factionBeliefCheck.x == 3 ? node.beliefs.x : factionBeliefCheck.x;
+                    factionBeliefCheck.y = factionBeliefCheck.y == 3 ? node.beliefs.y : factionBeliefCheck.y;
+
+                    if (Vector2.Distance(node.beliefs, factionBeliefCheck) > 0.9f)
+                    {
+                        //node.userInformation.instigator = Faction.None;
+                    }
+                    else
+                    {
+                        possibleAlliedFactions.Add(node.instigator);
+                    }
+                }
+            }
+
+            if (!instigatorInGroup)
+            {
+                foreach (Faction lFac in LevelManager.lM.levelFactions.Keys)
+                {
+                    if (lFac == Faction.Neutral)
+                    {
+                        continue;
+                    }
+
+                    foreach (Vector2 factionPosition in LevelManager.lM.levelFactions[lFac].positions)
+                    {
+                        if (Vector2.Distance(nodeGroup.groupBelief, factionPosition) < 12.1f)
+                        {
+                            possibleAlliedFactions.Add(lFac);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            Faction possibleAlliedFaction = Faction.Neutral;
+
+            if (possibleAlliedFactions.Count == 1)
+            {
+                possibleAlliedFaction = possibleAlliedFactions[0];
+            }
+
+
+            if (possibleAlliedFaction != Faction.Neutral)
+            {
+                if (!LevelManager.lM.CheckIfFactionSpaceConnectedToInstigator(possibleAlliedFaction, nodeGroup.groupBelief))
+                {
+                    possibleAlliedFaction = Faction.Neutral;
+                }
+            }
+        
+
+            if (nodeGroup.groupFaction != possibleAlliedFaction)
+            {
+                RemoveNodePosition(nodeGroup.groupFaction, nodeGroup.groupBelief);
+            }
+
+            nodeGroup.groupFaction = possibleAlliedFaction;
+            AddNodePosition(possibleAlliedFaction, nodeGroup.groupBelief);
+
+            foreach(Node_UserInformation node in nodeGroup.nodesInGroup)
+            {
+                node.faction = possibleAlliedFaction;
+                nodeFactions[possibleAlliedFaction].Add(node.nodeCore);
+            }
+        }
+            
+    }
+
+    public void DrawNodeGroupConnectionLines()
+    {
+        foreach (Node node in nodes)
+        {
+            foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
+            {
+                bool alreadyConnected = false;
+
+                for (int i = lines.Count - 1; i >= 0; i--)
+                {
+                    var line = lines[i];
+
+                    if (line.connectedNodes.Contains(node) && line.connectedNodes.Contains(connectedNode))
+                    {
+                        alreadyConnected = true;
+
+                        if (node.isBanned || connectedNode.isBanned || (node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && LayerManager.lM.activeLayer != line.connectionLayer))
+                        {
+                            for (int j = line.arrows.Count - 1; j >= 0; j--)
+                            {
+                                Destroy(line.arrows[j]);
+                                line.arrows.RemoveAt(j);
+                            }
+                            line.arrows.Clear();
+                            Destroy(line.lineR.gameObject);
+                            lines.Remove(line);
+                            continue;
+                        }
+
+                        if (node.userInformation.faction == connectedNode.userInformation.faction)
+                        {
+                            if (line.lineFaction != node.userInformation.faction)
+                            {
+                                line.lineFaction = node.userInformation.faction;
+                                line.lineR.material = LevelManager.lM.GiveLineMaterial(line.lineFaction);
+                                foreach (GameObject arrow in line.arrows)
+                                {
+                                    arrow.GetComponentInChildren<SpriteRenderer>().color = LevelManager.lM.levelFactions[line.lineFaction].color;
+                                }
+                                HUDManager.hM.SyncPoliticalAxes();
+                            }
+
+                        }
+                        else
+                        {
+                            if (line.lineFaction != Faction.Neutral)
+                            {
+                                line.lineR.material = neutralLine;
+                                line.lineFaction = Faction.Neutral;
+                                foreach (GameObject arrow in line.arrows)
+                                {
+                                    arrow.GetComponentInChildren<SpriteRenderer>().color = LevelManager.lM.levelFactions[line.lineFaction].color;
+                                }
+                                HUDManager.hM.SyncPoliticalAxes();
+                            }
+                        }
+                    }
+
+                    lines[i] = line;
+                }
+
+                if (!alreadyConnected)
+                {
+                    if (node.isBanned || connectedNode.isBanned)
+                    {
+                        continue;
+                    }
+
+                    if (node.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && node.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+                    {
+                        continue;
+                    }
+
+                    var newLineObj = Instantiate<GameObject>(lineObj);
+                    newLineObj.transform.parent = this.transform;
+                    var newLineR = newLineObj.GetComponent<LineRenderer>();
+                    newLineR.positionCount = 2;
+                    newLineR.SetPosition(0, node.transform.position - (Vector3.up * 0.25f));
+                    newLineR.SetPosition(1, connectedNode.transform.position - (Vector3.up * 0.25f));
+
+                    List<Node> connectedNodes = new List<Node>();
+                    connectedNodes.Add(node);
+                    connectedNodes.Add(connectedNode);
+
+                    Line newLine;
+                    newLine.lineR = newLineR;
+                    newLine.connectedNodes = connectedNodes;
+                    newLine.arrows = new List<GameObject>();
+
+                    if (node.userInformation.faction == connectedNode.userInformation.faction && node.userInformation.faction != Faction.Neutral)
+                    {
+                        newLine.lineR.material = LevelManager.lM.GiveLineMaterial(node.userInformation.faction);
+                        newLine.lineFaction = node.userInformation.faction;
+                    }
+                    else
+                    {
+                        newLine.lineR.material = neutralLine;
+                        newLine.lineFaction = Faction.Neutral;
+                    }
+
+                    bool influencerConnection = node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy || node.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn;
+
+                    if (influencerConnection)
+                    {
+                        float lengthOfLine = Vector3.Distance(newLineR.GetPosition(0), newLineR.GetPosition(1));
+                        int numberOfArrows = Mathf.FloorToInt(lengthOfLine * arrowsPerUnit);
+                        Vector3 midPoint = (newLineR.GetPosition(0) + newLineR.GetPosition(1)) / 2;
+
+                        for (int i = 0; i < numberOfArrows; i++)
+                        {
+                            float middleProximity = (((i + 1) / (float)numberOfArrows) - 0.5f);
+                            var newArrow = Instantiate<GameObject>(arrow);
+                            newArrow.transform.parent = this.transform;
+                            newArrow.transform.position = Vector3.MoveTowards(midPoint, newLineR.GetPosition(0), middleProximity * lengthOfLine);
+
+                            if (node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy)
+                            {
+                                newArrow.transform.LookAt(newLineR.GetPosition(0));
+                            }
+                            else
+                            {
+                                newArrow.transform.LookAt(newLineR.GetPosition(1));
+                            }
+
+                            newLine.arrows.Add(newArrow);
+
+                        }
+                    }
+
+                    newLine.connectionLayer = node.userInformation.connectedNodes[connectedNode].layer;
+
+                    lines.Add(newLine);
+                }
+            }
+        }
+    }
+
     private void AddNodePosition(Faction faction, Vector2 position)
     {
+        Debug.Log("Attempting to add " + position + " to " + faction);
         if (!LevelManager.lM.levelFactions[faction].positions.Contains(position))
         {
             LevelManager.lM.levelFactions[faction].positions.Add(position);

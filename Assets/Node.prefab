@@ -13147,7 +13147,8 @@ MonoBehaviour:
   levelFaction:
     name: 
     color: {r: 0, g: 0, b: 0, a: 0}
-    position: {x: 0, y: 0}
+    mainPosition: {x: 0, y: 0}
+    positions: []
     lineMaterial: {fileID: 0}
     particleMaterial: {fileID: 0}
     actionLine: {fileID: 0}
@@ -13158,6 +13159,7 @@ MonoBehaviour:
   connectedNodes:
     m_keys: []
     m_values: []
+  nodeCore: {fileID: 6232525151898465273}
 --- !u!114 &6232525151898465273
 MonoBehaviour:
   m_ObjectHideFlags: 0

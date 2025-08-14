@@ -14,6 +14,7 @@ public class Node : MonoBehaviour
         userInformation = GetComponent<Node_UserInformation>();
 
         NodeManager.nM.AddNodeToList(this);
+        LevelManager.lM.nodeGroups[userInformation.beliefs].AddNodeToGroup(userInformation);
 
         audioSource = GetComponent<AudioSource>();
 
@@ -189,93 +190,63 @@ public class Node : MonoBehaviour
             isBanned = true;
         }
 
-        if (aT == ActionType.Left || aT == ActionType.Right)
+        if (aT == ActionType.Left || aT == ActionType.Right || aT == ActionType.Up || aT == ActionType.Down)
         {
-            if (userInformation.misinformerHori)
+            Vector2 originalBeliefs = userInformation.beliefs;
+
+            if (userInformation.misinformerHori && (aT == ActionType.Left || aT == ActionType.Right))
             {
                 return;
             }
-
-            //if (actingLayer == connectionLayer.offline)
-            //{
-            //    if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
-            //    {
-            //        userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
-            //        actionSuccessful = true;
-            //    }
-            //    else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-            //    {
-            //        userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-            //        actionSuccessful = true;
-            //    }
-            //}
-            //else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-            //{
-            //    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-            //    actionSuccessful = true;
-            //}
-
-            if (aT == ActionType.Right)
+            else
             {
-                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(12f, 0f)))
+                if (aT == ActionType.Right)
                 {
-                    userInformation.beliefs += new Vector2(12f, 0f);
-                    actionSuccessful = true;
+                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(12f, 0f)))
+                    {
+                        userInformation.beliefs += new Vector2(12f, 0f);
+                        actionSuccessful = true;
+                    }
                 }
+                else if(aT == ActionType.Left)
+                {
+                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(-12f, 0f)))
+                    {
+                        userInformation.beliefs += new Vector2(-12f, 0f);
+                        actionSuccessful = true;
+                    }
+                }
+            }
+
+            if (userInformation.misinformerVert && (aT == ActionType.Up || aT == ActionType.Down))
+            {
+                return;
             }
             else
             {
-                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(-12f, 0f)))
+                if (aT == ActionType.Up)
                 {
-                    userInformation.beliefs += new Vector2(-12f, 0f);
-                    actionSuccessful = true;
+                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, 12f)))
+                    {
+                        userInformation.beliefs += new Vector2(0f, 12f);
+                        actionSuccessful = true;
+                    }
                 }
-            }
-        }
-
-            if (aT == ActionType.Up || aT == ActionType.Down)
-            {
-                if (userInformation.misinformerVert)
+                else if(aT == ActionType.Down)
                 {
-                    return;
-                }
-
-                //if (actingLayer == connectionLayer.offline)
-                //{
-                //    if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + (ActionManager.aM.actionInformation[aT].actionPosition * 2)))
-                //    {
-                //        userInformation.beliefs += (ActionManager.aM.actionInformation[aT].actionPosition * 2);
-                //        actionSuccessful = true;
-                //    }
-                //    else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-                //    {
-                //        userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-                //        actionSuccessful = true;
-                //    }
-                //}
-                //else if (HUDManager.hM.IsSpaceValid(userInformation.beliefs + ActionManager.aM.actionInformation[aT].actionPosition))
-                //{
-                //    userInformation.beliefs += ActionManager.aM.actionInformation[aT].actionPosition;
-                //    actionSuccessful = true;
-                //}
-
-            if (aT == ActionType.Up)
-            {
-                if(LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, 12f)))
-                {
-                    userInformation.beliefs += new Vector2(0f, 12f);
-                    actionSuccessful = true;
-                }
-            }
-            else
-            {
-                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, -12f)))
-                {
-                    userInformation.beliefs += new Vector2(0f, -12f);
-                    actionSuccessful = true;
+                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, -12f)))
+                    {
+                        userInformation.beliefs += new Vector2(0f, -12f);
+                        actionSuccessful = true;
+                    }
                 }
             }
 
+            if(originalBeliefs != userInformation.beliefs)
+            {
+                LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(userInformation);
+                LevelManager.lM.nodeGroups[userInformation.beliefs].AddNodeToGroup(userInformation);
+            }
         }
 
         if (aT == ActionType.Connect)

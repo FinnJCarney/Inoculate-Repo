@@ -223,6 +223,12 @@ public class InputManager : MonoBehaviour
                         ScreenRayCastHitInfo.collider.transform.parent.GetComponent<Node>().ShowMenu(true);
                     }
 
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroup")
+                    {
+                        //NodeManager.nM.CloseAllNodeMenus();
+                        ScreenRayCastHitInfo.collider.transform.parent.GetComponent<NodeGroup>().ShowMenu(true);
+                    }
+
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
                     {
                         var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
@@ -368,12 +374,6 @@ public class InputManager : MonoBehaviour
 
                 if (mouseButtonDown)
                 {
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Node")
-                    {
-                        //NodeManager.nM.CloseAllNodeMenus();
-                        ScreenRayCastHitInfo.collider.transform.parent.GetComponent<Node>().ShowMenu(true);
-                    }
-
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
                     {
                         var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();

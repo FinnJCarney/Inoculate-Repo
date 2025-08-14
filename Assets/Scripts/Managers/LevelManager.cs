@@ -17,6 +17,9 @@ public class LevelManager : MonoBehaviour
         {
             lM = this;
         }
+
+        AssembleValidSpaces();
+        LayoutFactionGrid();
     }
 
     private void Start()
@@ -47,9 +50,6 @@ public class LevelManager : MonoBehaviour
             adjustedLevelFaction.particleMaterial.SetColor("_EmissionColor", adjustedLevelFaction.color);
             levelFactions[factionIndexes[i]] = adjustedLevelFaction;
         }
-
-        AssembleValidSpaces();
-        LayoutFactionGrid();
 
         NodeManager.nM.AddNodeFactions();
         HUDManager.hM.SetMenuBounds(levelMap);
@@ -144,15 +144,26 @@ public class LevelManager : MonoBehaviour
             GridMarker gridMarker = gridMarkers[i];
             Vector2 gridPos = new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z));
 
-            validSpaces.Add(gridPos, Instantiate<GameObject>(NodeGroupObj, new Vector3(gridPos.x, 0, gridPos.y), Quaternion.identity).GetComponent<NodeGroup>());
+            nodeGroups.Add(gridPos, Instantiate<GameObject>(NodeGroupObj, new Vector3(gridPos.x, 0, gridPos.y), Quaternion.identity).GetComponent<NodeGroup>());
+            nodeGroups[gridPos].nodesInGroup = new List<Node_UserInformation>();
 
             Destroy(gridMarker.gameObject);
         }
     }
 
+    private void AssembleNodeGroups()
+    {
+        foreach(Node node in NodeManager.nM.nodes)
+        {
+            Node_UserInformation nodeUI = node.userInformation;
+
+            nodeGroups[nodeUI.beliefs].AddNodeToGroup(nodeUI);
+        }
+    }
+
     private void LayoutFactionGrid()
     {
-        foreach(Vector2 validSpace in validSpaces.Keys)
+        foreach(Vector2 validSpace in nodeGroups.Keys)
         {
             for (int i = 0; i < 225; i++)
             {
@@ -223,7 +234,7 @@ public class LevelManager : MonoBehaviour
 
     public bool CheckValidSpace(Vector2 spotToCheck)
     {
-        return validSpaces.Contains(spotToCheck);
+        return nodeGroups.Contains(spotToCheck);
     }
 
     public void CheckFactionSpaces()
@@ -341,7 +352,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private GameObject NodeGroupObj;
     [SerializeField] private GameObject factionGridMarker;
 
-    private SerializableDictionary<Vector2, NodeGroup> validSpaces = new SerializableDictionary<Vector2, NodeGroup>();
+    public SerializableDictionary<Vector2, NodeGroup> nodeGroups = new SerializableDictionary<Vector2, NodeGroup>();
     private Dictionary<Vector2, FactionGridMarker> factionGridMarkers = new Dictionary<Vector2, FactionGridMarker>();
 
     public static LevelManager lM;

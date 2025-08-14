@@ -17,19 +17,6 @@ public class Node_UserInformation : MonoBehaviour
 
     private void Update()
     {
-        if(new Vector2(this.transform.position.x, this.transform.position.z) != beliefs)
-        {
-            if (movementTween == null || !movementTween.active)
-            {
-                movementTween = this.transform.DOMove(new Vector3(beliefs.x, 0f, beliefs.y), 0.5f);
-            }
-            else if(movementTween.PathGetPoint(1f) != new Vector3(beliefs.x, 0f, beliefs.y))
-            {
-                movementTween.Kill();
-                movementTween = this.transform.DOMove(new Vector3(beliefs.x, 0f, beliefs.y), 0.5f);
-            }
-        }
-
         if(syncInfo)
         {
             if(NodeName == "")

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ public class NodeGroup : MonoBehaviour
             nodesInGroup.Add(newNode);
         }
 
+        ArrangeNodes();
         UpdateNodeInfo();
     }
 
@@ -32,7 +34,19 @@ public class NodeGroup : MonoBehaviour
             nodesInGroup.Remove(newNode);
         }
 
+        ArrangeNodes();
         UpdateNodeInfo();
+    }
+
+    private void ArrangeNodes()
+    {
+        foreach (Node_UserInformation node in nodesInGroup)
+        {
+            int i = nodesInGroup.IndexOf(node);
+            float posY = (nodesInGroup.Count - 1 - i) * 1.5f;
+            node.transform.DOKill();
+            node.transform.DOMove(new Vector3(node.beliefs.x, posY, node.beliefs.y), 0.5f);
+        }
     }
 
     private void Update()
@@ -43,9 +57,19 @@ public class NodeGroup : MonoBehaviour
 
     public void ShowMenu(bool show)
     {
-        menu.SetActive(show);
+        if (nodesInGroup.Count == 0)
+        {
+            menu.SetActive(false);
+        }
+        else
+        {
+            menu.SetActive(show);
+            if (show)
+            {
+                NodeManager.nM.CloseAllNodeGroupMenus(this);
+            }
+        }
     }
-
 
     public void UpdateNodeInfo()
     {
@@ -56,25 +80,26 @@ public class NodeGroup : MonoBehaviour
             foreach(Node connectedNodeCore in nodeUser.connectedNodes.Keys) //Change to UserInformation when things are more implemented
             {
                 Node_UserInformation connectedNode = connectedNodeCore.userInformation; // Should be able to get rid of this line
+                NodeGroup connectedNodeGroup = LevelManager.lM.nodeGroups[connectedNode.beliefs];
 
-                if(!connectedNodes.ContainsKey(connectedNode))
+                if (!connectedNodes.ContainsKey(connectedNodeGroup))
                 {
-                    connectedNodes.Add(connectedNode, nodeUser.connectedNodes[connectedNode]);
+                    connectedNodes.Add(connectedNodeGroup, nodeUser.connectedNodes[connectedNode.nodeCore]);
                 }
                 else
                 {
                     connectedNodeInfo connectedNodeInfo;
-                    connectedNodeInfo.layer = connectedNodes[connectedNode].layer;
-                    connectedNodeInfo.type = connectedNodes[connectedNode].type;
+                    connectedNodeInfo.layer = connectedNodes[connectedNodeGroup].layer;
+                    connectedNodeInfo.type = connectedNodes[connectedNodeGroup].type;
 
-                    if (connectedNodes[connectedNode].type != nodeUser.connectedNodes[connectedNode.nodeCore].type)
+                    if (connectedNodes[connectedNodeGroup].type != nodeUser.connectedNodes[connectedNode.nodeCore].type)
                     {
-                        if(connectedNodes[connectedNode].type == connectionType.influencedBy && nodeUser.connectedNodes[connectedNode.nodeCore].type != connectionType.influencedBy)
+                        if(connectedNodes[connectedNodeGroup].type == connectionType.influencedBy && nodeUser.connectedNodes[connectedNode.nodeCore].type != connectionType.influencedBy)
                         {
                             connectedNodeInfo.type = nodeUser.connectedNodes[connectedNode.nodeCore].type;
                         }
 
-                        if (connectedNodes[connectedNode].type == connectionType.influenceOn && nodeUser.connectedNodes[connectedNode.nodeCore].type == connectionType.mutual)
+                        if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn && nodeUser.connectedNodes[connectedNode.nodeCore].type == connectionType.mutual)
                         {
                             connectedNodeInfo.type = connectionType.mutual;
                         }
@@ -97,25 +122,28 @@ public class NodeGroup : MonoBehaviour
         bool upActionAvail = false;
         bool downActionAvail = false;
         bool inoculateActionAvail = false;
-    
-        foreach (Node_UserInformation connectedNode in connectedNodes.Keys)
+
+        if(nodesInGroup.Count == 0)
         {
-            if (connectedNode.nodeCore.isBanned)
+            accessRing.color = Color.clear;
+            allowanceRing.color = Color.clear;
+            return;
+        }
+    
+        foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
+        {
+    
+            if (connectedNodes[connectedNodeGroup].layer != connectionLayer.onlineOffline && connectedNodes[connectedNodeGroup].layer != LayerManager.lM.activeLayer)
             {
                 continue;
             }
     
-            if (connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+            if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn)
             {
                 continue;
             }
     
-            if (connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.connectedNodes[connectedNode.nodeCore].type == connectionType.influencedBy)
-            {
-                continue;
-            }
-    
-            if (connectedNode.faction == LevelManager.lM.playerAllyFaction)
+            if (connectedNodeGroup.groupFaction == LevelManager.lM.playerAllyFaction)
             {
                 possibleActions++;
                 allyNeighbourAvail = true;
@@ -168,7 +196,7 @@ public class NodeGroup : MonoBehaviour
     {
         if (nodesInGroup.Count != 0)
         {
-            ActionManager.aM.NewPerformButtonAction(aT, nodesInGroup[nodesInGroup.Count - 1]);
+            ActionManager.aM.PerfromGroupButtonAction(aT, this);
         }
     }
 
@@ -176,9 +204,9 @@ public class NodeGroup : MonoBehaviour
     public Faction groupFaction = Faction.Neutral;
 
     [SerializeField] public List<Node_UserInformation> nodesInGroup = new List<Node_UserInformation>();
-    public SerializableDictionary<Node_UserInformation, connectedNodeInfo> connectedNodes = new SerializableDictionary<Node_UserInformation, connectedNodeInfo>();
+    public SerializableDictionary<NodeGroup, connectedNodeInfo> connectedNodes = new SerializableDictionary<NodeGroup, connectedNodeInfo>();
 
-    public int nodeGroupPrio;
+    public int prio;
     public int performingActions;
     public int receivingActions;
 

@@ -127,9 +127,98 @@ public class ActionManager : MonoBehaviour
         actionRing.GetComponent<SpriteRenderer>().color = Color.Lerp(Color.clear, idealColor, amountThrough);
     }
 
-    public void NewPerformButtonAction(ActionType aT, Node_UserInformation receivingNode)
+    public void PerfromGroupButtonAction(ActionType aT, NodeGroup receivingNodeGroup)
     {
+        NodeGroup actingNodeGroup = null;
 
+
+        if (aT != ActionType.Connect)
+        {
+            foreach (NodeGroup nodeGroup in receivingNodeGroup.connectedNodes.Keys)
+            {
+                nodeGroup.prio = 100;
+
+                if (nodeGroup.performingActions == nodeGroup.nodesInGroup.Count || nodeGroup.groupFaction != LevelManager.lM.playerAllyFaction)
+                {
+                    nodeGroup.prio -= 1000;
+                }
+
+                if (receivingNodeGroup.connectedNodes[nodeGroup].type == connectionType.influenceOn)
+                {
+                    nodeGroup.prio -= 1000;
+                }
+
+                foreach (NodeGroup connectedNodeGroup in nodeGroup.connectedNodes.Keys)
+                {
+                    if (nodeGroup.connectedNodes[connectedNodeGroup].type == connectionType.influencedBy)
+                    {
+                        continue;
+                    }
+
+                    if (connectedNodeGroup.groupFaction == nodeGroup.groupFaction)
+                    {
+                        nodeGroup.prio += 5;
+                    }
+                    else
+                    {
+                        nodeGroup.prio -= 5;
+                    }
+
+                }
+
+                if (aT == ActionType.Left)
+                {
+                    nodeGroup.prio += Mathf.RoundToInt(receivingNodeGroup.groupBelief.x - nodeGroup.groupBelief.x) * 10;
+                }
+
+                if (aT == ActionType.Right)
+                {
+                    nodeGroup.prio += Mathf.RoundToInt(receivingNodeGroup.groupBelief.x - nodeGroup.groupBelief.x) * 10;
+                }
+
+                if (aT == ActionType.Up)
+                {
+                    nodeGroup.prio += Mathf.RoundToInt(receivingNodeGroup.groupBelief.y - nodeGroup.groupBelief.y) * 10;
+                }
+
+                if (aT == ActionType.Down)
+                {
+                    nodeGroup.prio += Mathf.RoundToInt(receivingNodeGroup.groupBelief.y - nodeGroup.groupBelief.y) * 10;
+                }
+            }
+
+            foreach (NodeGroup nodeGroup in receivingNodeGroup.connectedNodes.Keys)
+            {
+                if (nodeGroup.prio < 0)
+                {
+                    continue;
+                }
+
+                if (actingNodeGroup == null)
+                {
+                    actingNodeGroup = nodeGroup;
+                }
+                else if (actingNodeGroup.prio < nodeGroup.prio)
+                {
+                    actingNodeGroup = nodeGroup;
+                }
+            }
+        }
+
+        if (actingNodeGroup == null)
+        {
+            Debug.Log("Unable to find acting node group");
+            return;
+        }
+
+        receivingNodeGroup.receivingActions++;
+
+        MakeNewGroupAction(aT, LayerManager.lM.activeLayer, actingNodeGroup, receivingNodeGroup);
+
+        TimeManager.tM.AddTimeScale(0.75f);
+
+        numOfPlayerActions++;
+        RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
     public void PerformButtonAction(UserButton buttonInfo)
@@ -585,6 +674,29 @@ public class ActionManager : MonoBehaviour
         currentActions.Add(newCurrentAction);
 
         Debug.Log("Performing action type " + newActionType + " for faction " + newCurrentAction.faction + ", from " + actingNode + " to " + receivingNode);
+    }
+
+    private void MakeNewGroupAction(ActionType newActionType, connectionLayer actionLayer, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup)
+    {
+        //CurrentAction newCurrentAction;
+        //newCurrentAction.actionType = newActionType;
+        //newCurrentAction.actingNode = actingNodeGroup;
+        //actingNode.performingActions += = true;
+        //newCurrentAction.receivingNode = receivingNode;
+        //newCurrentAction.actionLayer = actionLayer;
+        //newCurrentAction.timer = actionLayer == connectionLayer.online ? actionInformation[newActionType].actionLength.x : actionInformation[newActionType].actionLength.y;
+        //newCurrentAction.timerMax = newCurrentAction.timer;
+        //newCurrentAction.faction = actingNode.userInformation.faction;
+        //newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine, this.transform).GetComponent<ActionLine>();
+        //newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNode.transform.position, receivingNode.transform.position, 0.5f);
+        //newCurrentAction.actionLine.SyncLine(0, actingNode.transform.position, receivingNode.transform.position, actionLayer != LayerManager.lM.activeLayer);
+        //newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
+        //newCurrentAction.actionRing.transform.position = receivingNode.transform.position;
+        //newCurrentAction.bleat = TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[newActionType], actingNode.userInformation, receivingNode.userInformation, newCurrentAction.faction);
+        //SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction, receivingNode.transform.position);
+        //currentActions.Add(newCurrentAction);
+        //
+        //Debug.Log("Performing action type " + newActionType + " for faction " + newCurrentAction.faction + ", from " + actingNode + " to " + receivingNode);
     }
 
     private PossibleAction MakePossibleAction(ActionType actionType, connectionLayer actionLayer, Node actingNode, Node receivingNode)
