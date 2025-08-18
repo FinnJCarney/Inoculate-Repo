@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numOfPointsOnLine: 50
-  randomOffsetRange: 2
+  randomOffsetRange: 6
   yValue: 5
 --- !u!120 &3082717458355634730
 LineRenderer:
@@ -67,6 +67,9 @@ LineRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -143,7 +146,7 @@ LineRenderer:
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
-    numCapVertices: 0
+    numCapVertices: 1
     alignment: 0
     textureMode: 0
     textureScale: {x: 1, y: 1}
@@ -164,6 +167,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 21633ad4e4833c94ca1593a97cda9b1f, type: 3}
+  m_Resource: {fileID: 8300000, guid: 21633ad4e4833c94ca1593a97cda9b1f, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.25
   m_Pitch: 1

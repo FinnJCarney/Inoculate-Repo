@@ -217,11 +217,6 @@ public class InputManager : MonoBehaviour
 
                 if (mouseButtonDown)
                 {
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Node")
-                    {
-                        //NodeManager.nM.CloseAllNodeMenus();
-                        ScreenRayCastHitInfo.collider.transform.parent.GetComponent<Node>().ShowMenu(true);
-                    }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroup")
                     {
@@ -246,13 +241,6 @@ public class InputManager : MonoBehaviour
                         universalButton.PerformAction();
                     }
 
-                    //MAKE NEW BUTTON TYPE HERE FOR TRIGERRING THE CONTACT BUTTON, SO THAT IT CAN SEND THE INFO FROM ITSELF TO THE SECTION MANAGER AND THEN DISPLAY THE CHAT LOG
-
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "ScrollbarHandle")
-                    {
-                        interactingWithScrollBar = true;
-                        currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollHandle>().cSV;
-                    }
                 }
             }
             else if (prevScreenRayCastHitInfo.collider != null)

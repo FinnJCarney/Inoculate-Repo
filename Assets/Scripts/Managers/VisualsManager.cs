@@ -36,7 +36,7 @@ public class VisualsManager : MonoBehaviour
 
         if (online)
         {
-            ScreenPlane.bigScreen.cameraCursor.camera.DOColor(onlineBackground, 0.5f);
+            //ScreenPlane.bigScreen.cameraCursor.camera.DOColor(onlineBackground, 0.5f);
             DOTween.To(() => bloom.intensity.value, x => bloom.intensity.value = x, defaultBloomIntensity, 0.5f);
             DOTween.To(() => filmGrain.intensity.value, x => filmGrain.intensity.value = x, defaultFilmGrainIntensity, 0.5f);
             DOTween.To(() => cRTRF.bleed, x => cRTRF.bleed = x, defaultBleed, 0.5f);
@@ -48,7 +48,7 @@ public class VisualsManager : MonoBehaviour
         }
         else
         {
-            ScreenPlane.bigScreen.cameraCursor.camera.DOColor(offlineBackground, 0.5f);
+            //ScreenPlane.bigScreen.cameraCursor.camera.DOColor(offlineBackground, 0.5f);
             DOTween.To(() => bloom.intensity.value, x => bloom.intensity.value = x, 1.25f, 0.5f);
             DOTween.To(() => filmGrain.intensity.value, x => filmGrain.intensity.value = x, 0f, 0.5f);
             DOTween.To(() => cRTRF.bleed, x => cRTRF.bleed = x, 0f, 0.5f);

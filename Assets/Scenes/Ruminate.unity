@@ -538,11 +538,16 @@ MonoBehaviour:
       actionLine: {fileID: 5016487758517115089, guid: 0da88e1391f64814086f8e6edd5c9192,
         type: 3}
   tweetsForActions:
-    m_keys: 02000000030000000400000005000000
+    m_keys: 030000000200000004000000050000000b0000000a000000090000000800000007000000
     m_values:
     - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
     - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
-    - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
+    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
+    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
+    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
+    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
+    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
+    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
     - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
   levelMap: '00000
 
@@ -1692,7 +1697,7 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: instigator
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -2419,12 +2424,12 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: beliefs.x
-      value: -12
+      value: -24
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: beliefs.y
-      value: 36
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
@@ -2434,7 +2439,7 @@ PrefabInstance:
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}
       propertyPath: instigator
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1313546436057439833, guid: 7f1ddec15223f064784005becbf99e84,
         type: 3}

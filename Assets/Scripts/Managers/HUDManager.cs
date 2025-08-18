@@ -227,16 +227,6 @@ public class HUDManager : MonoBehaviour
         }
 
         selectedNode = node;
-
-        politicalAxes.SyncPoliticalAxes(selectedNode, true);
-    }
-
-    public void SyncPoliticalAxes()
-    {
-        if(selectedNode != null)
-        {
-            politicalAxes.SyncPoliticalAxes(selectedNode, false);
-        }
     }
 
     public bool IsSpaceValid(Vector2 requestedSpace)

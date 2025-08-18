@@ -145,19 +145,10 @@ public class LevelManager : MonoBehaviour
             Vector2 gridPos = new Vector2(Mathf.Round(gridMarker.transform.position.x), Mathf.Round(gridMarker.transform.position.z));
 
             nodeGroups.Add(gridPos, Instantiate<GameObject>(NodeGroupObj, new Vector3(gridPos.x, 0, gridPos.y), Quaternion.identity).GetComponent<NodeGroup>());
+            nodeGroups[gridPos].name = ("Node Group: " + gridPos);
             nodeGroups[gridPos].nodesInGroup = new List<Node_UserInformation>();
 
             Destroy(gridMarker.gameObject);
-        }
-    }
-
-    private void AssembleNodeGroups()
-    {
-        foreach(Node node in NodeManager.nM.nodes)
-        {
-            Node_UserInformation nodeUI = node.userInformation;
-
-            nodeGroups[nodeUI.beliefs].AddNodeToGroup(nodeUI);
         }
     }
 
@@ -255,9 +246,15 @@ public class LevelManager : MonoBehaviour
                     hasCorrespondingAllliedNode = true;
                 }
 
-                foreach(Node node in NodeManager.nM.nodeFactions[faction])
+                foreach(NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
                 {
-                    if (levelFactions[faction].positions[i] == node.userInformation.beliefs && CheckIfFactionSpaceConnectedToInstigator(faction, levelFactions[faction].positions[i]))
+                    if(nodeGroup.nodesInGroup.Count == 0)
+                    {
+                        nodeGroup.groupFaction = Faction.Neutral;
+                        continue;
+                    }
+
+                    if (levelFactions[faction].positions[i] == nodeGroup.groupBelief && CheckIfFactionSpaceConnectedToInstigator(faction, levelFactions[faction].positions[i]))
                     {
                         hasCorrespondingAllliedNode = true;
                     }

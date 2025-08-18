@@ -40,7 +40,7 @@ Shader "Hidden/CRTFilter"
 			float4 _MainTex_TexelSize;
 			static const half pi = 3.141592653589793238462;
 
-			half2 m_pixSize;
+			//half2 m_pixSize;
 
             uniform float m_time;
 			uniform fixed m_screenBend;
@@ -50,8 +50,8 @@ Shader "Hidden/CRTFilter"
 			uniform fixed m_bleedr;
 			uniform fixed m_bleedg;
 			uniform fixed m_bleedb;
-			uniform fixed m_resX;
-			uniform fixed m_resY;
+			//uniform fixed m_resX;
+			//uniform fixed m_resY;
 			uniform fixed m_scanlinesStrength;
 			uniform fixed m_apertureStrength;
 			uniform fixed m_shadowlines;
@@ -73,49 +73,49 @@ Shader "Hidden/CRTFilter"
 			uniform fixed2 m_greenOffset;
 			uniform fixed2 m_blueOffset;
 
-			half2 pixel_size()
-			{
-				return half2((_MainTex_TexelSize.z / m_resX) * _MainTex_TexelSize.x, (_MainTex_TexelSize.w / m_resY) * _MainTex_TexelSize.y);				
-			}
-
-			half2 pixel_part(half2 uv)
-			{
-				return half2(floor(fmod(uv.x, m_pixSize.x) * _MainTex_TexelSize.z), floor(fmod(uv.y, m_pixSize.y) * _MainTex_TexelSize.w));
-			}
-			half pixel_part_x(half uvx)
-			{
-				return floor(fmod(uvx, m_pixSize.x) * _MainTex_TexelSize.z);
-			}
-			half pixel_part_y(half uvy)
-			{
-				return floor(fmod(uvy, m_pixSize.y) * _MainTex_TexelSize.w);
-			}
-
-			half2 pixel_frac(half2 uv)
-			{
-				return half2(fmod(uv.x, m_pixSize.x) * m_resX, fmod(uv.y, m_pixSize.y) * m_resY);
-			}
-			half pixel_frac_x(half uvx)
-			{
-				return fmod(uvx, m_pixSize.x) * m_resX;
-			}
-			half pixel_frac_y(half uvy)
-			{
-				return fmod(uvy, m_pixSize.y) * m_resY;
-			}
-
-			fixed2 pixel_num(half2 uv)
-			{
-				return fixed2(floor(uv.x / m_pixSize.x), floor(uv.y / m_pixSize.y));
-			}
-			fixed pixel_num_x(half uvx)
-			{
-				return floor(uvx / m_pixSize.x);
-			}
-			fixed pixel_num_y(half uvy)
-			{
-				return floor(uvy / m_pixSize.y);
-			}
+			//half2 pixel_size()
+			//{
+			//	return half2((_MainTex_TexelSize.z / m_resX) * _MainTex_TexelSize.x, (_MainTex_TexelSize.w / m_resY) * _MainTex_TexelSize.y);				
+			//}
+			//
+			//half2 pixel_part(half2 uv)
+			//{
+			//	return half2(floor(fmod(uv.x, m_pixSize.x) * _MainTex_TexelSize.z), floor(fmod(uv.y, m_pixSize.y) * _MainTex_TexelSize.w));
+			//}
+			//half pixel_part_x(half uvx)
+			//{
+			//	return floor(fmod(uvx, m_pixSize.x) * _MainTex_TexelSize.z);
+			//}
+			//half pixel_part_y(half uvy)
+			//{
+			//	return floor(fmod(uvy, m_pixSize.y) * _MainTex_TexelSize.w);
+			//}
+			//
+			//half2 pixel_frac(half2 uv)
+			//{
+			//	return half2(fmod(uv.x, m_pixSize.x) * m_resX, fmod(uv.y, m_pixSize.y) * m_resY);
+			//}
+			//half pixel_frac_x(half uvx)
+			//{
+			//	return fmod(uvx, m_pixSize.x) * m_resX;
+			//}
+			//half pixel_frac_y(half uvy)
+			//{
+			//	return fmod(uvy, m_pixSize.y) * m_resY;
+			//}
+			//
+			//fixed2 pixel_num(half2 uv)
+			//{
+			//	return fixed2(floor(uv.x / m_pixSize.x), floor(uv.y / m_pixSize.y));
+			//}
+			//fixed pixel_num_x(half uvx)
+			//{
+			//	return floor(uvx / m_pixSize.x);
+			//}
+			//fixed pixel_num_y(half uvy)
+			//{
+			//	return floor(uvy / m_pixSize.y);
+			//}
 
             half random (half2 uv)
             {
@@ -124,24 +124,24 @@ Shader "Hidden/CRTFilter"
 
 			half noise(half2 uv)
 			{
-				half2 i = floor(uv);
-				half2 f = frac(uv);
+				uv.x + m_time;
+				uv.y + m_time;
+
+				half2 i = uv;
 
 				half a = random(i);
-				half b = random(i + half2(1., 0.));
-				half c = random(i + half2(0, 1.));
-				half d = random(i + half2(1., 1.));
+				half b = random(i + half2(2., 0.));
+				half c = random(i + half2(0, 3.));
+				half d = random(i + half2(5., 5.));
 
-				half2 u = smoothstep(0., 1., f);
+				half2 u = smoothstep(0., 0.1, half2(1., 1.));
 
-				return lerp(a, b, u.x) + (c - a) * u.y * (1. - u.x) + (d - b) * u.x * u.y;
+				return (a) - 1;
 			}
 
 			half vignette(half2 uv)
 			{
 				uv -= .5;
-				//uv.x *= 1.33333333333333333333333;
-				//uv.x -= 0.175;
 				uv *= m_vignetteSize;
 				half amount = 1. - sqrt(pow(abs(uv.x), m_vignetteRound) + pow(abs(uv.y), m_vignetteRound));				
 
@@ -181,29 +181,26 @@ Shader "Hidden/CRTFilter"
 
 			fixed4 bleed(fixed4 col, half2 uv)
             {
-				fixed side2 = ceil((_MainTex_TexelSize.z / m_resX) / 2.);
-				fixed side1 = side2 - 1;
-
 				fixed s = 2.;
 				col *= s;
 
-				fixed4 bld = tex2D(_MainTex, uv + half2(_MainTex_TexelSize.x * side1, 0));
+				fixed4 bld = tex2D(_MainTex, uv + half2(_MainTex_TexelSize.x, 0));
 				fixed w = weight(bld);
 				col += bld * w;
 				s += min(w, 1.);
 
-				bld = tex2D(_MainTex, uv + half2(_MainTex_TexelSize.x * side2, 0));
+				bld = tex2D(_MainTex, uv + half2(_MainTex_TexelSize.x, 0));
 				w = weight(bld);
 				col += bld * w;
 				s += min(w, 1.);
 
-				bld = tex2D(_MainTex, uv - half2(_MainTex_TexelSize.x * side1, 0));
+				bld = tex2D(_MainTex, uv - half2(_MainTex_TexelSize.x, 0));
 				w = weight(bld);
 				col += bld * w;
 				s += min(w, 1.);
 
 
-				bld = tex2D(_MainTex, uv - half2(_MainTex_TexelSize.x * side2, 0));
+				bld = tex2D(_MainTex, uv - half2(_MainTex_TexelSize.x, 0));
 				w = weight(bld);
 				col += bld * w;
 				s += min(w, 1.);
@@ -222,13 +219,13 @@ Shader "Hidden/CRTFilter"
 
 			fixed4 scanline(fixed4 col, half2 uv)
 			{
-				return col * lerp(1, max(0.4, sin(pixel_frac_y(uv.y - _MainTex_TexelSize.y / 2.) * pi)), m_scanlinesStrength);
+				return col * lerp(1, max(0.4, sin((uv.y - _MainTex_TexelSize.y / 2.) * pi)), m_scanlinesStrength);
 			}
 
 			fixed4 pixelSmidge(fixed4 col, half2 uv)
 			{
-				fixed4 smgL = tex2D(_MainTex, uv + half2(-m_pixSize.x / 2, -m_pixSize.y));
-				fixed4 smgR = tex2D(_MainTex, uv + half2(m_pixSize.x / 2, -m_pixSize.y));
+				fixed4 smgL = tex2D(_MainTex, uv);
+				fixed4 smgR = tex2D(_MainTex, uv);
 				
 				fixed sL = step(0.4, max(smgL.r, max(smgL.g, smgL.b)));
 				fixed sR = step(0.4, max(smgR.r, max(smgR.g, smgR.b)));
@@ -237,30 +234,30 @@ Shader "Hidden/CRTFilter"
 				
 				fixed s = abs(sL - sR) * m_smidge;
 				s *= 1 - step(0.10, col.r + col.g + col.b);
-				s *= 1 - pixel_frac_y(uv.y);
+				s *= 1 - uv.y;
 
 				return col + (smgL + smgR) * s;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				m_pixSize = pixel_size();
+				//m_pixSize = pixel_size();
 
-				half2 buv = screen_bend(i.uv);
+				//half2 buv = screen_bend(i.uv);
 				
-				fixed4 col = tex2D(_MainTex, buv);
+				fixed4 col = tex2D(_MainTex, i.uv);
 				
-				col = blur(col, buv);
+				col = blur(col, i.uv);
 
-				col.r += tex2D(_MainTex, buv + m_redOffset).r;
-				col.g += tex2D(_MainTex, buv + m_greenOffset).g;
-				col.b += tex2D(_MainTex, buv + m_blueOffset).b;
+				col.r += tex2D(_MainTex, i.uv + m_redOffset).r;
+				col.g += tex2D(_MainTex, i.uv + m_greenOffset).g;
+				col.b += tex2D(_MainTex, i.uv + m_blueOffset).b;
 				col.rgb /= 2.0f;
 
-				col = bleed(col, buv);
-				col = scanline(col, buv);
-				col = aperture(col, buv);
-				col = pixelSmidge(col, buv);
+				col = bleed(col, i.uv);
+				//col = scanline(col, buv);
+				col = aperture(col, i.uv);
+				//col = pixelSmidge(col, buv);
 
 				col = pow(col, (1 / m_gamma));
 				col = m_contrast * (col - 0.5) + 0.5 + m_brightness;
@@ -269,8 +266,11 @@ Shader "Hidden/CRTFilter"
 				col.g *= m_green;
 				col.b *= m_blue;
 				
-				col = lerp(col, fixed(noise(buv * m_noiseSize)), m_noiseAlpha);
-				col = lerp(col, crt_line(buv.y, m_shadowlines, m_shadowlinesSpeed), m_shadowlinesAlpha);
+				col += fixed(noise((i.uv - 0.5) * m_noiseSize)) * m_noiseAlpha;
+				//col = lerp(col, crt_line(buv.y, m_shadowlines, m_shadowlinesSpeed), m_shadowlinesAlpha);
+
+				float _steps = 20;
+				col.rgb = floor(col.rgb * _steps) / _steps;
 				
 				return col * vignette(i.uv);
 			}

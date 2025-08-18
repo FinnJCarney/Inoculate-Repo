@@ -30,7 +30,7 @@ MonoBehaviour:
   - {fileID: 8485005057785277691}
   m_RendererFeatureMap: fb2caf0225cbc075
   m_UseNativeRenderPass: 0
-  xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
+  xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   m_AssetVersion: 2
   m_OpaqueLayerMask:
@@ -70,30 +70,30 @@ MonoBehaviour:
   shader: {fileID: 4800000, guid: 6f2fcdc189458914eb8a323f19e3a27b, type: 3}
   injectionPoint: 600
   preset: 6
-  pixelResolutionX: 1280
-  pixelResolutionY: 960
-  screenBend: 0.31
-  screenOverscan: 0.58
-  vignetteSize: 6.01
-  vignetteSmooth: 0.025
-  vignetteRound: 15.6
+  pixelResolutionX: 0
+  pixelResolutionY: 0
+  screenBend: 0
+  screenOverscan: 0
+  vignetteSize: 0
+  vignetteSmooth: 0
+  vignetteRound: 2
   blur: 0
-  bleed: 0
-  smidge: 22.7
+  bleed: 1.5
+  smidge: 22.2
   scanlinesStrength: 0
   apertureStrength: 0
   shadowlines: 0
-  shadowlinesSpeed: -20
-  shadowlinesAlpha: 0.012
-  noiseSize: 0
-  noiseSpeed: 3.07
-  noiseAlpha: 0.644
-  brightness: 0.01
-  contrast: 1.05
-  gamma: 1.07
-  red: 1
-  green: 1
-  blue: 1
+  shadowlinesSpeed: 0
+  shadowlinesAlpha: 0
+  noiseSize: 4.9
+  noiseSpeed: 0.8
+  noiseAlpha: 0.05
+  brightness: -0.045
+  contrast: 0.88
+  gamma: 0.71
+  red: 0.809
+  green: 0.943
+  blue: 1.043
   chromaticAberration: 0.63
   redOffset: {x: 0.063, y: 0.063}
   blueOffset: {x: 0, y: -0.088199995}

@@ -259,8 +259,7 @@ public class Node : MonoBehaviour
         }
 
         NodeManager.nM.CheckNodeConnections();
-        HUDManager.hM.SyncPoliticalAxes();
-        NodeManager.nM.DrawNodeConnectionLines();
+        NodeManager.nM.DrawNodeGroupConnectionLines();
 
         var particleSystemMain = playerPS.main;
         particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;

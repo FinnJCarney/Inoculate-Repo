@@ -12,6 +12,7 @@ public class NodeGroup : MonoBehaviour
     void Start()
     {
         groupBelief = new Vector2(this.transform.position.x, this.transform.position.z);
+        audioSource = GetComponent<AudioSource>();
 
         menu.SetActive(false);
     }
@@ -105,7 +106,7 @@ public class NodeGroup : MonoBehaviour
                         }
                     }
 
-                    connectedNodes[connectedNode] = connectedNodeInfo;
+                    connectedNodes[connectedNodeGroup] = connectedNodeInfo;
                 }
             }
         }
@@ -113,26 +114,18 @@ public class NodeGroup : MonoBehaviour
 
     public void UpdatePlayerActions()
     {
-        int possibleActions = 0;
-
-        bool allyNeighbourAvail = false;
-
-        bool leftActionAvail = false;
-        bool rightActionAvail = false;
-        bool upActionAvail = false;
-        bool downActionAvail = false;
-        bool inoculateActionAvail = false;
-
         if(nodesInGroup.Count == 0)
         {
             accessRing.color = Color.clear;
             allowanceRing.color = Color.clear;
             return;
         }
-    
+
+        int internalPossibleActions = nodesInGroup.Count - performingActions;
+        int externalPossibleActions = 0;
+
         foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
         {
-    
             if (connectedNodes[connectedNodeGroup].layer != connectionLayer.onlineOffline && connectedNodes[connectedNodeGroup].layer != LayerManager.lM.activeLayer)
             {
                 continue;
@@ -145,36 +138,20 @@ public class NodeGroup : MonoBehaviour
     
             if (connectedNodeGroup.groupFaction == LevelManager.lM.playerAllyFaction)
             {
-                possibleActions++;
-                allyNeighbourAvail = true;
+                externalPossibleActions += (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
             }
         }
-    
-        if (allyNeighbourAvail)
-        {
-            Vector2 movement = new Vector2(12f, 12f);
-            upActionAvail = LevelManager.lM.CheckValidSpace(groupBelief + (Vector2.up * movement));
 
-            downActionAvail = LevelManager.lM.CheckValidSpace(groupBelief + (Vector2.down * movement));
-    
-            rightActionAvail = LevelManager.lM.CheckValidSpace(groupBelief + (Vector2.right * movement));
-    
-            leftActionAvail = LevelManager.lM.CheckValidSpace(groupBelief + (Vector2.left * movement));
+        if (menu.activeInHierarchy)
+        {
+            foreach (NodeGroupButton nGB in buttonList)
+            {
+                nGB.gameObject.SetActive(nGB.CheckActionAbility(internalPossibleActions, externalPossibleActions));
+            }
         }
 
-        if (nodesInGroup.Count > 1 && nodesInGroup.Count > performingActions && groupFaction == LevelManager.lM.playerAllyFaction)
-        {
-            inoculateActionAvail = true;
-        }
 
-        but_Left.gameObject.SetActive(leftActionAvail);
-        but_Right.gameObject.SetActive(rightActionAvail);
-        but_Up.gameObject.SetActive(upActionAvail);
-        but_Down.gameObject.SetActive(downActionAvail);
-        but_Inoculate.gameObject.SetActive(inoculateActionAvail);
-
-    
-        if (possibleActions > 0)
+        if (externalPossibleActions > 0 || (internalPossibleActions > 0 && groupFaction == LevelManager.lM.playerAllyFaction))
         {
             var factionColor = LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color;
             float amountThrough = Mathf.Sqrt(Time.unscaledTime % 2f);
@@ -184,7 +161,7 @@ public class NodeGroup : MonoBehaviour
             
         }
     
-        else if (possibleActions == 0)
+        else
         {
             allowanceRing.color = Color.clear;
         }
@@ -198,6 +175,84 @@ public class NodeGroup : MonoBehaviour
         {
             ActionManager.aM.PerfromGroupButtonAction(aT, this);
         }
+    }
+
+    public void ActionResult(ActionType aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat)
+    {
+
+        if (nodesInGroup.Count == 0)
+        {
+            return;
+        }
+
+
+        bool actionSuccessful = false;
+
+        //Are we inoculating rn? If so, do stuff for that, exit out of the rest of this
+
+        Node_UserInformation nodeToActOn = nodesInGroup[nodesInGroup.Count - 1];
+
+        //if (aT == ActionType.DM)
+        //{
+        //
+        //}
+        //
+        //if (aT == ActionType.Ban)
+        //{
+        //
+        //}
+        //
+        //if (aT == ActionType.Connect)
+        //{
+        //
+        //}
+
+        if (aT == ActionType.Left || aT == ActionType.Right || aT == ActionType.Up || aT == ActionType.Down || aT == ActionType.DoubleLeft || aT == ActionType.DoubleRight || aT == ActionType.DoubleUp || aT == ActionType.DoubleDown)
+        {
+            Vector2 originalBeliefs = nodeToActOn.beliefs;
+            Vector2 actionMovement = ActionManager.aM.actionInformation[aT].actionPosition;
+
+            if (LevelManager.lM.CheckValidSpace(originalBeliefs + actionMovement))
+            {
+                nodeToActOn.beliefs += actionMovement;
+                actionSuccessful = true;
+            }
+
+            if (nodeToActOn.beliefs != originalBeliefs)
+            {
+                LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(nodeToActOn);
+                LevelManager.lM.nodeGroups[nodeToActOn.beliefs].AddNodeToGroup(nodeToActOn);
+            }
+        }
+        
+
+        var particleSystemMain = playerPS.main;
+        particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;
+        playerPS.GetComponent<ParticleSystemRenderer>().material = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+        playerPS.GetComponent<ParticleSystemRenderer>().trailMaterial = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+        playerPS.Play();
+
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+
+        if (actionSuccessful)
+        {
+            bleat.CreateResponse(nodeToActOn);
+        }
+
+        audioSource.volume = 0.5f;
+        audioSource.loop = false;
+        audioSource.pitch = Random.Range(0.85f, 1.15f);
+        audioSource.clip = actionComplete;
+        audioSource.Play();
+    }
+
+    public void SetActionAudio(float amountThrough)
+    {
+        audioSource.pitch = Mathf.Lerp(actionPitch - 0.75f, actionPitch, amountThrough);
+        audioSource.volume = Mathf.Lerp(0f, 0.5f, amountThrough);
     }
 
     public Vector2 groupBelief;
@@ -219,11 +274,7 @@ public class NodeGroup : MonoBehaviour
     [SerializeField] TextMeshPro handleText;
     [SerializeField] GameObject bannedCover;
 
-    [SerializeField] NodeGroupButton but_Left;
-    [SerializeField] NodeGroupButton but_Right;
-    [SerializeField] NodeGroupButton but_Up;
-    [SerializeField] NodeGroupButton but_Down;
-    [SerializeField] NodeGroupButton but_Inoculate;
+    [SerializeField] List<NodeGroupButton> buttonList = new List<NodeGroupButton>();
 
     [SerializeField] ParticleSystem playerPS;
     [SerializeField] ParticleSystem aIPs;
