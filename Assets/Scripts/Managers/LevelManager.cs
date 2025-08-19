@@ -48,7 +48,14 @@ public class LevelManager : MonoBehaviour
             adjustedLevelFaction.particleMaterial = new Material(defaultParticleMaterial);
             adjustedLevelFaction.particleMaterial.color = adjustedLevelFaction.color;
             adjustedLevelFaction.particleMaterial.SetColor("_EmissionColor", adjustedLevelFaction.color);
+
+            foreach (GameObject actionObject in adjustedLevelFaction.actionObjects)
+            {
+                adjustedLevelFaction.availableActions.Add(actionObject.GetComponent<AbstractAction>());
+            }
+            
             levelFactions[factionIndexes[i]] = adjustedLevelFaction;
+
         }
 
         NodeManager.nM.AddNodeFactions();
@@ -363,6 +370,8 @@ public struct levelFaction
     public Color color;
     public Vector2 mainPosition;
     public List<Vector2> positions;
+    public List<AbstractAction> availableActions;
+    public GameObject[] actionObjects; 
     public Material lineMaterial;
     public Material particleMaterial;
     public GameObject actionLine;

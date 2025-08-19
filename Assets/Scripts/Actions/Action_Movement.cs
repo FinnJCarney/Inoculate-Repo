@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
-public class Movement : AbstractActionClass
+[Serializable]
+public abstract class Action_Movement : AbstractAction
 {
-    Vector2 movement;
+    public Vector2 movement = new Vector2(33f, 33f);
 
     public override bool PerformAction(Node_UserInformation nodeToActOn)
     {
@@ -23,8 +25,6 @@ public class Movement : AbstractActionClass
 
     public override bool CheckActionAvailability(NodeGroup applicableNodeGroup, int availableActions)
     {
-        ActionInformation actionInfo = ActionManager.aM.actionInformation[actionType];
-
         if (cost > availableActions)
         {
             return false;

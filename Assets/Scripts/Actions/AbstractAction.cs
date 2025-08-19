@@ -1,10 +1,12 @@
+using System;
 using UnityEngine;
 
-public abstract class AbstractActionClass : MonoBehaviour
+[System.Serializable]
+public abstract class AbstractAction : MonoBehaviour
 {
-    [SerializeField] public ActionType actionType;
     [SerializeField] public int cost; 
     [SerializeField] public int count;
+    [SerializeField] public float timeToAct;
     [SerializeField] public ActionCostType costType;
 
     public virtual bool CheckActionAvailability(NodeGroup applicableNodeGroup, int availableActions)
@@ -25,7 +27,7 @@ public abstract class AbstractActionClass : MonoBehaviour
     public enum ActionCostType
     { 
          InternalAction,
-         InternalGroupAction,
+         ExternalGroupAction,
          ExternlAction,
          None
     }

@@ -152,6 +152,7 @@ public class NodeGroup : MonoBehaviour
 
         int internalPossibleActions = nodesInGroup.Count - performingActions;
         int externalPossibleActions = 0;
+        int externalPossibleGroupActions = 0;
 
         foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
         {
@@ -167,7 +168,13 @@ public class NodeGroup : MonoBehaviour
     
             if (connectedNodeGroup.groupFaction == LevelManager.lM.playerAllyFaction)
             {
-                externalPossibleActions += (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
+                int availableGroupActions = (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
+                externalPossibleActions += availableGroupActions;
+                
+                if(availableGroupActions > externalPossibleGroupActions)
+                {
+                    externalPossibleGroupActions = availableGroupActions;
+                }
             }
         }
 
@@ -175,10 +182,21 @@ public class NodeGroup : MonoBehaviour
         {
             foreach (NodeGroupButton nGB in buttonList)
             {
-                nGB.gameObject.SetActive(nGB.CheckActionAbility(internalPossibleActions, externalPossibleActions));
+                AbstractAction action = nGB.action;
+                if (action.costType == AbstractAction.ActionCostType.InternalAction)
+                {
+                    nGB.gameObject.SetActive(action.CheckActionAvailability(this, internalPossibleActions));
+                }
+                else if(action.costType == AbstractAction.ActionCostType.ExternlAction)
+                {
+                    nGB.gameObject.SetActive(action.CheckActionAvailability(this, externalPossibleActions));
+                }
+                else if (action.costType == AbstractAction.ActionCostType.ExternalGroupAction)
+                {
+                    nGB.gameObject.SetActive(action.CheckActionAvailability(this, externalPossibleGroupActions));
+                }
             }
         }
-
 
         if (externalPossibleActions > 0 || (internalPossibleActions > 0 && groupFaction == LevelManager.lM.playerAllyFaction))
         {

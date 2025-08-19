@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class NodeGroupButton : AbstractButtonClass
@@ -9,7 +10,7 @@ public class NodeGroupButton : AbstractButtonClass
 
     public override void PerformAction()
     {
-        myNodeGroup.PerformButtonAction(actionType);
+        //myNodeGroup.PerformButtonAction(actionType);
     }
 
     public bool CheckActionAbility(int internalNodePossibleActions, int externalNodePossibleActions)
@@ -19,25 +20,15 @@ public class NodeGroupButton : AbstractButtonClass
             myNodeGroup = GetComponentInParent<NodeGroup>();
         }
 
-        ActionInformation actionInfo = ActionManager.aM.actionInformation[actionType];
-        if(actionInfo.internalAction)
-        {
-            if (internalNodePossibleActions < actionInfo.actionCost)
-            {
-                return false;
-            }
-        }
-        else if (externalNodePossibleActions < actionInfo.actionCost)
+        if (!LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].availableActions.Contains<AbstractAction>(action))
         {
             return false;
         }
 
-        bool returnValue = LevelManager.lM.CheckValidSpace(myNodeGroup.groupBelief + actionInfo.actionPosition);
-
-        return returnValue;
+        return action.CheckActionAvailability(myNodeGroup, internalNodePossibleActions);
     }
 
 
     NodeGroup myNodeGroup;
-    [SerializeField] ActionType actionType;
+    [SerializeField] public AbstractAction action;
 }
