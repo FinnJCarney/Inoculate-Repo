@@ -59,7 +59,7 @@ public class LevelManager : MonoBehaviour
         }
 
         NodeManager.nM.AddNodeFactions();
-        HUDManager.hM.SetMenuBounds(levelMap);
+        //HUDManager.hM.SetMenuBounds(levelMap);
         InputManager.iM.SetMCC(mapCamera);
         LayerManager.lM.SetLayer(startingLayer, allowedLayers);
     }
