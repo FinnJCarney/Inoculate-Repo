@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class NodeGroup : MonoBehaviour
@@ -15,6 +16,9 @@ public class NodeGroup : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
 
         menu.SetActive(false);
+
+        defaultAccessRingScale = accessRing.transform.localScale;
+        defaultAllowanceRingScale = allowanceRing.transform.localScale;
     }
 
     public void AddNodeToGroup(Node_UserInformation newNode)
@@ -41,12 +45,37 @@ public class NodeGroup : MonoBehaviour
 
     private void ArrangeNodes()
     {
-        foreach (Node_UserInformation node in nodesInGroup)
+        if(nodesInGroup.Count == 1)
         {
-            int i = nodesInGroup.IndexOf(node);
-            float posY = (nodesInGroup.Count - 1 - i) * 1.5f;
-            node.transform.DOKill();
-            node.transform.DOMove(new Vector3(node.beliefs.x, posY, node.beliefs.y), 0.5f);
+            nodesInGroup[0].transform.DOMove(new Vector3(groupBelief.x, 0, groupBelief.y), 0.5f);
+            accessRing.transform.DOScale(defaultAccessRingScale, 0.5f);
+            allowanceRing.transform.DOScale(defaultAllowanceRingScale, 0.5f);
+        }
+
+        else
+        {
+            Vector2 centerPoint = new Vector2(this.transform.position.x, this.transform.position.z);
+            float radius = 3f;
+
+            foreach (Node_UserInformation node in nodesInGroup)
+            {
+                if(node.instigator != Faction.Neutral && node.instigator == groupFaction)
+                {
+                    node.transform.DOMove(new Vector3(groupBelief.x, 0, groupBelief.y), 0.5f);
+                    continue;
+                }
+
+                int i = nodesInGroup.IndexOf(node);
+                float angleInRadians = ((360f / nodesInGroup.Count) * i) * Mathf.Deg2Rad;
+                float x = radius * Mathf.Cos(angleInRadians);
+                float y = radius * Mathf.Sin(angleInRadians);
+                Vector2 desiredPoint = centerPoint + new Vector2(x, y);
+                node.transform.DOKill();
+                node.transform.DOMove(new Vector3(desiredPoint.x, 0, desiredPoint.y), 0.5f);
+            }
+
+            accessRing.transform.DOScale(defaultAccessRingScale * radius, 0.5f);
+            allowanceRing.transform.DOScale(defaultAllowanceRingScale * radius, 0.5f);
         }
     }
 
@@ -158,7 +187,6 @@ public class NodeGroup : MonoBehaviour
             allowanceRing.color = Color.Lerp(factionColor, Color.clear, amountThrough);
             allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
             allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
-            
         }
     
         else
@@ -223,6 +251,8 @@ public class NodeGroup : MonoBehaviour
                 LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(nodeToActOn);
                 LevelManager.lM.nodeGroups[nodeToActOn.beliefs].AddNodeToGroup(nodeToActOn);
             }
+
+            CheckActions(LevelManager.lM.nodeGroups[nodeToActOn.beliefs]);
         }
         
 
@@ -249,6 +279,22 @@ public class NodeGroup : MonoBehaviour
         audioSource.Play();
     }
 
+    public void CheckActions(NodeGroup newNodeGroup)
+    {
+        if(nodesInGroup.Count == 0)
+        {
+            if(performingActions > 0)
+            {
+                ActionManager.aM.PivotAction_Performing(this, newNodeGroup);
+            }
+
+            if(receivingActions > 0)
+            {
+                ActionManager.aM.PivotAction_Receiving(this, newNodeGroup);
+            }
+        }
+    }
+
     public void SetActionAudio(float amountThrough)
     {
         audioSource.pitch = Mathf.Lerp(actionPitch - 0.75f, actionPitch, amountThrough);
@@ -268,7 +314,9 @@ public class NodeGroup : MonoBehaviour
     [SerializeField] public SpriteRenderer nodeVisual;
 
     [SerializeField] private SpriteRenderer accessRing;
+    private Vector3 defaultAccessRingScale;
     [SerializeField] private SpriteRenderer allowanceRing;
+    private Vector3 defaultAllowanceRingScale;
 
     [SerializeField] GameObject menu;
     [SerializeField] TextMeshPro handleText;

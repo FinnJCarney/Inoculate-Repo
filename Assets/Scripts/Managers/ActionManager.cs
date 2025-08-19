@@ -805,7 +805,7 @@ public class ActionManager : MonoBehaviour
     }
 
 
-    private float MinDistanceBetweenTwoVector2sOnMap(Vector2 startingPos, Vector2 endingPos)
+    private float MinDistanceBetweenTwoVector2sOnMap(Vector2 startingPos, Vector2 endingPos) //Move to LevelManager
     {
         Vector2 movement = new Vector2(12f, 12f);
         List<Vector2> positionsToCheck = new List<Vector2>();
@@ -903,6 +903,40 @@ public class ActionManager : MonoBehaviour
         //Debug.Log("Shortest Path between " + startingPos + " and " + endingPos + " is " + possiblePaths[endingPos].Count);
 
         return possiblePaths[endingPos].Count;
+    }
+
+    public void PivotAction_Performing(NodeGroup ogActingNodeGroup, NodeGroup newActingNodeGroup)
+    {
+        for (int i = currentActions.Count - 1; i >= 0; i--)
+        {
+            var adjustedCurAction = currentActions[i];
+
+            if(adjustedCurAction.actingNodeGroup == ogActingNodeGroup)
+            {
+                adjustedCurAction.actingNodeGroup = newActingNodeGroup;
+                ogActingNodeGroup.performingActions--;
+                newActingNodeGroup.performingActions++;
+            }
+
+            currentActions[i] = adjustedCurAction;
+        }
+    }
+
+    public void PivotAction_Receiving(NodeGroup ogReceivingNodeGroup, NodeGroup newReceivingNodeGroup)
+    {
+        for (int i = currentActions.Count - 1; i >= 0; i--)
+        {
+            var adjustedCurAction = currentActions[i];
+
+            if (adjustedCurAction.receivingNodeGroup == ogReceivingNodeGroup)
+            {
+                adjustedCurAction.receivingNodeGroup = newReceivingNodeGroup;
+                ogReceivingNodeGroup.receivingActions--;
+                newReceivingNodeGroup.receivingActions++;
+            }
+
+            currentActions[i] = adjustedCurAction;
+        }
     }
 
     private int numOfPlayerActions = 0;
