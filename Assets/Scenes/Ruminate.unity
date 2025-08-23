@@ -515,7 +515,10 @@ MonoBehaviour:
       positions: []
       availableActions: []
       actionObjects:
-      - {fileID: 1268051856}
+      - {fileID: 4954414405114697385, guid: 09be107c614c8a8409b44bfcf978624b, type: 3}
+      - {fileID: 4954414405114697385, guid: 2f14471e2492c6d4ea0bf74ad830d98d, type: 3}
+      - {fileID: 4954414405114697385, guid: f557a9609ec2c4e4aac29417357bcdf1, type: 3}
+      - {fileID: 4954414405114697385, guid: 6b88ca70c66b69d4988661bef8030815, type: 3}
       lineMaterial: {fileID: 2100000, guid: fe2069569130be44bb226f7ca649fb3b, type: 2}
       particleMaterial: {fileID: 0}
       actionLine: {fileID: 5016487758517115089, guid: 82005d6b94408184ca9d9fda4c07d26b,
@@ -525,7 +528,11 @@ MonoBehaviour:
       mainPosition: {x: -12, y: 36}
       positions: []
       availableActions: []
-      actionObjects: []
+      actionObjects:
+      - {fileID: 4954414405114697385, guid: 09be107c614c8a8409b44bfcf978624b, type: 3}
+      - {fileID: 4954414405114697385, guid: 2f14471e2492c6d4ea0bf74ad830d98d, type: 3}
+      - {fileID: 4954414405114697385, guid: f557a9609ec2c4e4aac29417357bcdf1, type: 3}
+      - {fileID: 4954414405114697385, guid: 6b88ca70c66b69d4988661bef8030815, type: 3}
       lineMaterial: {fileID: 2100000, guid: 4466e6d98cab1744694da72bf6267eba, type: 2}
       particleMaterial: {fileID: 0}
       actionLine: {fileID: 5016487758517115089, guid: bb3eddc3bca8332438bcdc7e02e3f630,
@@ -541,26 +548,16 @@ MonoBehaviour:
       actionLine: {fileID: 5016487758517115089, guid: 0da88e1391f64814086f8e6edd5c9192,
         type: 3}
   tweetsForActions:
-    m_keys: 030000000200000004000000050000000b0000000a000000090000000800000007000000
+    m_keys:
+    - {fileID: 8369039296640889830, guid: 6b88ca70c66b69d4988661bef8030815, type: 3}
+    - {fileID: 7280328243185793495, guid: 09be107c614c8a8409b44bfcf978624b, type: 3}
+    - {fileID: 5883304782841689363, guid: f557a9609ec2c4e4aac29417357bcdf1, type: 3}
+    - {fileID: 2241765215960126948, guid: 2f14471e2492c6d4ea0bf74ad830d98d, type: 3}
     m_values:
-    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
-    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
-    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
-    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
-    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
     - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
     - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
     - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
-    - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
-  levelMap: '00000
-
-    01110
-
-    11111
-
-    01110
-
-    00000'
+    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
   allowedLayers: 1
   startingLayer: 1
   numOfActionsPerTurn: 1
@@ -2397,12 +2394,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1268051856 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4954414405114697385, guid: 6b88ca70c66b69d4988661bef8030815,
-    type: 3}
-  m_PrefabInstance: {fileID: 901684139573116241}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1271703493
 PrefabInstance:
   m_ObjectHideFlags: 0

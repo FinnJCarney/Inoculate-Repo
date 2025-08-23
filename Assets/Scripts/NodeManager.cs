@@ -456,9 +456,9 @@ public class NodeManager : MonoBehaviour
                     factionBeliefCheck.x = factionBeliefCheck.x == 3 ? node.beliefs.x : factionBeliefCheck.x;
                     factionBeliefCheck.y = factionBeliefCheck.y == 3 ? node.beliefs.y : factionBeliefCheck.y;
 
-                    if (Vector2.Distance(node.beliefs, factionBeliefCheck) > 0.9f)
+                    if (Vector2.Distance(node.beliefs, factionBeliefCheck) > 12f)
                     {
-                        //node.userInformation.instigator = Faction.None;
+                        node.instigator = Faction.None;
                     }
                     else
                     {

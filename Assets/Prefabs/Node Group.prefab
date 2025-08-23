@@ -232,7 +232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2595029510071658488
 RectTransform:
   m_ObjectHideFlags: 0
@@ -277,7 +277,8 @@ MonoBehaviour:
   buttonIcon: {fileID: 7488896649026990428}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 8
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 0}
 --- !u!114 &7094105924535434206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,7 +394,9 @@ MonoBehaviour:
   buttonIcon: {fileID: 3537060322948743049}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 5
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 4954414405114697385, guid: 2f14471e2492c6d4ea0bf74ad830d98d,
+    type: 3}
 --- !u!114 &7811722867826835319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,7 +926,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2843739935229757968
 RectTransform:
   m_ObjectHideFlags: 0
@@ -968,7 +971,8 @@ MonoBehaviour:
   buttonIcon: {fileID: 6260060794525338974}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 9
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 0}
 --- !u!114 &7104267552854587459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1084,7 +1088,9 @@ MonoBehaviour:
   buttonIcon: {fileID: 2701667883363953235}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 2
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 4954414405114697385, guid: f557a9609ec2c4e4aac29417357bcdf1,
+    type: 3}
 --- !u!114 &1811875926827586602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1412,7 +1418,9 @@ MonoBehaviour:
   buttonIcon: {fileID: 2927388511034660628}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 4
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 4954414405114697385, guid: 6b88ca70c66b69d4988661bef8030815,
+    type: 3}
 --- !u!114 &9061057176445204226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6676,7 +6684,9 @@ MonoBehaviour:
   buttonIcon: {fileID: 5889393734039153594}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 3
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 4954414405114697385, guid: 09be107c614c8a8409b44bfcf978624b,
+    type: 3}
 --- !u!114 &1339602174575962175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6747,7 +6757,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3114970721635922472
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6792,7 +6802,8 @@ MonoBehaviour:
   buttonIcon: {fileID: 7843774741605843547}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 11
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 0}
 --- !u!114 &6930104486300236910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12411,7 +12422,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7800310787455730839
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12456,7 +12467,8 @@ MonoBehaviour:
   buttonIcon: {fileID: 1146656875893522372}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 10
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 0}
 --- !u!114 &7602471514321945141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12577,13 +12589,9 @@ MonoBehaviour:
   bannedCover: {fileID: 0}
   buttonList:
   - {fileID: 4448806782430331520}
-  - {fileID: 8562554160562692449}
   - {fileID: 4404660976211092682}
-  - {fileID: 3142761270400170832}
   - {fileID: 5322335136673587411}
-  - {fileID: 2868590079475662681}
   - {fileID: 5928291527263492688}
-  - {fileID: 640688538516915619}
   - {fileID: 8093945866925123685}
   playerPS: {fileID: 937055342986273458}
   aIPs: {fileID: 751978200388672698}
@@ -12750,7 +12758,9 @@ MonoBehaviour:
   buttonIcon: {fileID: 8472774507032808129}
   unhoveredColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   hoverColor: {r: 1, g: 1, b: 1, a: 1}
-  actionType: 7
+  action: {fileID: 0}
+  abstractActionObj: {fileID: 4954414405114697385, guid: 2f14471e2492c6d4ea0bf74ad830d98d,
+    type: 3}
 --- !u!114 &7948507592162326508
 MonoBehaviour:
   m_ObjectHideFlags: 0

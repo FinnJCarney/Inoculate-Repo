@@ -323,6 +323,106 @@ public class LevelManager : MonoBehaviour
         return false;
     }
 
+    public float MinDistanceBetweenTwoVector2sOnMap(Vector2 startingPos, Vector2 endingPos) //Move to LevelManager
+    {
+        Vector2 movement = new Vector2(12f, 12f);
+        List<Vector2> positionsToCheck = new List<Vector2>();
+        Dictionary<Vector2, List<Vector2>> possiblePaths = new Dictionary<Vector2, List<Vector2>>();
+
+        positionsToCheck.Add(startingPos);
+
+        List<Vector2> startingPath = new List<Vector2>();
+        startingPath.Add(startingPos);
+        possiblePaths.Add(startingPos, startingPath);
+
+        //Debug.Log("Checking for path from " + startingPos + " to " + endingPos);
+
+        for (int i = 0; i < positionsToCheck.Count; i++) //Check list of Vector2s that are valid
+        {
+            Vector2 positionToCheck = positionsToCheck[i];
+
+            List<Vector2> positionsToAdd = new List<Vector2>();
+
+            //Check all adjacent Vector2, if they are available, we should look at them
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.up * movement)))
+            {
+                positionsToAdd.Add(positionToCheck + (Vector2.up * movement));
+            }
+
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.down * movement)))
+            {
+                positionsToAdd.Add(positionToCheck + (Vector2.down * movement));
+            }
+
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.right * movement)))
+            {
+                positionsToAdd.Add(positionToCheck + (Vector2.right * movement));
+            }
+
+            if (LevelManager.lM.CheckValidSpace(positionToCheck + (Vector2.left * movement)))
+            {
+                positionsToAdd.Add(positionToCheck + (Vector2.left * movement));
+            }
+
+            foreach (Vector2 positionToAdd in positionsToAdd)
+            {
+                //We're gonna see what a path to this new Vector2 looks like
+                List<Vector2> newPossiblePath = new List<Vector2>();
+
+                //Have we been to our Vector2 before? If so, grab the current path there now
+                if (possiblePaths.ContainsKey(positionToCheck))
+                {
+                    //Debug.Log("Possible paths contains " + positionToCheck);
+                    foreach (Vector2 pathPos in possiblePaths[positionToCheck])
+                    {
+                        newPossiblePath.Add(pathPos);
+                    }
+                    newPossiblePath.Add(positionToAdd);
+                }
+                else //Else, we have no record of how to get here, which probably means it's very close
+                {
+                    //Debug.Log("Possible paths does not contain " + positionToCheck);
+                    newPossiblePath.Add(positionToCheck);
+                    newPossiblePath.Add(positionToAdd);
+                }
+
+                //We have established a path to this new vector2 we're checking
+                //Debug.Log("Possible Path between " + newPossiblePath[0] + " and " + positionToAdd + " is " + newPossiblePath.Count);
+
+                //We've never been to this Vector2 before! Whatever path we've developed to it is currently our best one, so let's add that path and check what's around it in future
+                if (!possiblePaths.ContainsKey(positionToAdd))
+                {
+                    //Debug.Log("Possible paths does not contain " + positionToAdd);
+                    possiblePaths.Add(positionToAdd, newPossiblePath);
+                    positionsToCheck.Add(positionToAdd);
+                }
+                else //We have been to this vector 2 before, so check how long it previously took to get here vs our new path. Save whichever one is shorter
+                {
+                    //Debug.Log("Possible paths does contain " + positionToAdd + "with length " + possiblePaths[positionToAdd].Count);
+                    if (newPossiblePath.Count < possiblePaths[positionToAdd].Count)
+                    {
+                        //Debug.Log(newPossiblePath.Count + " is smaller than " + possiblePaths[positionToAdd].Count);
+                        possiblePaths[positionToAdd].Clear();
+
+                        foreach (Vector2 pathPos in newPossiblePath)
+                        {
+                            possiblePaths[positionToAdd].Add(pathPos);
+                        }
+
+                        positionsToCheck.Add(positionToAdd);
+                    }
+                }
+
+                //Debug.Log("New smallest path between " + startingPos + " and " + positionToAdd + " is " + possiblePaths[positionToAdd].Count);
+            }
+        }
+
+        //At this stage, we should have checked essentially every point on the board, and in that process found the shortest path to our ideal end point, so return that
+        //Debug.Log("Shortest Path between " + startingPos + " and " + endingPos + " is " + possiblePaths[endingPos].Count);
+
+        return possiblePaths[endingPos].Count;
+    }
+
     [SerializeField] public LevelInfo levelInfo;
 
     public Node playerNode;
@@ -332,10 +432,7 @@ public class LevelManager : MonoBehaviour
     public float amountRequiredForControl;
 
     public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
-    public SerializableDictionary<ActionType, TweetInfo> tweetsForActions = new SerializableDictionary<ActionType, TweetInfo>();
-
-    [TextArea(5, 5)]
-    public string levelMap = "11111\n11111\n11111\n11111\n11111";
+    public SerializableDictionary<AbstractAction, TweetInfo> tweetsForActions = new SerializableDictionary<AbstractAction, TweetInfo>();
 
     [SerializeField] public connectionLayer allowedLayers;
     [SerializeField] connectionLayer startingLayer;

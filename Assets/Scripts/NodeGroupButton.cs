@@ -3,32 +3,19 @@ using UnityEngine;
 
 public class NodeGroupButton : AbstractButtonClass
 {
-    private void Start()
+    private void Awake()
     {
         myNodeGroup = GetComponentInParent<NodeGroup>();
+        action = abstractActionObj.GetComponent<AbstractAction>();
     }
 
     public override void PerformAction()
     {
-        //myNodeGroup.PerformButtonAction(actionType);
-    }
-
-    public bool CheckActionAbility(int internalNodePossibleActions, int externalNodePossibleActions)
-    {
-        if(myNodeGroup == null)
-        {
-            myNodeGroup = GetComponentInParent<NodeGroup>();
-        }
-
-        if (!LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].availableActions.Contains<AbstractAction>(action))
-        {
-            return false;
-        }
-
-        return action.CheckActionAvailability(myNodeGroup, internalNodePossibleActions);
+        ActionManager.aM.PerfromGroupButtonAction(action, myNodeGroup);
     }
 
 
     NodeGroup myNodeGroup;
-    [SerializeField] public AbstractAction action;
+    [HideInInspector] public AbstractAction action;
+    [SerializeField] private GameObject abstractActionObj;
 }

@@ -74,8 +74,8 @@ public class NodeGroup : MonoBehaviour
                 node.transform.DOMove(new Vector3(desiredPoint.x, 0, desiredPoint.y), 0.5f);
             }
 
-            accessRing.transform.DOScale(defaultAccessRingScale * radius, 0.5f);
-            allowanceRing.transform.DOScale(defaultAllowanceRingScale * radius, 0.5f);
+            accessRing.transform.DOScale(defaultAccessRingScale * radius * 2/3, 0.5f);
+            allowanceRing.transform.DOScale(defaultAllowanceRingScale * radius * 5/6, 0.5f);
         }
     }
 
@@ -150,7 +150,7 @@ public class NodeGroup : MonoBehaviour
             return;
         }
 
-        int internalPossibleActions = nodesInGroup.Count - performingActions;
+        int internalPossibleActions = this.groupFaction == LevelManager.lM.playerAllyFaction ? nodesInGroup.Count - performingActions : 0;
         int externalPossibleActions = 0;
         int externalPossibleGroupActions = 0;
 
@@ -183,6 +183,12 @@ public class NodeGroup : MonoBehaviour
             foreach (NodeGroupButton nGB in buttonList)
             {
                 AbstractAction action = nGB.action;
+
+                if (!LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].availableActions.Contains(action))
+                {
+                    nGB.gameObject.SetActive(false);
+                }
+
                 if (action.costType == AbstractAction.ActionCostType.InternalAction)
                 {
                     nGB.gameObject.SetActive(action.CheckActionAvailability(this, internalPossibleActions));
@@ -215,15 +221,40 @@ public class NodeGroup : MonoBehaviour
         accessRing.color = LevelManager.lM.levelFactions[groupFaction].color;
     }
 
-    public void PerformButtonAction(ActionType aT)
+    public Vector3 CheckAvailableActions(Faction faction)
     {
-        if (nodesInGroup.Count != 0)
+        int internalPossibleActions = this.groupFaction == faction ? nodesInGroup.Count - performingActions : 0;
+        int externalPossibleActions = 0;
+        int externalPossibleGroupActions = 0;
+
+        foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
         {
-            ActionManager.aM.PerfromGroupButtonAction(aT, this);
+            if (connectedNodes[connectedNodeGroup].layer != connectionLayer.onlineOffline && connectedNodes[connectedNodeGroup].layer != LayerManager.lM.activeLayer)
+            {
+                continue;
+            }
+
+            if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn)
+            {
+                continue;
+            }
+
+            if (connectedNodeGroup.groupFaction == faction)
+            {
+                int availableGroupActions = (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
+                externalPossibleActions += availableGroupActions;
+
+                if (availableGroupActions > externalPossibleGroupActions)
+                {
+                    externalPossibleGroupActions = availableGroupActions;
+                }
+            }
         }
+
+        return new Vector3 (internalPossibleActions, externalPossibleActions, externalPossibleGroupActions);
     }
 
-    public void ActionResult(ActionType aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat)
+    public void ActionResult(AbstractAction aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat)
     {
 
         if (nodesInGroup.Count == 0)
@@ -253,26 +284,9 @@ public class NodeGroup : MonoBehaviour
         //
         //}
 
-        if (aT == ActionType.Left || aT == ActionType.Right || aT == ActionType.Up || aT == ActionType.Down || aT == ActionType.DoubleLeft || aT == ActionType.DoubleRight || aT == ActionType.DoubleUp || aT == ActionType.DoubleDown)
-        {
-            Vector2 originalBeliefs = nodeToActOn.beliefs;
-            Vector2 actionMovement = ActionManager.aM.actionInformation[aT].actionPosition;
+        aT.PerformAction(nodeToActOn);
 
-            if (LevelManager.lM.CheckValidSpace(originalBeliefs + actionMovement))
-            {
-                nodeToActOn.beliefs += actionMovement;
-                actionSuccessful = true;
-            }
-
-            if (nodeToActOn.beliefs != originalBeliefs)
-            {
-                LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(nodeToActOn);
-                LevelManager.lM.nodeGroups[nodeToActOn.beliefs].AddNodeToGroup(nodeToActOn);
-            }
-
-            CheckActions(LevelManager.lM.nodeGroups[nodeToActOn.beliefs]);
-        }
-        
+        CheckActions(LevelManager.lM.nodeGroups[nodeToActOn.beliefs]);
 
         var particleSystemMain = playerPS.main;
         particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;

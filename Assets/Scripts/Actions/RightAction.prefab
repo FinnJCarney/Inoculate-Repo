@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5297241933657921645}
-  - component: {fileID: 8369039296640889830}
+  - component: {fileID: 7280328243185793495}
   m_Layer: 0
-  m_Name: UpAction
+  m_Name: RightAction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8369039296640889830
+--- !u!114 &7280328243185793495
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -48,4 +48,4 @@ MonoBehaviour:
   count: 0
   timeToAct: 7.5
   costType: 2
-  movement: {x: 0, y: 12}
+  movement: {x: 12, y: 0}
