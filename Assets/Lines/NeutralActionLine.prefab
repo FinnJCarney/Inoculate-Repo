@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numOfPointsOnLine: 50
-  randomOffsetRange: 6
+  randomOffsetRange: 3
   yValue: 5
 --- !u!120 &3082717458355634730
 LineRenderer:

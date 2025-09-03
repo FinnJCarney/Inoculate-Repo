@@ -29,9 +29,9 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        Time.timeScale = defaultTimeScale + Mathf.Sqrt(timeMultiplier) + 0.025f;
-        realTimeElapsed += Time.deltaTime / Time.timeScale;
-        adjustedDeltaTime = Time.deltaTime * Time.timeScale;
+        Time.timeScale = defaultTimeScale + timeMultiplier + 0.025f;
+        realTimeElapsed += Time.unscaledDeltaTime;
+        gameTimeElapsed += Time.deltaTime;
     }
 
     public void SetTimeScale(float timeScale)
@@ -61,7 +61,7 @@ public class TimeManager : MonoBehaviour
     Tween timeScaleTween;
     private float desiredTimeScale;
     private float defaultTimeScale;
-    public float adjustedDeltaTime;
     [SerializeField][Range(0f, 16f)] public float timeMultiplier;
     public float realTimeElapsed;
+    public float gameTimeElapsed;
 }

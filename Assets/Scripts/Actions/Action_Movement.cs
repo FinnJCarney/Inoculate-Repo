@@ -2,14 +2,15 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
-public class Action_Movement : AbstractAction
+public class Action_Movement : Action
 {
     public Vector2 movement = new Vector2(33f, 33f);
 
-    public override bool PerformAction(Node_UserInformation nodeToActOn)
+    public override bool PerformActionOnNode(Node_UserInformation nodeToActOn)
     {
         Vector2 originalBeliefs = nodeToActOn.beliefs;
 
@@ -26,7 +27,7 @@ public class Action_Movement : AbstractAction
         return true;
     }
 
-    public override bool CheckActionAvailability(NodeGroup applicableNodeGroup, int availableActions)
+    public override bool CheckNodeActionAvailability(NodeGroup applicableNodeGroup, int availableActions)
     {
         if (cost > availableActions)
         {
@@ -40,7 +41,6 @@ public class Action_Movement : AbstractAction
 
     public override NodeGroup[] ProvidePossibleActingNodes(NodeGroup applicableNodeGroup, Faction faction)
     {
-        //Under assumption this only works as an external action
         List<NodeGroup> possibleActingNodeGroupList = new List<NodeGroup>();
         
         foreach(NodeGroup connectedNodeGroup in applicableNodeGroup.connectedNodes.Keys)
@@ -52,10 +52,12 @@ public class Action_Movement : AbstractAction
                 continue;
             }
 
-            if(connectedNodeGroup.groupFaction == faction)
+            if (connectedNodeGroup.groupFaction != faction)
             {
-                availableActions += (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
+                continue;
             }
+
+            availableActions += (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
 
             if(availableActions >= cost)
             {
@@ -88,6 +90,14 @@ public class Action_Movement : AbstractAction
             scoreToReturn += 6f;
         }
 
+        foreach(Node_UserInformation node in receivingNodeGroup.nodesInGroup)
+        {
+            if(node.instigator != Faction.None && actingFaction != node.instigator)
+            {
+                scoreToReturn += 10f;
+            }
+        }
+
         foreach (NodeGroup cNConnectedNode in receivingNodeGroup.connectedNodes.Keys)
         {
             if (Vector2.Distance(receivingNodeGroup.groupBelief + movement, cNConnectedNode.groupBelief) < 12.1f)
@@ -104,6 +114,21 @@ public class Action_Movement : AbstractAction
         }
 
         return Mathf.RoundToInt(scoreToReturn);
+    }
+
+    public override void UndoNodeAction(Node_UserInformation nodeToActOn)
+    {
+        Vector2 originalBeliefs = nodeToActOn.beliefs;
+
+        if (!LevelManager.lM.CheckValidSpace(originalBeliefs - movement))
+        {
+            return;
+        }
+
+        nodeToActOn.beliefs -= movement;
+
+        LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(nodeToActOn);
+        LevelManager.lM.nodeGroups[nodeToActOn.beliefs].AddNodeToGroup(nodeToActOn);
     }
 }
 

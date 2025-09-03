@@ -28,7 +28,7 @@ public class LayerManager : MonoBehaviour
             buttonImage.sprite = online ? onlineSpr : offlineSpr;
         }
 
-        VisualsManager.vM.SwapLayer(online);
+        //VisualsManager.vM.SwapLayer(online);
     }
 
     public void ChangeLayer()
@@ -39,7 +39,7 @@ public class LayerManager : MonoBehaviour
         {
             buttonImage.sprite = online ? onlineSpr : offlineSpr;
         }
-        VisualsManager.vM.SwapLayer(online);
+        //VisualsManager.vM.SwapLayer(online);
     }
 
     public static LayerManager lM;

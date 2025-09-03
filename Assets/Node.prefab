@@ -13149,6 +13149,8 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0, a: 0}
     mainPosition: {x: 0, y: 0}
     positions: []
+    availableActions: []
+    actionObjects: []
     lineMaterial: {fileID: 0}
     particleMaterial: {fileID: 0}
     actionLine: {fileID: 0}
@@ -13310,7 +13312,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2528994053259682323
 Transform:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class NodeGroupButton : AbstractButtonClass
     private void Awake()
     {
         myNodeGroup = GetComponentInParent<NodeGroup>();
-        action = abstractActionObj.GetComponent<AbstractAction>();
+        action = abstractActionObj.GetComponent<Action>();
     }
 
     public override void PerformAction()
@@ -16,6 +16,6 @@ public class NodeGroupButton : AbstractButtonClass
 
 
     NodeGroup myNodeGroup;
-    [HideInInspector] public AbstractAction action;
+    [HideInInspector] public Action action;
     [SerializeField] private GameObject abstractActionObj;
 }

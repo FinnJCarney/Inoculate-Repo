@@ -29,7 +29,10 @@ public class ActionManager : MonoBehaviour
     {
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
-            Destroy(currentActions[i].actionLine.gameObject);
+            for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
+            {
+                Destroy(currentActions[i].actionLines[j].gameObject);
+            }
             Destroy(currentActions[i].actionRing);
             currentActions.Remove(currentActions[i]);
         }
@@ -38,34 +41,18 @@ public class ActionManager : MonoBehaviour
         RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
-    private void Start()
-    {
-        tm = TimeManager.tM;
-    }
-
     private void Update()
     {
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
             if (currentActions[i].faction != currentActions[i].actingNodeGroup.groupFaction)
             {
-                if (currentActions[i].faction == LevelManager.lM.playerAllyFaction)
-                {
-                    TimeManager.tM.AddTimeScale(-0.75f);
-                    numOfPlayerActions--;
-                    RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
-                }
-                currentActions[i].actingNodeGroup.performingActions--; ;
-                currentActions[i].receivingNodeGroup.receivingActions--;
-                currentActions[i].bleat.CancelBleat();
-                Destroy(currentActions[i].actionLine.gameObject);
-                Destroy(currentActions[i].actionRing);
-                currentActions.Remove(currentActions[i]);
+                DestroyCurrentAction(currentActions[i]);
                 continue;
             }
 
             var adjustedCurAction = currentActions[i];
-            adjustedCurAction.timer -= tm.adjustedDeltaTime;
+            adjustedCurAction.timer -= Time.deltaTime;
             currentActions[i] = adjustedCurAction;
 
             //Old functionality
@@ -82,12 +69,17 @@ public class ActionManager : MonoBehaviour
      
             if (LayerManager.lM.activeLayer == currentActions[i].actionLayer)
             {
-
-                currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position, false);
+                for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
+                {
+                    currentActions[i].actionLines[j].SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position, false);
+                }
             }
             else
             {
-                currentActions[i].actionLine.SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position, true);
+                for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
+                {
+                    currentActions[i].actionLines[j].SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position, true);
+                }
             }
             
 
@@ -102,10 +94,14 @@ public class ActionManager : MonoBehaviour
                     numOfPlayerActions--;
                     RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
                 }
-                currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].actionLayer, currentActions[i].bleat);
-                currentActions[i].actingNodeGroup.performingActions--;
+                currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].actionLayer, currentActions[i].bleat, currentActions[i].pastAction);
+                currentActions[i].actingNodeGroup.performingActions -= currentActions[i].action.cost;
                 currentActions[i].receivingNodeGroup.receivingActions--;
-                Destroy(currentActions[i].actionLine.gameObject);
+
+                for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
+                {
+                    Destroy(currentActions[i].actionLines[j].gameObject);
+                }
                 Destroy(currentActions[i].actionRing);
                 currentActions.Remove(currentActions[i]);
                 continue;
@@ -126,200 +122,48 @@ public class ActionManager : MonoBehaviour
         actionRing.GetComponent<SpriteRenderer>().color = Color.Lerp(Color.clear, idealColor, amountThrough);
     }
 
-    public void PerfromGroupButtonAction(AbstractAction aT, NodeGroup receivingNodeGroup)
+    public void PerfromGroupButtonAction(Action aT, NodeGroup receivingNodeGroup)
     {
         NodeGroup actingNodeGroup = null;
+        NodeGroup[] possibleActingNodeGroups = aT.ProvidePossibleActingNodes(receivingNodeGroup, LevelManager.lM.playerAllyFaction);
 
-        if (aT.GetComponent<Action_Movement>() != null)
+        foreach (NodeGroup nodeGroup in possibleActingNodeGroups)
         {
-            foreach (NodeGroup nodeGroup in receivingNodeGroup.connectedNodes.Keys)
-            {
-                nodeGroup.prio = 100;
-
-                if (nodeGroup.performingActions == nodeGroup.nodesInGroup.Count || nodeGroup.groupFaction != LevelManager.lM.playerAllyFaction)
-                {
-                    nodeGroup.prio -= 1000;
-                }
-
-                if (receivingNodeGroup.connectedNodes[nodeGroup].type == connectionType.influenceOn)
-                {
-                    nodeGroup.prio -= 1000;
-                }
-
-                foreach (NodeGroup connectedNodeGroup in nodeGroup.connectedNodes.Keys)
-                {
-                    if (nodeGroup.connectedNodes[connectedNodeGroup].type == connectionType.influencedBy)
-                    {
-                        continue;
-                    }
-
-                    if (connectedNodeGroup.groupFaction == nodeGroup.groupFaction)
-                    {
-                        nodeGroup.prio += 5;
-                    }
-                    else
-                    {
-                        nodeGroup.prio -= 5;
-                    }
-
-                }
-
-                nodeGroup.prio += aT.ProvideActionScore(nodeGroup, receivingNodeGroup, LevelManager.lM.playerAllyFaction);
-            }
+            nodeGroup.prio = aT.ProvideActionScore(nodeGroup, receivingNodeGroup, LevelManager.lM.playerAllyFaction);
         }
 
-        foreach (NodeGroup nodeGroup in receivingNodeGroup.connectedNodes.Keys)
+        if (aT.costType == Action.ActionCostType.InternalAction)
         {
-            if (nodeGroup.prio < 0)
-            {
-                continue;
-            }
-
-            if (actingNodeGroup == null)
-            {
-                actingNodeGroup = nodeGroup;
-            }
-            else if (actingNodeGroup.prio < nodeGroup.prio)
-            {
-                actingNodeGroup = nodeGroup;
-            }
+            MakeNewGroupAction(aT, LayerManager.lM.activeLayer, receivingNodeGroup, receivingNodeGroup);
         }
-
-
-        if (actingNodeGroup == null)
+        else
         {
-            Debug.Log("Unable to find acting node group");
-            return;
-        }
-
-        MakeNewGroupAction(aT, LayerManager.lM.activeLayer, actingNodeGroup, receivingNodeGroup);
-
-        TimeManager.tM.AddTimeScale(0.75f);
-
-        numOfPlayerActions++;
-        RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
-    }
-
-    public void PerformButtonAction(UserButton buttonInfo)
-    {
-        if(!buttonInfo.buttonEnabled)
-        {
-            return;
-        }
-
-        Node receivingNode = buttonInfo.relatedNode;
-
-        Node actingNode = null;
-
-
-        if (buttonInfo.type != ActionType.Connect)
-        {
-            foreach (Node connectedNode in receivingNode.userInformation.connectedNodes.Keys)
+            foreach (NodeGroup nodeGroup in possibleActingNodeGroups)
             {
-                connectedNode.nodePrio = 100;
-
-                if (connectedNode.performingAction || connectedNode.isBanned || connectedNode.userInformation.faction != LevelManager.lM.playerAllyFaction)
-                {
-                    connectedNode.nodePrio -= 1000;
-                }
-
-                if (receivingNode.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn)
-                {
-                    connectedNode.nodePrio -= 1000;
-                }
-
-                if (receivingNode.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && receivingNode.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
-                {
-                    connectedNode.nodePrio -= 1000;
-                }
-
-                foreach (Node cNCN in connectedNode.userInformation.connectedNodes.Keys)
-                {
-                    if (connectedNode.userInformation.connectedNodes[cNCN].type == connectionType.influencedBy)
-                    {
-                        continue;
-                    }
-
-                    if (cNCN.userInformation.faction == connectedNode.userInformation.faction)
-                    {
-                        connectedNode.nodePrio += 5;
-                    }
-                    else
-                    {
-                        connectedNode.nodePrio -= 5;
-                    }
-
-                }
-
-                if (buttonInfo.type == ActionType.Left)
-                {
-                    connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.x - connectedNode.userInformation.beliefs.x) * 10;
-                }
-
-                if (buttonInfo.type == ActionType.Right)
-                {
-                    connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.x - receivingNode.userInformation.beliefs.x) * 10;
-                }
-
-                if (buttonInfo.type == ActionType.Up)
-                {
-                    connectedNode.nodePrio += Mathf.RoundToInt(connectedNode.userInformation.beliefs.y - receivingNode.userInformation.beliefs.y) * 10;
-                }
-
-                if (buttonInfo.type == ActionType.Down)
-                {
-                    connectedNode.nodePrio += Mathf.RoundToInt(receivingNode.userInformation.beliefs.y - connectedNode.userInformation.beliefs.y) * 10;
-                }
-            }
-
-            foreach (Node connectedNode in receivingNode.userInformation.connectedNodes.Keys)
-            {
-                if (connectedNode.nodePrio < 0)
+                if (nodeGroup.prio < 0)
                 {
                     continue;
                 }
 
-                if (actingNode == null)
+                if (actingNodeGroup == null)
                 {
-                    actingNode = connectedNode;
+                    actingNodeGroup = nodeGroup;
                 }
-                else if (actingNode.nodePrio < connectedNode.nodePrio)
+                else if (actingNodeGroup.prio < nodeGroup.prio)
                 {
-                    actingNode = connectedNode;
+                    actingNodeGroup = nodeGroup;
                 }
             }
-        }
 
-        if (buttonInfo.type == ActionType.Connect)
-        {
-            Node closestCentristNode = null;
-            float shortestDistance = Mathf.Infinity;
-
-            foreach (Node centristNode in NodeManager.nM.centristNodes)
+            if (actingNodeGroup == null)
             {
-                if(!receivingNode.userInformation.connectedNodes.Contains(centristNode))
-                {
-                    if(shortestDistance > Vector3.Distance(receivingNode.transform.position, centristNode.transform.position))
-                    {
-                        shortestDistance = Vector3.Distance(receivingNode.transform.position, centristNode.transform.position);
-                        closestCentristNode = centristNode;
-                    }
-                }
+                Debug.Log("Unable to find acting node group");
+                return;
             }
 
-            actingNode = closestCentristNode;
+            MakeNewGroupAction(aT, LayerManager.lM.activeLayer, actingNodeGroup, receivingNodeGroup);
+
         }
-
-        if (actingNode == null)
-        {
-            Debug.Log("Unable to find acting node");
-            return;
-        }
-
-        actingNode.performingAction = true;
-        receivingNode.receivingActions++;
-
-        //MakeNewAction(buttonInfo.type, LayerManager.lM.activeLayer, actingNode, receivingNode);
 
         TimeManager.tM.AddTimeScale(0.75f);
 
@@ -561,29 +405,38 @@ public class ActionManager : MonoBehaviour
 
             foreach(NodeGroup nodeGroup in possibleReceivingNodeGroups)
             {
-                foreach(AbstractAction possibleAction in LevelManager.lM.levelFactions[faction].availableActions)
+                foreach(Action possibleAction in LevelManager.lM.levelFactions[faction].availableActions)
                 {
                     int applicableActions = 0;
                     Vector3 availableActions = nodeGroup.CheckAvailableActions(faction);
 
-                    if(possibleAction.costType == AbstractAction.ActionCostType.InternalAction)
+                    if (possibleAction.costType == Action.ActionCostType.InternalAction)
                     {
                         applicableActions = ((int)availableActions.x);
-                    }
-                    else if (possibleAction.costType == AbstractAction.ActionCostType.ExternlAction)
-                    {
-                        applicableActions = ((int)availableActions.y);
-                    }
-                    else if (possibleAction.costType == AbstractAction.ActionCostType.ExternalGroupAction)
-                    {
-                        applicableActions = ((int)availableActions.z);
-                    }
 
-                    if(possibleAction.CheckActionAvailability(nodeGroup, applicableActions))
-                    {
-                        foreach(NodeGroup possibleActingNodeGroup in possibleAction.ProvidePossibleActingNodes(nodeGroup, faction))
+                        if (possibleAction.CheckNodeActionAvailability(nodeGroup, applicableActions))
                         {
-                            possibleActions.Add(MakePossibleGroupAction(possibleAction, possibleActingNodeGroup, nodeGroup, faction));
+                            possibleActions.Add(MakePossibleGroupAction(possibleAction, nodeGroup, nodeGroup, faction));
+                        }
+                    }
+                    else
+                    {
+                        if (possibleAction.costType == Action.ActionCostType.ExternalAction)
+                        {
+                            applicableActions = ((int)availableActions.y);
+                        }
+                        
+                        if (possibleAction.costType == Action.ActionCostType.ExternalGroupAction)
+                        {
+                            applicableActions = ((int)availableActions.z);
+                        }
+
+                        if (possibleAction.CheckNodeActionAvailability(nodeGroup, applicableActions))
+                        {
+                            foreach (NodeGroup possibleActingNodeGroup in possibleAction.ProvidePossibleActingNodes(nodeGroup, faction))
+                            {
+                                possibleActions.Add(MakePossibleGroupAction(possibleAction, possibleActingNodeGroup, nodeGroup, faction));
+                            }
                         }
                     }
                 }
@@ -612,7 +465,7 @@ public class ActionManager : MonoBehaviour
         }
     }
 
-    private void MakeNewAction(AbstractAction action, Node actingNode, Node receivingNode, Faction faction)
+    private void MakeNewAction(Action action, Node actingNode, Node receivingNode, Faction faction)
     {
         //CurrentAction newCurrentAction;
         //newCurrentAction.actionType = newActionType;
@@ -635,31 +488,36 @@ public class ActionManager : MonoBehaviour
         //Debug.Log("Performing action type " + newActionType + " for faction " + newCurrentAction.faction + ", from " + actingNode + " to " + receivingNode);
     }
 
-    private void MakeNewGroupAction(AbstractAction aT, connectionLayer actionLayer, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup)
+    private CurrentAction MakeNewGroupAction(Action aT, connectionLayer actionLayer, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup)
     {
         CurrentAction newCurrentAction;
         newCurrentAction.action = aT;
         newCurrentAction.actingNodeGroup = actingNodeGroup;
-        actingNodeGroup.performingActions++;
+        actingNodeGroup.performingActions += aT.cost;
         newCurrentAction.receivingNodeGroup = receivingNodeGroup;
         receivingNodeGroup.receivingActions++;
         newCurrentAction.actionLayer = LayerManager.lM.activeLayer;
         newCurrentAction.timer = aT.timeToAct;
         newCurrentAction.timerMax = newCurrentAction.timer;
         newCurrentAction.faction = actingNodeGroup.groupFaction;
-        newCurrentAction.actionLine = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine, this.transform).GetComponent<ActionLine>();
-        newCurrentAction.actionLine.transform.position = Vector3.Lerp(actingNodeGroup.transform.position, receivingNodeGroup.transform.position, 0.5f);
-        newCurrentAction.actionLine.SyncLine(0, actingNodeGroup.transform.position, receivingNodeGroup.transform.position, actionLayer != LayerManager.lM.activeLayer);
+        newCurrentAction.actionLines = new ActionLine[aT.cost];
+        for (int i = 0; i < aT.cost; i++)
+        {
+            newCurrentAction.actionLines[i] = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine, this.transform).GetComponent<ActionLine>();
+            newCurrentAction.actionLines[i].transform.position = Vector3.Lerp(actingNodeGroup.transform.position, receivingNodeGroup.transform.position, 0.5f);
+            newCurrentAction.actionLines[i].SyncLine(0, actingNodeGroup.transform.position, receivingNodeGroup.transform.position, actionLayer != LayerManager.lM.activeLayer);
+        }
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
         newCurrentAction.actionRing.transform.position = receivingNodeGroup.transform.position;
         newCurrentAction.bleat = TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[aT], actingNodeGroup.nodesInGroup[Random.Range(0, actingNodeGroup.nodesInGroup.Count - 1)], receivingNodeGroup.nodesInGroup[Random.Range(0, receivingNodeGroup.nodesInGroup.Count - 1)], newCurrentAction.faction);
         SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction, receivingNodeGroup.transform.position);
+        newCurrentAction.pastAction = RegisterPastAction(aT, actingNodeGroup, receivingNodeGroup, null);
         currentActions.Add(newCurrentAction);
-        
+        return currentActions[currentActions.IndexOf(newCurrentAction)];
         Debug.Log("Performing action type " + aT + " for faction " + newCurrentAction.faction + ", from " + actingNodeGroup + " to " + receivingNodeGroup);
     }
 
-    private PossibleAction MakePossibleGroupAction(AbstractAction action, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction faction)
+    private PossibleAction MakePossibleGroupAction(Action action, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction faction)
     {
         PossibleAction newPossibleAction = new PossibleAction();
         newPossibleAction.action = action;
@@ -669,8 +527,6 @@ public class ActionManager : MonoBehaviour
         newPossibleAction.faction = faction;
 
         newPossibleAction.score = action.ProvideActionScore(actingNodeGroup, receivingNodeGroup, faction);
-
-        newPossibleAction.score += Random.Range(0f, 2f);
         return newPossibleAction;
 
 
@@ -724,8 +580,37 @@ public class ActionManager : MonoBehaviour
 
     }
 
+    public PastAction RegisterPastAction(Action aA, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Node_UserInformation receivingNode)
+    {
+        PastAction newPastAction;
+        newPastAction.action = aA;
+        newPastAction.actingNodeGroups.Add;
+        newPastAction.receivingNodeGroups = new List<NodeGroupTarget>();
+        newPastAction.receivingNode = receivingNode;
+        newPastAction.timeStarted = TimeManager.tM.gameTimeElapsed;
+        newPastAction.timeCompleted = -999f;
 
+        pastActions.Add(newPastAction);
+        return pastActions[pastActions.IndexOf(newPastAction)];
+    }
 
+    public void UpdatePastAction(PastAction pA, Node_UserInformation receivingNode, bool completed)
+    {
+        PastAction adjustedPastAction = pastActions[pastActions.IndexOf(pA)];
+        adjustedPastAction.timeCompleted = completed ? TimeManager.tM.gameTimeElapsed : -999f;
+        adjustedPastAction.receivingNode = completed ? receivingNode : null;
+        pastActions[pastActions.IndexOf(pA)] = adjustedPastAction;
+    }
+
+    public void RecreatePastAction(PastAction pA, float timerVal)
+    {
+        var recreatedAction = MakeNewGroupAction(pA.action, connectionLayer.online, pA.actingNodeGroup, pA.receivingNodeGroup);
+        int actionIndex = currentActions.IndexOf(recreatedAction);
+        pastActions.Remove(recreatedAction.pastAction);
+        recreatedAction.timer = timerVal;
+        recreatedAction.pastAction = pA;
+        currentActions[actionIndex] = recreatedAction;
+    }
 
     //private PossibleAction MakePossibleAction(ActionType actionType, connectionLayer actionLayer, Node actingNode, Node receivingNode)
     //{
@@ -835,6 +720,26 @@ public class ActionManager : MonoBehaviour
     //    return newPossibleAction;
     //}
 
+    public void DestroyCurrentAction(CurrentAction currentAction)
+    {
+        if (currentAction.faction == LevelManager.lM.playerAllyFaction)
+        {
+            TimeManager.tM.AddTimeScale(-0.75f);
+            numOfPlayerActions--;
+            RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
+        }
+        currentAction.actingNodeGroup.performingActions -= currentAction.action.cost;
+        currentAction.receivingNodeGroup.receivingActions--;
+        currentAction.bleat.CancelBleat();
+        for (int j = currentAction.actionLines.Length - (1); j >= 0; j--)
+        {
+            Destroy(currentAction.actionLines[j].gameObject);
+        }
+        Destroy(currentAction.actionRing);
+        currentActions.Remove(currentAction);
+    }
+
+
 
     public void PivotAction_Performing(NodeGroup ogActingNodeGroup, NodeGroup newActingNodeGroup)
     {
@@ -873,54 +778,35 @@ public class ActionManager : MonoBehaviour
     private int numOfPlayerActions = 0;
 
     [SerializeField] public List<CurrentAction> currentActions = new List<CurrentAction>();
+    [SerializeField] public List<PastAction> pastActions = new List<PastAction>();
     [SerializeField] public List<Node> previousNodes = new List<Node>();
 
     [SerializeField] GameObject actionRing;
     [SerializeField] Vector3 outerActionRingScale;
 
     [SerializeField] int actingNodeMemoryLength;
-
-    [SerializeField] public SerializableDictionary<ActionType, ActionInformation> actionInformation = new SerializableDictionary<ActionType, ActionInformation>(); //Where x = online action time, and y = offline action time
-
-    private TimeManager tm;
-}
-
-public enum ActionType
-{ 
-    DM,
-    Ban,
-    Left,
-    Right,
-    Up,
-    Down,
-    Connect,
-    Inoculate,
-    DoubleLeft,
-    DoubleRight,
-    DoubleUp,
-    DoubleDown,
-    None
 }
 
 [System.Serializable]
 public struct CurrentAction
 {
-    public AbstractAction action;
+    public Action action;
     public NodeGroup actingNodeGroup;
     public NodeGroup receivingNodeGroup;
     public float timer;
     public float timerMax;
     public connectionLayer actionLayer;
-    public ActionLine actionLine;
+    public ActionLine[] actionLines;
     public GameObject actionRing;
     public Faction faction;
     public Bleat bleat;
+    public PastAction pastAction; 
 }
 
 [System.Serializable]
 public struct PossibleAction
 {
-    public AbstractAction action;
+    public Action action;
     public NodeGroup actingNodeGroup;
     public NodeGroup receivingNodeGroup;
     public Faction faction;
@@ -929,10 +815,20 @@ public struct PossibleAction
 }
 
 [System.Serializable]
-public struct ActionInformation
+public struct PastAction
 {
-    public bool internalAction;
-    public int actionCost;
-    public Vector2 actionLength;
-    public Vector2 actionPosition;
+    public Action action;
+    public List<NodeGroupTarget> actingNodeGroups;
+    public Node_UserInformation receivingNode;
+    public List<NodeGroupTarget> receivingNodeGroups;
+    public float timeStarted;
+    public float timeCompleted;
 }
+
+[System.Serializable]
+public struct NodeGroupTarget
+{
+    public NodeGroup nodeGroupTarget;
+    public float timeOfTarget;
+}
+

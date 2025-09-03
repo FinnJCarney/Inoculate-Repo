@@ -51,7 +51,7 @@ public class LevelManager : MonoBehaviour
 
             foreach (GameObject actionObject in adjustedLevelFaction.actionObjects)
             {
-                adjustedLevelFaction.availableActions.Add(actionObject.GetComponent<AbstractAction>());
+                adjustedLevelFaction.availableActions.Add(actionObject.GetComponent<Action>());
             }
             
             levelFactions[factionIndexes[i]] = adjustedLevelFaction;
@@ -88,9 +88,9 @@ public class LevelManager : MonoBehaviour
 
             float timeToReduceBy = Time.deltaTime;
 
-            timeToReduceBy *= NodeManager.nM.nodeFactions[adjustedFactionTimer.faction].Count / (float)NodeManager.nM.nodes.Count;
-
-            timeToReduceBy = Mathf.Clamp(timeToReduceBy, Time.deltaTime * 0.4f, Time.deltaTime * 0.8f);
+            //timeToReduceBy *= NodeManager.nM.nodeFactions[adjustedFactionTimer.faction].Count / (float)NodeManager.nM.nodes.Count;
+            
+            //timeToReduceBy = Mathf.Clamp(timeToReduceBy, Time.deltaTime * 0.4f, Time.deltaTime * 0.8f);
 
             adjustedFactionTimer.timer -= timeToReduceBy;
 
@@ -104,14 +104,14 @@ public class LevelManager : MonoBehaviour
                 {
                     if (specificFactionSetting.faction == adjustedFactionTimer.faction)
                     {
-                        adjustedFactionTimer.timer = specificFactionSetting.specificTimer * (Random.Range(0.75f, 1.25f));
+                        adjustedFactionTimer.timer = specificFactionSetting.specificTimer;
                         specificTimerFound = true;
                     }
                 }
 
                 if (!specificTimerFound)
                 {
-                    adjustedFactionTimer.timer = roundTimer * (Random.Range(0.75f, 1.25f));
+                    adjustedFactionTimer.timer = roundTimer;
                 }
             }
 
@@ -432,17 +432,17 @@ public class LevelManager : MonoBehaviour
     public float amountRequiredForControl;
 
     public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
-    public SerializableDictionary<AbstractAction, TweetInfo> tweetsForActions = new SerializableDictionary<AbstractAction, TweetInfo>();
+    public SerializableDictionary<Action, TweetInfo> tweetsForActions = new SerializableDictionary<Action, TweetInfo>();
 
     [SerializeField] public connectionLayer allowedLayers;
     [SerializeField] connectionLayer startingLayer;
 
     [SerializeField] int numOfActionsPerTurn;
 
-    [SerializeField] private float roundTimer;
+    [SerializeField] public float roundTimer;
 
-    [SerializeField] private List<factionTimer> factionTimers = new List<factionTimer>();
-    [SerializeField] private List<specificFactionSetting> specificFactionSettings = new List<specificFactionSetting>();
+    [SerializeField] public List<factionTimer> factionTimers = new List<factionTimer>();
+    [SerializeField] public List<specificFactionSetting> specificFactionSettings = new List<specificFactionSetting>();
 
     [SerializeField] public string currentScene;
 
@@ -467,7 +467,7 @@ public struct levelFaction
     public Color color;
     public Vector2 mainPosition;
     public List<Vector2> positions;
-    public List<AbstractAction> availableActions;
+    public List<Action> availableActions;
     public GameObject[] actionObjects; 
     public Material lineMaterial;
     public Material particleMaterial;

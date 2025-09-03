@@ -1,12 +1,9 @@
 using DG.Tweening;
-using JetBrains.Annotations;
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class NodeGroup : MonoBehaviour
 {
@@ -17,6 +14,7 @@ public class NodeGroup : MonoBehaviour
 
         menu.SetActive(false);
 
+        nodeGroupColliderDefaultScale = nodeGroupCollider.transform.localScale;
         defaultAccessRingScale = accessRing.transform.localScale;
         defaultAllowanceRingScale = allowanceRing.transform.localScale;
     }
@@ -45,21 +43,34 @@ public class NodeGroup : MonoBehaviour
 
     private void ArrangeNodes()
     {
-        if(nodesInGroup.Count == 1)
+        if (nodesInGroup.Count == 0)
+        {
+            backgroundRing.enabled = false;
+        }
+        else
+        {
+            backgroundRing.enabled = true;
+        }
+
+        if (nodesInGroup.Count == 1)
         {
             nodesInGroup[0].transform.DOMove(new Vector3(groupBelief.x, 0, groupBelief.y), 0.5f);
+            accessRing.sprite = bigRing;
+            allowanceRing.sprite = bigRing;
+            nodeGroupCollider.transform.DOScale(nodeGroupColliderDefaultScale, 0.5f);
             accessRing.transform.DOScale(defaultAccessRingScale, 0.5f);
             allowanceRing.transform.DOScale(defaultAllowanceRingScale, 0.5f);
         }
 
         else
         {
+            nodeGroupCollider.transform.DOScale(nodeGroupColliderDefaultScale * 2f, 0.5f);
             Vector2 centerPoint = new Vector2(this.transform.position.x, this.transform.position.z);
             float radius = 3f;
 
             foreach (Node_UserInformation node in nodesInGroup)
             {
-                if(node.instigator != Faction.Neutral && node.instigator == groupFaction)
+                if (node.instigator != Faction.Neutral && node.instigator == groupFaction)
                 {
                     node.transform.DOMove(new Vector3(groupBelief.x, 0, groupBelief.y), 0.5f);
                     continue;
@@ -74,15 +85,19 @@ public class NodeGroup : MonoBehaviour
                 node.transform.DOMove(new Vector3(desiredPoint.x, 0, desiredPoint.y), 0.5f);
             }
 
-            accessRing.transform.DOScale(defaultAccessRingScale * radius * 2/3, 0.5f);
-            allowanceRing.transform.DOScale(defaultAllowanceRingScale * radius * 5/6, 0.5f);
+            accessRing.sprite = smallRing;
+            allowanceRing.sprite = smallRing;
+            accessRing.transform.DOScale(defaultAccessRingScale * radius * 2 / 3, 0.5f);
+            allowanceRing.transform.DOScale(defaultAllowanceRingScale * radius * 5 / 6, 0.5f);
         }
     }
 
     private void Update()
     {
+        UpdataTags();
         UpdateNodeInfo();
         UpdatePlayerActions();
+        UpdateVisuals();
     }
 
     public void ShowMenu(bool show)
@@ -111,6 +126,11 @@ public class NodeGroup : MonoBehaviour
             {
                 Node_UserInformation connectedNode = connectedNodeCore.userInformation; // Should be able to get rid of this line
                 NodeGroup connectedNodeGroup = LevelManager.lM.nodeGroups[connectedNode.beliefs];
+
+                if(connectedNodeGroup == this)
+                {
+                    continue;
+                }
 
                 if (!connectedNodes.ContainsKey(connectedNodeGroup))
                 {
@@ -182,24 +202,25 @@ public class NodeGroup : MonoBehaviour
         {
             foreach (NodeGroupButton nGB in buttonList)
             {
-                AbstractAction action = nGB.action;
+                Action action = nGB.action;
 
                 if (!LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].availableActions.Contains(action))
                 {
                     nGB.gameObject.SetActive(false);
+                    continue;
                 }
 
-                if (action.costType == AbstractAction.ActionCostType.InternalAction)
+                if (action.costType == Action.ActionCostType.InternalAction)
                 {
-                    nGB.gameObject.SetActive(action.CheckActionAvailability(this, internalPossibleActions));
+                    nGB.gameObject.SetActive(action.CheckNodeActionAvailability(this, internalPossibleActions));
                 }
-                else if(action.costType == AbstractAction.ActionCostType.ExternlAction)
+                else if(action.costType == Action.ActionCostType.ExternalAction)
                 {
-                    nGB.gameObject.SetActive(action.CheckActionAvailability(this, externalPossibleActions));
+                    nGB.gameObject.SetActive(action.CheckNodeActionAvailability(this, externalPossibleActions));
                 }
-                else if (action.costType == AbstractAction.ActionCostType.ExternalGroupAction)
+                else if (action.costType == Action.ActionCostType.ExternalGroupAction)
                 {
-                    nGB.gameObject.SetActive(action.CheckActionAvailability(this, externalPossibleGroupActions));
+                    nGB.gameObject.SetActive(action.CheckNodeActionAvailability(this, externalPossibleGroupActions));
                 }
             }
         }
@@ -254,7 +275,7 @@ public class NodeGroup : MonoBehaviour
         return new Vector3 (internalPossibleActions, externalPossibleActions, externalPossibleGroupActions);
     }
 
-    public void ActionResult(AbstractAction aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat)
+    public void ActionResult(Action aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat, PastAction pastAction)
     {
 
         if (nodesInGroup.Count == 0)
@@ -262,6 +283,13 @@ public class NodeGroup : MonoBehaviour
             return;
         }
 
+        foreach(string tag in tags.Keys)
+        {
+            if(tag == "Inoculate" && actingFaction != groupFaction)
+            {
+                return;
+            }
+        }
 
         bool actionSuccessful = false;
 
@@ -269,30 +297,17 @@ public class NodeGroup : MonoBehaviour
 
         Node_UserInformation nodeToActOn = nodesInGroup[nodesInGroup.Count - 1];
 
-        //if (aT == ActionType.DM)
-        //{
-        //
-        //}
-        //
-        //if (aT == ActionType.Ban)
-        //{
-        //
-        //}
-        //
-        //if (aT == ActionType.Connect)
-        //{
-        //
-        //}
+        aT.PerformActionOnNodeGroup(this);
+        aT.PerformActionOnNode(nodeToActOn);
 
-        aT.PerformAction(nodeToActOn);
+        ActionManager.aM.UpdatePastAction(pastAction, nodeToActOn, true);
+        ReorientActions(LevelManager.lM.nodeGroups[nodeToActOn.beliefs]);
 
-        CheckActions(LevelManager.lM.nodeGroups[nodeToActOn.beliefs]);
-
-        var particleSystemMain = playerPS.main;
+        var particleSystemMain = myPS.main;
         particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;
-        playerPS.GetComponent<ParticleSystemRenderer>().material = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
-        playerPS.GetComponent<ParticleSystemRenderer>().trailMaterial = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
-        playerPS.Play();
+        myPS.GetComponent<ParticleSystemRenderer>().material = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+        myPS.GetComponent<ParticleSystemRenderer>().trailMaterial = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+        myPS.Play();
 
         if (audioSource.isPlaying)
         {
@@ -311,7 +326,7 @@ public class NodeGroup : MonoBehaviour
         audioSource.Play();
     }
 
-    public void CheckActions(NodeGroup newNodeGroup)
+    public void ReorientActions(NodeGroup newNodeGroup)
     {
         if(nodesInGroup.Count == 0)
         {
@@ -327,14 +342,59 @@ public class NodeGroup : MonoBehaviour
         }
     }
 
+    public void AddTag(string tag, float timer)
+    {
+        tags.Add(tag, timer);
+    }
+
+    private void UpdataTags()
+    {
+        List<string> tagsToCheck = tags.Keys.ToList();
+        for (int i = tags.Count - 1; i >= 0; i--)
+        {
+            var tag = tagsToCheck[i];
+
+            if (tags[tag] != -99f)
+            {
+                tags[tag] -= Time.deltaTime;
+
+                if (tags[tag] < 0f)
+                {
+                    tags.Remove(tag);
+                }
+            }
+        }
+    }
+
     public void SetActionAudio(float amountThrough)
     {
         audioSource.pitch = Mathf.Lerp(actionPitch - 0.75f, actionPitch, amountThrough);
         audioSource.volume = Mathf.Lerp(0f, 0.5f, amountThrough);
     }
 
+    private void UpdateVisuals()
+    {
+        if(tags.ContainsKey("Inoculate"))
+        {
+            for (int i = 0; i < inoculationSpheres.Length; i++)
+            {
+                inoculationSpheres[i].gameObject.SetActive(true);
+                inoculationSpheres[i].transform.Rotate(Vector3.up * 90f * Time.unscaledDeltaTime, Space.Self);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < inoculationSpheres.Length; i++)
+            {
+                inoculationSpheres[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
     public Vector2 groupBelief;
     public Faction groupFaction = Faction.Neutral;
+
+    public SerializableDictionary<string, float> tags = new SerializableDictionary<string, float>();
 
     [SerializeField] public List<Node_UserInformation> nodesInGroup = new List<Node_UserInformation>();
     public SerializableDictionary<NodeGroup, connectedNodeInfo> connectedNodes = new SerializableDictionary<NodeGroup, connectedNodeInfo>();
@@ -343,24 +403,32 @@ public class NodeGroup : MonoBehaviour
     public int performingActions;
     public int receivingActions;
 
-    [SerializeField] public SpriteRenderer nodeVisual;
+    [Header("Static Elements")]
+
+    [SerializeField] private SpriteRenderer backgroundRing;
+    [SerializeField] private GameObject nodeGroupCollider;
+    private Vector3 nodeGroupColliderDefaultScale;
 
     [SerializeField] private SpriteRenderer accessRing;
     private Vector3 defaultAccessRingScale;
     [SerializeField] private SpriteRenderer allowanceRing;
     private Vector3 defaultAllowanceRingScale;
 
-    [SerializeField] GameObject menu;
-    [SerializeField] TextMeshPro handleText;
-    [SerializeField] GameObject bannedCover;
+    [SerializeField] private GameObject[] inoculationSpheres;
+
+    [SerializeField] ParticleSystem myPS;
 
     [SerializeField] List<NodeGroupButton> buttonList = new List<NodeGroupButton>();
 
-    [SerializeField] ParticleSystem playerPS;
-    [SerializeField] ParticleSystem aIPs;
+    [SerializeField] GameObject menu;
+    [SerializeField] TextMeshPro handleText;
+    [SerializeField] GameObject bannedCover;
 
     private AudioSource audioSource;
     [SerializeField] AudioClip actionComplete;
     [SerializeField] AudioClip actionReady;
     private float actionPitch;
+
+    [SerializeField] Sprite bigRing;
+    [SerializeField] Sprite smallRing;
 }

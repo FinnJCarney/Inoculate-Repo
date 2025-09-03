@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5893f98939a4d942a8450de3037617c, type: 3}
+  m_Name: Generic_Inoculate
+  m_EditorClassIdentifier: 
+  tweets:
+  - Text: I just like [FACTION]! Why should I change my mind?
+    pNO: 0
+    pTF: 0
+    pSpecial: 0
+    responses:
+    - Text: Same!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+  - Text: Me and [RECEIVER] are locked in. We're not gonna change!
+    pNO: 0
+    pTF: 0
+    pSpecial: 0
+    responses:
+    - Text: YEAH
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+  - Text: I just feel [FACTION] in my bones
+    pNO: 1
+    pTF: 0
+    pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: me too!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+  - Text: I'm just really liking the look of [FACTION] rn
+    pNO: 2
+    pTF: 0
+    pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Tell me more!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+  - Text: Got [FACTION] on the brain
+    pNO: 0
+    pTF: 1
+    pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Interested in your thoughts!
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+  - Text: I'm really gunning for [FACTION] at this point
+    pNO: 0
+    pTF: 2
+    pSpecial: 0
+    responses:
+    - Text: +1
+      pNO: 0
+      pTF: 0
+      pSpecial: 0
+    - Text: Same here
+      pNO: 0
+      pTF: 0
+      pSpecial: 0

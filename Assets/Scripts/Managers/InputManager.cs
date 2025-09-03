@@ -85,12 +85,49 @@ public class InputManager : MonoBehaviour
 
             if (ScreenRayCastHitInfo.collider != null)
             {
+                if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                {
+                    if (prevScreenRayCastHitInfo.collider == null)
+                    {
+                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                    }
+                    else
+                    {
+                        if (prevScreenRayCastHitInfo.collider.gameObject.tag != "NodeGroupButton")
+                        {
+                            ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                        }
+                    }
+                }
+
+                else if (prevScreenRayCastHitInfo.collider != null)
+                {
+                    if (prevScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                    {
+                        prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
+                    }
+                }
+
+                if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                {
+                    if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag != "UniversalButton") || prevScreenRayCastHitInfo.collider == null)
+                    {
+                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                        universalButton.OnHover(true);
+                    }
+                }
+                else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
+                {
+                    var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                    universalButton.OnHover(false);
+                }
+
                 if (mouseButtonDown)
                 {
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
                     {
                         var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                        ActionManager.aM.PerformButtonAction(buttonInfo);
+                        //ActionManager.aM.PerformButtonAction(buttonInfo);
                     }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "NewButton")
@@ -111,20 +148,11 @@ public class InputManager : MonoBehaviour
                         var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
                         universalButton.PerformAction();
                     }
-                }
 
-                if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
-                {
-                    if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag != "UniversalButton") || prevScreenRayCastHitInfo.collider == null)
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
                     {
-                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
-                        universalButton.OnHover(true);
+                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().PerformAction();
                     }
-                }
-                else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
-                {
-                    var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
-                    universalButton.OnHover(false);
                 }
             }
             else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
@@ -176,6 +204,8 @@ public class InputManager : MonoBehaviour
 
             if (ScreenRayCastHitInfo.collider != null)
             {
+                //Debug.Log(ScreenRayCastHitInfo.collider);
+
                 if (ScreenRayCastHitInfo.collider.tag == "ScrollView")
                 {
                     currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollView>();
@@ -215,6 +245,14 @@ public class InputManager : MonoBehaviour
                     }
                 }
 
+                else if(prevScreenRayCastHitInfo.collider != null)
+                {
+                    if (prevScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                    {
+                        prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
+                    }
+                }
+
                 if (mouseButtonDown)
                 {
 
@@ -227,7 +265,7 @@ public class InputManager : MonoBehaviour
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
                     {
                         var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                        ActionManager.aM.PerformButtonAction(buttonInfo);
+                        //ActionManager.aM.PerformButtonAction(buttonInfo);
                     }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
@@ -288,7 +326,7 @@ public class InputManager : MonoBehaviour
             if (worldRaycastHitInfo.collider.gameObject.tag == "Button")
             {
                 var buttonInfo = worldRaycastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                ActionManager.aM.PerformButtonAction(buttonInfo);
+                //ActionManager.aM.PerformButtonAction(buttonInfo);
             }
 
             prevWorldMousePos = curWorldMousePos;
@@ -365,7 +403,7 @@ public class InputManager : MonoBehaviour
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
                     {
                         var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                        ActionManager.aM.PerformButtonAction(buttonInfo);
+                        //ActionManager.aM.PerformButtonAction(buttonInfo);
                     }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
@@ -408,7 +446,7 @@ public class InputManager : MonoBehaviour
             if (worldRaycastHitInfo.collider.gameObject.tag == "Button")
             {
                 var buttonInfo = worldRaycastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                ActionManager.aM.PerformButtonAction(buttonInfo);
+                //ActionManager.aM.PerformButtonAction(buttonInfo);
             }
 
             prevWorldMousePos = curWorldMousePos;

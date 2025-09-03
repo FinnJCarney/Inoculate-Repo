@@ -27,7 +27,7 @@ public class HUDManager : MonoBehaviour
         foreach (UserButton userButton in userButtons)
         {
             var UIButton = userButton.GetComponent<Button>();
-            UIButton.onClick.AddListener(delegate { ActionManager.aM.PerformButtonAction(userButton); });
+            //UIButton.onClick.AddListener(delegate { ActionManager.aM.PerformButtonAction(userButton); });
         }
 
         SyncMenu(null);

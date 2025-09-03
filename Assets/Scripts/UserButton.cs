@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class UserButton : MonoBehaviour
 {
     [SerializeField] public Node relatedNode;
-    [SerializeField] public ActionType type;
+    //[SerializeField] public ActionType type;
     [SerializeField] Image image;
     [SerializeField] GameObject text;
 

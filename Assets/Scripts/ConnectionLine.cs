@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Timers;
+using System.Xml;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.ShaderGraph.Internal;
@@ -18,6 +19,7 @@ public class ConnectionLine : MonoBehaviour
     private Faction myFaction;
     private Material myMaterial;
     private LineRenderer lineRenderer;
+    Vector3 randomOffset;
 
     [SerializeField] Material baseLineMaterial;
 
@@ -31,13 +33,25 @@ public class ConnectionLine : MonoBehaviour
         connectedNodeGroups.Add(nG1);
         connectedNodeGroups.Add(nG2);
 
+        float offsetVal = Mathf.Clamp((Vector3.Distance(nG1.transform.position, nG2.transform.position) - 17f) /3f, 0f, 12f);
+        float xSign = Mathf.Abs(nG2.transform.position.x) > Mathf.Abs(nG1.transform.position.x) ? Mathf.Sign(nG2.transform.position.x) : Mathf.Sign(nG1.transform.position.x);
+        float ySign = Mathf.Abs(nG2.transform.position.y) > Mathf.Abs(nG1.transform.position.y) ? Mathf.Sign(nG2.transform.position.y) : Mathf.Sign(nG1.transform.position.y);
+        float xOffset = nG1.transform.position.y == nG2.transform.position.y ? xSign * offsetVal : 0f;
+        float yOffset = nG1.transform.position.x == nG2.transform.position.x ? ySign * offsetVal : 0f;
+        if(yOffset != 0f && xOffset != 0f)
+        {
+            yOffset *= 0.33f;
+            xOffset *= 0.33f;
+        }
+        randomOffset = new Vector3(xOffset, 0, yOffset);
+
         LayoutLine(0);
         StartCoroutine(SyncLine(true));
     }
 
     private void LayoutLine(float progress)
     {
-        int points = 10;
+        int points = 25;
         lineRenderer.positionCount = points;
 
         for (int i = 0; i < lineRenderer.positionCount; i++)
@@ -46,7 +60,10 @@ public class ConnectionLine : MonoBehaviour
             if (i == lineRenderer.positionCount - 1) { pointPos = 1f; }
             pointPos -= 0.5f;
             float lineProgress = 0.5f - (pointPos * progress);
-            lineRenderer.SetPosition(i, Vector3.Lerp(connectedNodeGroups[0].transform.position, connectedNodeGroups[1].transform.position, lineProgress));
+            float middleProximity = 1f - Mathf.Pow(Mathf.Abs((lineProgress - 0.5f) * 2f), 2f);
+            Vector3 pointLoc = Vector3.Lerp(connectedNodeGroups[0].transform.position, connectedNodeGroups[1].transform.position, lineProgress);
+            pointLoc += (randomOffset * middleProximity);
+            lineRenderer.SetPosition(i, pointLoc);
         }
     }
 

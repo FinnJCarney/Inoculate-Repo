@@ -176,113 +176,113 @@ public class Node : MonoBehaviour
     }
 
 
-    public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer, Bleat bleat)
-    {
-        bool actionSuccessful = false;
+    //public void ActionResult(ActionType aT, Faction actingFaction, Node actingNode, connectionLayer actingLayer, Bleat bleat)
+    //{
+    //    bool actionSuccessful = false;
 
-        if (aT == ActionType.DM)
-        {
-            userInformation.userInfoHidden = false;
-        }
+    //    if (aT == ActionType.DM)
+    //    {
+    //        userInformation.userInfoHidden = false;
+    //    }
 
-        if(aT == ActionType.Ban)
-        {
-            isBanned = true;
-        }
+    //    if(aT == ActionType.Ban)
+    //    {
+    //        isBanned = true;
+    //    }
 
-        if (aT == ActionType.Left || aT == ActionType.Right || aT == ActionType.Up || aT == ActionType.Down)
-        {
-            Vector2 originalBeliefs = userInformation.beliefs;
+    //    if (aT == ActionType.Left || aT == ActionType.Right || aT == ActionType.Up || aT == ActionType.Down)
+    //    {
+    //        Vector2 originalBeliefs = userInformation.beliefs;
 
-            if (userInformation.misinformerHori && (aT == ActionType.Left || aT == ActionType.Right))
-            {
-                return;
-            }
-            else
-            {
-                if (aT == ActionType.Right)
-                {
-                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(12f, 0f)))
-                    {
-                        userInformation.beliefs += new Vector2(12f, 0f);
-                        actionSuccessful = true;
-                    }
-                }
-                else if(aT == ActionType.Left)
-                {
-                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(-12f, 0f)))
-                    {
-                        userInformation.beliefs += new Vector2(-12f, 0f);
-                        actionSuccessful = true;
-                    }
-                }
-            }
+    //        if (userInformation.misinformerHori && (aT == ActionType.Left || aT == ActionType.Right))
+    //        {
+    //            return;
+    //        }
+    //        else
+    //        {
+    //            if (aT == ActionType.Right)
+    //            {
+    //                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(12f, 0f)))
+    //                {
+    //                    userInformation.beliefs += new Vector2(12f, 0f);
+    //                    actionSuccessful = true;
+    //                }
+    //            }
+    //            else if(aT == ActionType.Left)
+    //            {
+    //                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(-12f, 0f)))
+    //                {
+    //                    userInformation.beliefs += new Vector2(-12f, 0f);
+    //                    actionSuccessful = true;
+    //                }
+    //            }
+    //        }
 
-            if (userInformation.misinformerVert && (aT == ActionType.Up || aT == ActionType.Down))
-            {
-                return;
-            }
-            else
-            {
-                if (aT == ActionType.Up)
-                {
-                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, 12f)))
-                    {
-                        userInformation.beliefs += new Vector2(0f, 12f);
-                        actionSuccessful = true;
-                    }
-                }
-                else if(aT == ActionType.Down)
-                {
-                    if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, -12f)))
-                    {
-                        userInformation.beliefs += new Vector2(0f, -12f);
-                        actionSuccessful = true;
-                    }
-                }
-            }
+    //        if (userInformation.misinformerVert && (aT == ActionType.Up || aT == ActionType.Down))
+    //        {
+    //            return;
+    //        }
+    //        else
+    //        {
+    //            if (aT == ActionType.Up)
+    //            {
+    //                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, 12f)))
+    //                {
+    //                    userInformation.beliefs += new Vector2(0f, 12f);
+    //                    actionSuccessful = true;
+    //                }
+    //            }
+    //            else if(aT == ActionType.Down)
+    //            {
+    //                if (LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0f, -12f)))
+    //                {
+    //                    userInformation.beliefs += new Vector2(0f, -12f);
+    //                    actionSuccessful = true;
+    //                }
+    //            }
+    //        }
 
-            if(originalBeliefs != userInformation.beliefs)
-            {
-                LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(userInformation);
-                LevelManager.lM.nodeGroups[userInformation.beliefs].AddNodeToGroup(userInformation);
-            }
-        }
+    //        if(originalBeliefs != userInformation.beliefs)
+    //        {
+    //            LevelManager.lM.nodeGroups[originalBeliefs].RemoveNodeFromGroup(userInformation);
+    //            LevelManager.lM.nodeGroups[userInformation.beliefs].AddNodeToGroup(userInformation);
+    //        }
+    //    }
 
-        if (aT == ActionType.Connect)
-        {
-            var newConnectedNodeInfo = new connectedNodeInfo();
-            newConnectedNodeInfo.layer = connectionLayer.onlineOffline;
-            newConnectedNodeInfo.type = connectionType.mutual;
-            userInformation.connectedNodes.Add(actingNode, newConnectedNodeInfo);
-            actingNode.userInformation.connectedNodes.Add(actingNode, newConnectedNodeInfo);
-        }
+    //    if (aT == ActionType.Connect)
+    //    {
+    //        var newConnectedNodeInfo = new connectedNodeInfo();
+    //        newConnectedNodeInfo.layer = connectionLayer.onlineOffline;
+    //        newConnectedNodeInfo.type = connectionType.mutual;
+    //        userInformation.connectedNodes.Add(actingNode, newConnectedNodeInfo);
+    //        actingNode.userInformation.connectedNodes.Add(actingNode, newConnectedNodeInfo);
+    //    }
 
-        NodeManager.nM.CheckNodeConnections();
-        NodeManager.nM.DrawNodeGroupConnectionLines();
+    //    NodeManager.nM.CheckNodeConnections();
+    //    NodeManager.nM.DrawNodeGroupConnectionLines();
 
-        var particleSystemMain = playerPS.main;
-        particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;
-        playerPS.GetComponent<ParticleSystemRenderer>().material = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
-        playerPS.GetComponent<ParticleSystemRenderer>().trailMaterial = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
-        playerPS.Play();
+    //    var particleSystemMain = playerPS.main;
+    //    particleSystemMain.startColor = LevelManager.lM.levelFactions[actingFaction].color;
+    //    playerPS.GetComponent<ParticleSystemRenderer>().material = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+    //    playerPS.GetComponent<ParticleSystemRenderer>().trailMaterial = LevelManager.lM.levelFactions[actingFaction].particleMaterial;
+    //    playerPS.Play();
 
-        if(audioSource.isPlaying)
-        {
-            audioSource.Stop();
-        }
+    //    if(audioSource.isPlaying)
+    //    {
+    //        audioSource.Stop();
+    //    }
 
-        if(actionSuccessful)
-        {
-            bleat.CreateResponse(this.userInformation);
-        }
+    //    if(actionSuccessful)
+    //    {
+    //        bleat.CreateResponse(this.userInformation);
+    //    }
 
-        audioSource.volume = 0.5f;
-        audioSource.loop = false;
-        audioSource.pitch = Random.Range(0.85f, 1.15f);
-        audioSource.clip = actionComplete;
-        audioSource.Play();
-    }
+    //    audioSource.volume = 0.5f;
+    //    audioSource.loop = false;
+    //    audioSource.pitch = Random.Range(0.85f, 1.15f);
+    //    audioSource.clip = actionComplete;
+    //    audioSource.Play();
+    //}
 
     public void PlayActionAudio()
     {
