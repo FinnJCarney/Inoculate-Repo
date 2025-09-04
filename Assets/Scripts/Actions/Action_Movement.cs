@@ -47,6 +47,11 @@ public class Action_Movement : Action
         {
             int availableActions = 0;
 
+            if(!connectedNodeGroup.connectedNodes.ContainsKey(applicableNodeGroup))
+            {
+                continue;
+            }
+
             if (connectedNodeGroup.connectedNodes[applicableNodeGroup].type == connectionType.influencedBy)
             {
                 continue;

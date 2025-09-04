@@ -163,10 +163,16 @@ public class NodeGroup : MonoBehaviour
 
     public void UpdatePlayerActions()
     {
-        if(nodesInGroup.Count == 0)
+        if (nodesInGroup.Count == 0)
         {
             accessRing.color = Color.clear;
             allowanceRing.color = Color.clear;
+
+            foreach (NodeGroupButton nGB in buttonList)
+            {
+                nGB.gameObject.SetActive(false);
+            }
+
             return;
         }
 
@@ -277,7 +283,6 @@ public class NodeGroup : MonoBehaviour
 
     public void ActionResult(Action aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat, PastAction pastAction)
     {
-
         if (nodesInGroup.Count == 0)
         {
             return;
@@ -293,14 +298,12 @@ public class NodeGroup : MonoBehaviour
 
         bool actionSuccessful = false;
 
-        //Are we inoculating rn? If so, do stuff for that, exit out of the rest of this
-
         Node_UserInformation nodeToActOn = nodesInGroup[nodesInGroup.Count - 1];
 
         aT.PerformActionOnNodeGroup(this);
         aT.PerformActionOnNode(nodeToActOn);
 
-        ActionManager.aM.UpdatePastAction(pastAction, nodeToActOn, true);
+        ActionManager.aM.CompletePastAction(pastAction, nodeToActOn, true);
         ReorientActions(LevelManager.lM.nodeGroups[nodeToActOn.beliefs]);
 
         var particleSystemMain = myPS.main;

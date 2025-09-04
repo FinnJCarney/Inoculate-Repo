@@ -10,7 +10,7 @@ public class Action_Rewind : Action_UserAction
 
     public override bool PerformUserAction()
     {
-        float cutOffTime = Mathf.Max(TimeManager.tM.gameTimeElapsed - timeToRewind, 0);
+        float cutOffTime = TimeManager.tM.gameTimeElapsed - timeToRewind;
 
         List<PastAction> pastActions = ActionManager.aM.pastActions;
         List<CurrentAction> currentActions = ActionManager.aM.currentActions;
@@ -42,19 +42,34 @@ public class Action_Rewind : Action_UserAction
             if(pastActions[i].timeCompleted > cutOffTime)
             {
                 pastActions[i].action.UndoNodeAction(pastActions[i].receivingNode);
-                ActionManager.aM.UpdatePastAction(pastActions[i], null, false);
+                ActionManager.aM.CompletePastAction(pastActions[i], null, false);
                 
                 if (pastActions[i].timeStarted < cutOffTime)
                 {
-                    Debug.Log("Is this being called");
+                    for (int j = pastActions[i].actingNodeGroups.Count - 1; j >= 0; j--)
+                    {
+                        if (pastActions[i].actingNodeGroups[j].timeOfTarget > cutOffTime)
+                        {
+                            pastActions[i].actingNodeGroups.RemoveAt(j);
+                        }
+                    }
+
+                    for (int j = pastActions[i].receivingNodeGroups.Count - 1; j >= 0; j--)
+                    {
+                        if (pastActions[i].receivingNodeGroups[j].timeOfTarget > cutOffTime)
+                        {
+                            pastActions[i].receivingNodeGroups.RemoveAt(j);
+                        }
+                    }
+
                     float timerVal = cutOffTime - pastActions[i].timeStarted;
-                    ActionManager.aM.RecreatePastAction(pastActions[i], timerVal);
+                    if (pastActions[i].actingNodeGroups[pastActions[i].actingNodeGroups.Count - 1].nodeGroupTarget.nodesInGroup.Count > 0 && pastActions[i].receivingNodeGroups[pastActions[i].receivingNodeGroups.Count - 1].nodeGroupTarget.nodesInGroup.Count > 0)
+                    {
+                        ActionManager.aM.RecreatePastAction(pastActions[i], timerVal);
+                    }
                 }
-                
             }
-
-
-            if (pastActions[i].timeStarted > cutOffTime)
+            else
             {
                 pastActions.Remove(pastActions[i]);
             }

@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,23 +38,18 @@ public class TimeManager : MonoBehaviour
     public void SetTimeScale(float timeScale)
     {
         desiredTimeScale = timeScale + 0.025f;
+
+        if(desiredTimeScale == timeMultiplier)
+        {
+            return;
+        }
+
         if(timeScaleTween != null)
         {
             timeScaleTween.Kill();
         }
         timeScaleTween.SetUpdate(true);
         timeScaleTween = DOTween.To(() => timeMultiplier, x => timeMultiplier = x, desiredTimeScale, 1f);
-    }
-
-    public void AddTimeScale(float timeScaleAddition)
-    {
-        desiredTimeScale += timeScaleAddition;
-        if (timeScaleTween != null)
-        {
-            timeScaleTween.Kill();
-        }
-        timeScaleTween.SetUpdate(true);
-        timeScaleTween = DOTween.To(() => timeMultiplier, x => timeMultiplier = x, desiredTimeScale, 2.5f);
     }
 
     public static TimeManager tM;

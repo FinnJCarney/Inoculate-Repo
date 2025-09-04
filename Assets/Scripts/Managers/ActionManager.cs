@@ -43,6 +43,8 @@ public class ActionManager : MonoBehaviour
 
     private void Update()
     {
+        numOfPlayerActions = 0;
+
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
             if (currentActions[i].faction != currentActions[i].actingNodeGroup.groupFaction)
@@ -88,25 +90,28 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].timer < 0f)
             {
-                if (currentActions[i].faction == LevelManager.lM.playerAllyFaction)
-                {
-                    TimeManager.tM.AddTimeScale(-0.75f);
-                    numOfPlayerActions--;
-                    RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
-                }
-                currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].actionLayer, currentActions[i].bleat, currentActions[i].pastAction);
                 currentActions[i].actingNodeGroup.performingActions -= currentActions[i].action.cost;
                 currentActions[i].receivingNodeGroup.receivingActions--;
+                currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].actionLayer, currentActions[i].bleat, currentActions[i].pastAction);
 
                 for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
                 {
                     Destroy(currentActions[i].actionLines[j].gameObject);
                 }
+
                 Destroy(currentActions[i].actionRing);
                 currentActions.Remove(currentActions[i]);
                 continue;
             }
+
+            if(currentActions[i].faction == LevelManager.lM.playerAllyFaction)
+            {
+                numOfPlayerActions++;
+            }
         }
+
+        TimeManager.tM.SetTimeScale(numOfPlayerActions > 0 ? 1f : 0f);
+        RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
     private void SetActionRing(GameObject actionRing, float amountThrough, Faction faction, Vector3 nodePosition)
@@ -164,11 +169,6 @@ public class ActionManager : MonoBehaviour
             MakeNewGroupAction(aT, LayerManager.lM.activeLayer, actingNodeGroup, receivingNodeGroup);
 
         }
-
-        TimeManager.tM.AddTimeScale(0.75f);
-
-        numOfPlayerActions++;
-        RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
     public void PerformAIAction(int NumOfActions, Faction faction)
@@ -584,17 +584,44 @@ public class ActionManager : MonoBehaviour
     {
         PastAction newPastAction;
         newPastAction.action = aA;
-        newPastAction.actingNodeGroups.Add;
+        newPastAction.actingNodeGroups = new List<NodeGroupTarget>();
         newPastAction.receivingNodeGroups = new List<NodeGroupTarget>();
         newPastAction.receivingNode = receivingNode;
         newPastAction.timeStarted = TimeManager.tM.gameTimeElapsed;
         newPastAction.timeCompleted = -999f;
 
+        NodeGroupTarget actingNodeTarget = new NodeGroupTarget();
+        actingNodeTarget.nodeGroupTarget = actingNodeGroup;
+        actingNodeTarget.timeOfTarget = TimeManager.tM.gameTimeElapsed;
+        newPastAction.actingNodeGroups.Add(actingNodeTarget);
+
+        NodeGroupTarget receivingNodeTarget = new NodeGroupTarget();
+        receivingNodeTarget.nodeGroupTarget = receivingNodeGroup;
+        receivingNodeTarget.timeOfTarget = TimeManager.tM.gameTimeElapsed;
+        newPastAction.receivingNodeGroups.Add(receivingNodeTarget);
+       
+
         pastActions.Add(newPastAction);
         return pastActions[pastActions.IndexOf(newPastAction)];
     }
 
-    public void UpdatePastAction(PastAction pA, Node_UserInformation receivingNode, bool completed)
+    public void PivotPastAction(PastAction pA, NodeGroup newNodeGroup, bool acting)
+    {
+        PastAction adjustedPastAction = pastActions[pastActions.IndexOf(pA)];
+
+        if (acting)
+        {
+            adjustedPastAction.actingNodeGroups.Add(ActionConverters.ProvideNodeGroupTarget(newNodeGroup));
+        }
+        else
+        {
+            adjustedPastAction.receivingNodeGroups.Add(ActionConverters.ProvideNodeGroupTarget(newNodeGroup));
+        }
+
+        pastActions[pastActions.IndexOf(pA)] = adjustedPastAction;
+    }
+
+    public void CompletePastAction(PastAction pA, Node_UserInformation receivingNode, bool completed)
     {
         PastAction adjustedPastAction = pastActions[pastActions.IndexOf(pA)];
         adjustedPastAction.timeCompleted = completed ? TimeManager.tM.gameTimeElapsed : -999f;
@@ -604,7 +631,7 @@ public class ActionManager : MonoBehaviour
 
     public void RecreatePastAction(PastAction pA, float timerVal)
     {
-        var recreatedAction = MakeNewGroupAction(pA.action, connectionLayer.online, pA.actingNodeGroup, pA.receivingNodeGroup);
+        var recreatedAction = MakeNewGroupAction(pA.action, connectionLayer.online, pA.actingNodeGroups[pA.actingNodeGroups.Count - 1].nodeGroupTarget, pA.receivingNodeGroups[pA.receivingNodeGroups.Count - 1].nodeGroupTarget);
         int actionIndex = currentActions.IndexOf(recreatedAction);
         pastActions.Remove(recreatedAction.pastAction);
         recreatedAction.timer = timerVal;
@@ -722,15 +749,9 @@ public class ActionManager : MonoBehaviour
 
     public void DestroyCurrentAction(CurrentAction currentAction)
     {
-        if (currentAction.faction == LevelManager.lM.playerAllyFaction)
-        {
-            TimeManager.tM.AddTimeScale(-0.75f);
-            numOfPlayerActions--;
-            RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
-        }
         currentAction.actingNodeGroup.performingActions -= currentAction.action.cost;
         currentAction.receivingNodeGroup.receivingActions--;
-        currentAction.bleat.CancelBleat();
+        Destroy(currentAction.bleat.gameObject);
         for (int j = currentAction.actionLines.Length - (1); j >= 0; j--)
         {
             Destroy(currentAction.actionLines[j].gameObject);
@@ -752,6 +773,7 @@ public class ActionManager : MonoBehaviour
                 adjustedCurAction.actingNodeGroup = newActingNodeGroup;
                 ogActingNodeGroup.performingActions--;
                 newActingNodeGroup.performingActions++;
+                PivotPastAction(pastActions[pastActions.IndexOf(currentActions[i].pastAction)], newActingNodeGroup, true);
             }
 
             currentActions[i] = adjustedCurAction;
@@ -762,6 +784,11 @@ public class ActionManager : MonoBehaviour
     {
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
+            if (currentActions[i].timer < 0f)
+            {
+                continue;
+            }
+
             var adjustedCurAction = currentActions[i];
 
             if (adjustedCurAction.receivingNodeGroup == ogReceivingNodeGroup)
@@ -769,6 +796,7 @@ public class ActionManager : MonoBehaviour
                 adjustedCurAction.receivingNodeGroup = newReceivingNodeGroup;
                 ogReceivingNodeGroup.receivingActions--;
                 newReceivingNodeGroup.receivingActions++;
+                PivotPastAction(pastActions[pastActions.IndexOf(currentActions[i].pastAction)], newReceivingNodeGroup, false);
             }
 
             currentActions[i] = adjustedCurAction;
