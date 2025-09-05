@@ -48,4 +48,4 @@ MonoBehaviour:
   timeToAct: 5
   costType: 3
   itemName: Rewind
-  timeToRewind: 5
+  timeToRewind: 2

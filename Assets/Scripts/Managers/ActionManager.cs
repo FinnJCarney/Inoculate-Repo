@@ -599,7 +599,6 @@ public class ActionManager : MonoBehaviour
         receivingNodeTarget.nodeGroupTarget = receivingNodeGroup;
         receivingNodeTarget.timeOfTarget = TimeManager.tM.gameTimeElapsed;
         newPastAction.receivingNodeGroups.Add(receivingNodeTarget);
-       
 
         pastActions.Add(newPastAction);
         return pastActions[pastActions.IndexOf(newPastAction)];
@@ -631,10 +630,11 @@ public class ActionManager : MonoBehaviour
 
     public void RecreatePastAction(PastAction pA, float timerVal)
     {
+        Debug.Log("Past Action Acting Count = " + (pA.actingNodeGroups.Count - 1) + "Past Acting Receiving Count = " + (pA.receivingNodeGroups.Count - 1));
         var recreatedAction = MakeNewGroupAction(pA.action, connectionLayer.online, pA.actingNodeGroups[pA.actingNodeGroups.Count - 1].nodeGroupTarget, pA.receivingNodeGroups[pA.receivingNodeGroups.Count - 1].nodeGroupTarget);
         int actionIndex = currentActions.IndexOf(recreatedAction);
         pastActions.Remove(recreatedAction.pastAction);
-        recreatedAction.timer = timerVal;
+        recreatedAction.timer = recreatedAction.timerMax - timerVal;
         recreatedAction.pastAction = pA;
         currentActions[actionIndex] = recreatedAction;
     }
@@ -796,7 +796,7 @@ public class ActionManager : MonoBehaviour
                 adjustedCurAction.receivingNodeGroup = newReceivingNodeGroup;
                 ogReceivingNodeGroup.receivingActions--;
                 newReceivingNodeGroup.receivingActions++;
-                PivotPastAction(pastActions[pastActions.IndexOf(currentActions[i].pastAction)], newReceivingNodeGroup, false);
+                PivotPastAction(currentActions[i].pastAction, newReceivingNodeGroup, false);
             }
 
             currentActions[i] = adjustedCurAction;
