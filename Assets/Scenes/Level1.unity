@@ -317,11 +317,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1955520866691305685, guid: 7f1ddec15223f064784005becbf99e84,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f1ddec15223f064784005becbf99e84, type: 3}
 --- !u!1 &19223995
 GameObject:
@@ -480,6 +476,12 @@ MonoBehaviour:
       color: {r: 0.8584906, g: 0, b: 0.53500885, a: 1}
       mainPosition: {x: 0, y: 0}
       positions: []
+      availableActions: []
+      actionObjects:
+      - {fileID: 4954414405114697385, guid: 6b88ca70c66b69d4988661bef8030815, type: 3}
+      - {fileID: 4954414405114697385, guid: 2f14471e2492c6d4ea0bf74ad830d98d, type: 3}
+      - {fileID: 4954414405114697385, guid: f557a9609ec2c4e4aac29417357bcdf1, type: 3}
+      - {fileID: 4954414405114697385, guid: 09be107c614c8a8409b44bfcf978624b, type: 3}
       lineMaterial: {fileID: 2100000, guid: fe2069569130be44bb226f7ca649fb3b, type: 2}
       particleMaterial: {fileID: 0}
       actionLine: {fileID: 5016487758517115089, guid: 82005d6b94408184ca9d9fda4c07d26b,
@@ -488,6 +490,12 @@ MonoBehaviour:
       color: {r: 0.85882354, g: 0.40531254, b: 0, a: 1}
       mainPosition: {x: -12, y: 36}
       positions: []
+      availableActions: []
+      actionObjects:
+      - {fileID: 4954414405114697385, guid: 6b88ca70c66b69d4988661bef8030815, type: 3}
+      - {fileID: 4954414405114697385, guid: 2f14471e2492c6d4ea0bf74ad830d98d, type: 3}
+      - {fileID: 4954414405114697385, guid: f557a9609ec2c4e4aac29417357bcdf1, type: 3}
+      - {fileID: 4954414405114697385, guid: 09be107c614c8a8409b44bfcf978624b, type: 3}
       lineMaterial: {fileID: 2100000, guid: 4466e6d98cab1744694da72bf6267eba, type: 2}
       particleMaterial: {fileID: 0}
       actionLine: {fileID: 5016487758517115089, guid: bb3eddc3bca8332438bcdc7e02e3f630,
@@ -496,26 +504,23 @@ MonoBehaviour:
       color: {r: 0.9716981, g: 0.9716981, b: 0.9716981, a: 1}
       mainPosition: {x: 0, y: 0}
       positions: []
+      availableActions: []
+      actionObjects: []
       lineMaterial: {fileID: 2100000, guid: 83b7a16fe63249e49b5fd4149d859292, type: 2}
       particleMaterial: {fileID: 0}
       actionLine: {fileID: 5016487758517115089, guid: 0da88e1391f64814086f8e6edd5c9192,
         type: 3}
   tweetsForActions:
-    m_keys: 02000000030000000400000005000000
+    m_keys:
+    - {fileID: 8369039296640889830, guid: 6b88ca70c66b69d4988661bef8030815, type: 3}
+    - {fileID: 7280328243185793495, guid: 09be107c614c8a8409b44bfcf978624b, type: 3}
+    - {fileID: 5883304782841689363, guid: f557a9609ec2c4e4aac29417357bcdf1, type: 3}
+    - {fileID: 2241765215960126948, guid: 2f14471e2492c6d4ea0bf74ad830d98d, type: 3}
     m_values:
-    - {fileID: 11400000, guid: 08929c2bcb57d4c47b865baa43596750, type: 2}
-    - {fileID: 11400000, guid: c56c0d89bd0703a488f7b790c4ef2165, type: 2}
-    - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
-    - {fileID: 11400000, guid: 7a256b937b432f34f8ebf38e9035399e, type: 2}
-  levelMap: '00000
-
-    01110
-
-    11111
-
-    01110
-
-    00000'
+    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
+    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
+    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
+    - {fileID: 11400000, guid: ec6b025732c63324b8722b9099cc8663, type: 2}
   allowedLayers: 1
   startingLayer: 1
   numOfActionsPerTurn: 1
@@ -528,8 +533,13 @@ MonoBehaviour:
   mapCamera: {fileID: 982450583}
   defaultParticleMaterial: {fileID: 2100000, guid: df9b8679561fd4347a7d46c832ac3856,
     type: 2}
+  NodeGroupObj: {fileID: 7559115712013899185, guid: c5e3f4db191d6174b8aafe702c2e6a8b,
+    type: 3}
   factionGridMarker: {fileID: 2095341175476847529, guid: 2d38a881cac187a4380062d7ad110363,
     type: 3}
+  nodeGroups:
+    m_keys: []
+    m_values: []
 --- !u!1001 &82835074
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1822,11 +1832,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1955520866691305685, guid: 7f1ddec15223f064784005becbf99e84,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f1ddec15223f064784005becbf99e84, type: 3}
 --- !u!114 &759984947 stripped
 MonoBehaviour:
@@ -2557,11 +2563,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1955520866691305685, guid: 7f1ddec15223f064784005becbf99e84,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f1ddec15223f064784005becbf99e84, type: 3}
 --- !u!114 &1271703494 stripped
 MonoBehaviour:
@@ -2976,11 +2978,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1955520866691305685, guid: 7f1ddec15223f064784005becbf99e84,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f1ddec15223f064784005becbf99e84, type: 3}
 --- !u!1 &1500002466
 GameObject:
@@ -3300,11 +3298,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1955520866691305685, guid: 7f1ddec15223f064784005becbf99e84,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f1ddec15223f064784005becbf99e84, type: 3}
 --- !u!4 &1606694941 stripped
 Transform:
@@ -4144,11 +4138,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1955520866691305685, guid: 7f1ddec15223f064784005becbf99e84,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f1ddec15223f064784005becbf99e84, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

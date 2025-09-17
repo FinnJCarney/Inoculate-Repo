@@ -467,7 +467,7 @@ public struct levelFaction
     public Color color;
     public Vector2 mainPosition;
     public List<Vector2> positions;
-    public List<Action> availableActions;
+    [HideInInspector] public List<Action> availableActions;
     public GameObject[] actionObjects; 
     public Material lineMaterial;
     public Material particleMaterial;

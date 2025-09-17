@@ -313,62 +313,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentActions: []
+  pastActions: []
   previousNodes: []
   actionRing: {fileID: 1578964178344496048, guid: b0794392fe3169d4081b72159045f340,
     type: 3}
   outerActionRingScale: {x: 4, y: 4, z: 4}
   actingNodeMemoryLength: 3
-  actionInformation:
-    m_keys: 020000000300000004000000050000000000000001000000060000000700000008000000090000000a0000000b000000
-    m_values:
-    - internalAction: 0
-      actionCost: 1
-      actionLength: {x: 10, y: 15}
-      actionPosition: {x: -12, y: 0}
-    - internalAction: 0
-      actionCost: 1
-      actionLength: {x: 10, y: 15}
-      actionPosition: {x: 12, y: 0}
-    - internalAction: 0
-      actionCost: 1
-      actionLength: {x: 10, y: 15}
-      actionPosition: {x: 0, y: 12}
-    - internalAction: 0
-      actionCost: 1
-      actionLength: {x: 10, y: 15}
-      actionPosition: {x: 0, y: -12}
-    - internalAction: 0
-      actionCost: 1
-      actionLength: {x: 5, y: 7.5}
-      actionPosition: {x: 0, y: 0}
-    - internalAction: 0
-      actionCost: 4
-      actionLength: {x: 20, y: 30}
-      actionPosition: {x: 0, y: 0}
-    - internalAction: 0
-      actionCost: 3
-      actionLength: {x: 20, y: 30}
-      actionPosition: {x: 0, y: 0}
-    - internalAction: 1
-      actionCost: 2
-      actionLength: {x: 5, y: 5}
-      actionPosition: {x: 0, y: 0}
-    - internalAction: 0
-      actionCost: 2
-      actionLength: {x: 5, y: 10}
-      actionPosition: {x: -24, y: 0}
-    - internalAction: 0
-      actionCost: 2
-      actionLength: {x: 5, y: 10}
-      actionPosition: {x: 24, y: 0}
-    - internalAction: 0
-      actionCost: 2
-      actionLength: {x: 5, y: 10}
-      actionPosition: {x: 0, y: 24}
-    - internalAction: 0
-      actionCost: 2
-      actionLength: {x: 5, y: 10}
-      actionPosition: {x: 0, y: -24}
 --- !u!1 &418542471
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,9 +348,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2703c5fe7b755438034cb421da775f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  adjustedDeltaTime: 0
   timeMultiplier: 0.1
   realTimeElapsed: 0
+  gameTimeElapsed: 0
 --- !u!4 &418542473
 Transform:
   m_ObjectHideFlags: 0
@@ -698,7 +648,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1036586657}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5215c1745c70cdb47bc67d9ff1549832, type: 3}
   m_Name: 
@@ -827,7 +777,7 @@ MonoBehaviour:
   gameOverCanvasLocalPos: {x: -0.55, y: -10, z: 10}
   LevelsToDisplay:
   - {fileID: 11400000, guid: a814f20f6a616424bb4e257118dc3d3f, type: 2}
-  gameState: 0
+  gameState: 1
 --- !u!1 &1251637672
 GameObject:
   m_ObjectHideFlags: 0
