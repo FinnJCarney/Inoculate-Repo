@@ -494,8 +494,8 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.action = aT;
         newCurrentAction.actingNodeGroup = actingNodeGroup;
         actingNodeGroup.performingActions += aT.cost;
-        newCurrentAction.receivingNodeGroup = receivingNodeGroup;
         receivingNodeGroup.receivingActions++;
+        newCurrentAction.receivingNodeGroup = receivingNodeGroup;
         newCurrentAction.actionLayer = LayerManager.lM.activeLayer;
         newCurrentAction.timer = aT.timeToAct;
         newCurrentAction.timerMax = newCurrentAction.timer;
