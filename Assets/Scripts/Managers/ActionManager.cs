@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class ActionManager : MonoBehaviour
@@ -53,9 +54,12 @@ public class ActionManager : MonoBehaviour
                 continue;
             }
 
-            var adjustedCurAction = currentActions[i];
-            adjustedCurAction.timer -= Time.deltaTime;
-            currentActions[i] = adjustedCurAction;
+            if(!hitStun)
+            {
+                var adjustedCurAction = currentActions[i];
+                adjustedCurAction.timer -= Time.deltaTime;
+                currentActions[i] = adjustedCurAction;
+            }
 
             //Old functionality
             //if ((currentActions[i].faction == LevelManager.lM.playerAllyFaction || currentActions[i].receivingNode.userInformation.faction == LevelManager.lM.playerAllyFaction || currentActions[i].actingNode.showMenu || currentActions[i].receivingNode.showMenu) && LayerManager.lM.activeLayer == currentActions[i].actionLayer)
@@ -93,6 +97,7 @@ public class ActionManager : MonoBehaviour
                 currentActions[i].actingNodeGroup.performingActions -= currentActions[i].action.cost;
                 currentActions[i].receivingNodeGroup.receivingActions--;
                 currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].actionLayer, currentActions[i].bleat, currentActions[i].pastAction);
+                CallHitStun();
 
                 for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
                 {
@@ -803,6 +808,25 @@ public class ActionManager : MonoBehaviour
         }
     }
 
+    public void CallHitStun()
+    {
+        StartCoroutine(HitStun());
+    }
+
+    private IEnumerator HitStun()
+    {
+        float timer = 0f;
+
+        while(timer < 0.333f)
+        {
+            hitStun = true;
+            timer += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        hitStun = false;
+    }
+
     private int numOfPlayerActions = 0;
 
     [SerializeField] public List<CurrentAction> currentActions = new List<CurrentAction>();
@@ -813,6 +837,8 @@ public class ActionManager : MonoBehaviour
     [SerializeField] Vector3 outerActionRingScale;
 
     [SerializeField] int actingNodeMemoryLength;
+
+    private bool hitStun;
 }
 
 [System.Serializable]
@@ -859,4 +885,5 @@ public struct NodeGroupTarget
     public NodeGroup nodeGroupTarget;
     public float timeOfTarget;
 }
+
 

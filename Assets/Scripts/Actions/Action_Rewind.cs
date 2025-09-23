@@ -63,29 +63,29 @@ public class Action_Rewind : Action_UserAction
 
         }
 
-        for (int i = actionsToRecreate.Count - 1; i >= 0; i--)
-        {
-
-            for (int j = actionsToRecreate[i].actingNodeGroups.Count - 1; j >= 0; j--)
-            {
-                if (actionsToRecreate[i].actingNodeGroups[j].timeOfTarget > cutOffTime)
-                {
-                    actionsToRecreate[i].actingNodeGroups.RemoveAt(j);
-                }
-            }
-
-            for (int j = pastActions[i].receivingNodeGroups.Count - 1; j >= 0; j--)
-            {
-                if (actionsToRecreate[i].receivingNodeGroups[j].timeOfTarget > cutOffTime)
-                {
-                    actionsToRecreate[i].receivingNodeGroups.RemoveAt(j);
-                }
-            }
-
-            float timerVal = cutOffTime - actionsToRecreate[i].timeStarted;
-            ActionManager.aM.RecreatePastAction(actionsToRecreate[i], timerVal);
-
-        }
+        //for (int i = actionsToRecreate.Count - 1; i >= 0; i--)
+        //{
+        //
+        //    for (int j = actionsToRecreate[i].actingNodeGroups.Count - 1; j >= 0; j--)
+        //    {
+        //        if (actionsToRecreate[i].actingNodeGroups[j].timeOfTarget > cutOffTime)
+        //        {
+        //            actionsToRecreate[i].actingNodeGroups.RemoveAt(j);
+        //        }
+        //    }
+        //
+        //    for (int j = pastActions[i].receivingNodeGroups.Count - 1; j >= 0; j--)
+        //    {
+        //        if (actionsToRecreate[i].receivingNodeGroups[j].timeOfTarget > cutOffTime)
+        //        {
+        //            actionsToRecreate[i].receivingNodeGroups.RemoveAt(j);
+        //        }
+        //    }
+        //
+        //    float timerVal = cutOffTime - actionsToRecreate[i].timeStarted;
+        //    ActionManager.aM.RecreatePastAction(actionsToRecreate[i], timerVal);
+        //
+        //}
 
         ActionManager.aM.pastActions = pastActions;
 

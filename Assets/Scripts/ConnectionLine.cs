@@ -8,9 +8,11 @@ using System.Timers;
 using System.Xml;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UIElements;
 
 public class ConnectionLine : MonoBehaviour
 {
@@ -19,7 +21,7 @@ public class ConnectionLine : MonoBehaviour
     private Faction myFaction;
     private Material myMaterial;
     private LineRenderer lineRenderer;
-    Vector3 randomOffset;
+    Vector3 offset;
 
     [SerializeField] Material baseLineMaterial;
 
@@ -33,20 +35,84 @@ public class ConnectionLine : MonoBehaviour
         connectedNodeGroups.Add(nG1);
         connectedNodeGroups.Add(nG2);
 
-        float offsetVal = Mathf.Clamp((Vector3.Distance(nG1.transform.position, nG2.transform.position) - 17f) /3f, 0f, 12f);
-        float xSign = Mathf.Abs(nG2.transform.position.x) > Mathf.Abs(nG1.transform.position.x) ? Mathf.Sign(nG2.transform.position.x) : Mathf.Sign(nG1.transform.position.x);
-        float ySign = Mathf.Abs(nG2.transform.position.y) > Mathf.Abs(nG1.transform.position.y) ? Mathf.Sign(nG2.transform.position.y) : Mathf.Sign(nG1.transform.position.y);
-        float xOffset = nG1.transform.position.y == nG2.transform.position.y ? xSign * offsetVal : 0f;
-        float yOffset = nG1.transform.position.x == nG2.transform.position.x ? ySign * offsetVal : 0f;
-        if(yOffset != 0f && xOffset != 0f)
-        {
-            yOffset *= 0.33f;
-            xOffset *= 0.33f;
-        }
-        randomOffset = new Vector3(xOffset, 0, yOffset);
+        //float offsetVal = Mathf.Clamp((Vector3.Distance(nG1.transform.position, nG2.transform.position) - 17f) / 2f, 0f, 18f);
+        //float xSign = Mathf.Abs(nG2.transform.position.x) > Mathf.Abs(nG1.transform.position.x) ? Mathf.Sign(nG2.transform.position.x) : Mathf.Sign(nG1.transform.position.x);
+        //float ySign = Mathf.Abs(nG2.transform.position.y) > Mathf.Abs(nG1.transform.position.y) ? Mathf.Sign(nG2.transform.position.y) : Mathf.Sign(nG1.transform.position.y);
+        //float xOffset = nG1.transform.position.y == nG2.transform.position.y ? xSign * offsetVal : 0f;
+        //float yOffset = nG1.transform.position.x == nG2.transform.position.x ? ySign * offsetVal : 0f;
+        //if(yOffset != 0f && xOffset != 0f)
+        //{
+        //    yOffset *= 0.33f;
+        //    xOffset *= 0.33f;
+        //}
+        //offset = new Vector3(xOffset, 0, yOffset);
 
+        CheckOffset();
         LayoutLine(0);
         StartCoroutine(SyncLine(true));
+    }
+
+    private void CheckOffset()
+    {
+        float distanceCovered = Vector3.Distance(connectedNodeGroups[0].transform.position, connectedNodeGroups[1].transform.position);
+
+        if(distanceCovered < 17f)
+        {
+            return;
+        }
+
+        Vector2 node1Pos = connectedNodeGroups[0].groupBelief;
+        Vector2 node2Pos = connectedNodeGroups[1].groupBelief;
+
+
+        int numOfPointsToCheck = Mathf.RoundToInt(distanceCovered / 14.5f);
+
+        int numOfChecksToDo = 1;
+
+        for(int i = 0; i < numOfChecksToDo; i++)
+        {
+            if (numOfChecksToDo > 64)
+            {
+                return;
+            }
+
+            for (int j = 0; j < numOfPointsToCheck; j++)
+            {
+                //Change this to iterate through points on line to find nearest nodeGroup (ignoring base nodeGroups)
+                int pointToCheck = (j + 1 / numOfPointsToCheck + 2) * 25;
+                Vector3 pointLocationV3 = Vector3.Lerp(connectedNodeGroups[0].transform.position, connectedNodeGroups[1].transform.position, pointToCheck / 25);
+
+                float middleProximity = pointToCheck / 25f;
+                pointLocationV3 += (offset * middleProximity);
+
+                Vector2 pointLocation = new Vector2(pointLocationV3.x, pointLocationV3.z);
+
+                Vector2 closestNodeGroupPos = new Vector2(Mathf.RoundToInt(pointLocation.x / 12f) * 12, Mathf.RoundToInt(pointLocation.y / 12f) * 12);
+
+                if (!LevelManager.lM.nodeGroups.ContainsKey(closestNodeGroupPos) || LevelManager.lM.nodeGroups[closestNodeGroupPos].nodesInGroup.Count == 0)
+                {
+                    continue;
+                }
+                
+                if(Vector2.Distance(pointLocation, closestNodeGroupPos) < 4f)
+                {
+                    numOfChecksToDo++;
+                    float offsetVal = 3f;
+                    float xDistance = Mathf.Abs(pointLocation.x -  closestNodeGroupPos.x);
+                    float yDistance = Mathf.Abs(pointLocation.y - closestNodeGroupPos.y);
+                    if(xDistance > yDistance)
+                    {
+                        float xSign = Mathf.Abs(pointLocation.x) > Mathf.Abs(pointLocation.x) ? Mathf.Sign(pointLocation.x) : Mathf.Sign(pointLocation.x);
+                        offset.x += offsetVal * xSign;
+                    }
+                    else
+                    {
+                        float ySign = Mathf.Abs(pointLocation.y) > Mathf.Abs(pointLocation.y) ? Mathf.Sign(pointLocation.y) : Mathf.Sign(pointLocation.y);
+                        offset.z += offsetVal * ySign;
+                    }
+                }
+            }
+        }
     }
 
     private void LayoutLine(float progress)
@@ -62,7 +128,7 @@ public class ConnectionLine : MonoBehaviour
             float lineProgress = 0.5f - (pointPos * progress);
             float middleProximity = 1f - Mathf.Pow(Mathf.Abs((lineProgress - 0.5f) * 2f), 2f);
             Vector3 pointLoc = Vector3.Lerp(connectedNodeGroups[0].transform.position, connectedNodeGroups[1].transform.position, lineProgress);
-            pointLoc += (randomOffset * middleProximity);
+            pointLoc += (offset * middleProximity);
             lineRenderer.SetPosition(i, pointLoc);
         }
     }
