@@ -43,77 +43,116 @@ public class InputManager : MonoBehaviour
         }
 
         if (worldRaycastHitInfo.collider.tag == "HUDScreen")
-        {
-            if(HUDManager.hM == null)
             {
-                return;
-            }
-
-            CameraCursor camCursor = ScreenPlane.smallScreen.cameraCursor;
-            
-
-            prevSmallScreenPos = curSmallScreenPos;
-            prevScreenRayCastHitInfo = ScreenRayCastHitInfo;
-
-            var screenRelativePos = worldRaycastHitInfo.transform.position - worldRaycastHitInfo.point;
-            Vector3 screenBounds = worldRaycastHitInfo.collider.bounds.size / 2;
-            curSmallScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 4.5f, -(screenRelativePos.y / screenBounds.y) * 10f); // x is times by 1 / 3 as the map screen has a 1 / 3 ratio
-            Vector3 rayShootPos = Vector3.zero;
-
-            if (camCursor.ortho)
-            {
-                rayShootPos = curSmallScreenPos * camCursor.camera.orthographicSize;
-            }
-            else
-            {
-                float cameraFrustrumHeight = Mathf.Tan(camCursor.camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-                rayShootPos = curSmallScreenPos * cameraFrustrumHeight;
-            }
-
-            camCursor.MoveCursor(rayShootPos);
-
-            if (camCursor.ortho)
-            {
-                Physics.Raycast(camCursor.cursor.transform.position, camCursor.camera.transform.forward, out ScreenRayCastHitInfo);
-                Debug.DrawRay(camCursor.cursor.transform.position, camCursor.camera.transform.forward, Color.red, 2f);
-            }
-            else
-            {
-                Physics.Raycast(camCursor.transform.position, Vector3.Normalize(camCursor.cursor.transform.position - camCursor.camera.transform.position), out ScreenRayCastHitInfo);
-                Debug.DrawRay(camCursor.transform.position, Vector3.Normalize(camCursor.cursor.transform.position - camCursor.camera.transform.position), Color.red, 2f);
-            }
-
-            if (ScreenRayCastHitInfo.collider != null)
-            {
-                if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                if (HUDManager.hM == null)
                 {
-                    if (prevScreenRayCastHitInfo.collider == null)
+                    return;
+                }
+
+                CameraCursor camCursor = ScreenPlane.smallScreen.cameraCursor;
+
+
+                prevSmallScreenPos = curSmallScreenPos;
+                prevScreenRayCastHitInfo = ScreenRayCastHitInfo;
+
+                var screenRelativePos = worldRaycastHitInfo.transform.position - worldRaycastHitInfo.point;
+                Vector3 screenBounds = worldRaycastHitInfo.collider.bounds.size / 2;
+                curSmallScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 4.5f, -(screenRelativePos.y / screenBounds.y) * 10f); // x is times by 1 / 3 as the map screen has a 1 / 3 ratio
+                Vector3 rayShootPos = Vector3.zero;
+
+                if (camCursor.ortho)
+                {
+                    rayShootPos = curSmallScreenPos * camCursor.camera.orthographicSize;
+                }
+                else
+                {
+                    float cameraFrustrumHeight = Mathf.Tan(camCursor.camera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+                    rayShootPos = curSmallScreenPos * cameraFrustrumHeight;
+                }
+
+                camCursor.MoveCursor(rayShootPos);
+
+                if (camCursor.ortho)
+                {
+                    Physics.Raycast(camCursor.cursor.transform.position, camCursor.camera.transform.forward, out ScreenRayCastHitInfo);
+                    Debug.DrawRay(camCursor.cursor.transform.position, camCursor.camera.transform.forward, Color.red, 2f);
+                }
+                else
+                {
+                    Physics.Raycast(camCursor.transform.position, Vector3.Normalize(camCursor.cursor.transform.position - camCursor.camera.transform.position), out ScreenRayCastHitInfo);
+                    Debug.DrawRay(camCursor.transform.position, Vector3.Normalize(camCursor.cursor.transform.position - camCursor.camera.transform.position), Color.red, 2f);
+                }
+
+                if (ScreenRayCastHitInfo.collider != null)
+                {
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
                     {
-                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
-                    }
-                    else
-                    {
-                        if (prevScreenRayCastHitInfo.collider.gameObject.tag != "NodeGroupButton")
+                        if (prevScreenRayCastHitInfo.collider == null)
                         {
                             ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
                         }
+                        else
+                        {
+                            if (prevScreenRayCastHitInfo.collider.gameObject.tag != "NodeGroupButton")
+                            {
+                                ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                            }
+                        }
                     }
-                }
 
-                else if (prevScreenRayCastHitInfo.collider != null)
-                {
-                    if (prevScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                    else if (prevScreenRayCastHitInfo.collider != null)
                     {
-                        prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
+                        if (prevScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                        {
+                            prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
+                        }
                     }
-                }
 
-                if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
-                {
-                    if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag != "UniversalButton") || prevScreenRayCastHitInfo.collider == null)
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
                     {
-                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
-                        universalButton.OnHover(true);
+                        if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag != "UniversalButton") || prevScreenRayCastHitInfo.collider == null)
+                        {
+                            var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                            universalButton.OnHover(true);
+                        }
+                    }
+                    else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
+                    {
+                        var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                        universalButton.OnHover(false);
+                    }
+
+                    if (mouseButtonDown)
+                    {
+                        if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
+                        {
+                            var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
+                            //ActionManager.aM.PerformButtonAction(buttonInfo);
+                        }
+
+                        if (ScreenRayCastHitInfo.collider.gameObject.tag == "NewButton")
+                        {
+                            var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<ButtonAssigner>();
+                            if (buttonInfo.reqMan == ButtonAssigner.RequestedManager.TimeManager)
+                            {
+                                TimeManager.tM.SetTimeScale(buttonInfo.value);
+                            }
+                            if (buttonInfo.reqMan == ButtonAssigner.RequestedManager.HUDManager)
+                            {
+                                NodeManager.nM.CloseAllNodeMenus(null);
+                            }
+                        }
+
+                        if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
+                        {
+                            var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
+                            universalButton.PerformAction();
+                        }
+
+                        if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
+                        {
+                            ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().PerformAction();
+                        }
                     }
                 }
                 else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
@@ -121,46 +160,7 @@ public class InputManager : MonoBehaviour
                     var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
                     universalButton.OnHover(false);
                 }
-
-                if (mouseButtonDown)
-                {
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
-                    {
-                        var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                        //ActionManager.aM.PerformButtonAction(buttonInfo);
-                    }
-
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "NewButton")
-                    {
-                        var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<ButtonAssigner>();
-                        if (buttonInfo.reqMan == ButtonAssigner.RequestedManager.TimeManager)
-                        {
-                            TimeManager.tM.SetTimeScale(buttonInfo.value);
-                        }
-                        if (buttonInfo.reqMan == ButtonAssigner.RequestedManager.HUDManager)
-                        {
-                            NodeManager.nM.CloseAllNodeMenus(null);
-                        }
-                    }
-
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
-                    {
-                        var universalButton = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
-                        universalButton.PerformAction();
-                    }
-
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "NodeGroupButton")
-                    {
-                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().PerformAction();
-                    }
-                }
             }
-            else if ((prevScreenRayCastHitInfo.collider != null && prevScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton"))
-            {
-                var universalButton = prevScreenRayCastHitInfo.collider.gameObject.GetComponent<UniversalButton>();
-                universalButton.OnHover(false);
-            }
-        }
 
         if (worldRaycastHitInfo.collider.tag == "BigScreen")
         {
@@ -400,11 +400,18 @@ public class InputManager : MonoBehaviour
 
                 if (mouseButtonDown)
                 {
-                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
+                    Debug.Log("Is this running?");
+                    if (worldRaycastHitInfo.collider.gameObject.tag == "PhoneScreen")
                     {
-                        var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
-                        //ActionManager.aM.PerformButtonAction(buttonInfo);
+                        Debug.Log("Hit phone");
+                        RoomManager.rM.LookAtPhone();
                     }
+
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
+                        {
+                            var buttonInfo = ScreenRayCastHitInfo.collider.gameObject.GetComponent<UserButton>();
+                            //ActionManager.aM.PerformButtonAction(buttonInfo);
+                        }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "UniversalButton")
                     {

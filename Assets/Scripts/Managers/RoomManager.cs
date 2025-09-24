@@ -14,6 +14,7 @@ public class RoomManager : MonoBehaviour
     private void Start()
     {
         SceneManager.SetActiveScene(this.gameObject.scene);
+        phoneLocs[false] = phonePivot.transform.localPosition;
     }
 
     public void AdjustVisualsToGameState(GameState newGameState, float timeForTransition)
@@ -42,7 +43,7 @@ public class RoomManager : MonoBehaviour
         if (lookingAtPhone)
         {
             phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.3f);
-            phonePivot.transform.DORotate(new Vector3(270f, 0f, -19.696f), 0.4f);
+            //phonePivot.transform.DORotate(new Vector3(270f, 0f, -19.696f), 0.4f);
             mainCamera.transform.DORotate(phoneCamLoc.rotation.eulerAngles, 0.2f);
             mainCamera.transform.DOMove(phoneCamLoc.position, 0.25f);
             DOTween.To(() => idealCamPos, x => idealCamPos = x, phoneCamLoc.position, 0.25f);
@@ -50,7 +51,7 @@ public class RoomManager : MonoBehaviour
         else
         {
             phonePivot.transform.DOMove(phoneLocs[lookingAtPhone], 0.4f);
-            phonePivot.transform.DORotate(new Vector3(355f, 0f, -19.696f), 0.4f);
+            //phonePivot.transform.DORotate(new Vector3(355f, 0f, -19.696f), 0.4f);
             AdjustVisualsToGameState(gameState, 0.33f);
         }
     }
