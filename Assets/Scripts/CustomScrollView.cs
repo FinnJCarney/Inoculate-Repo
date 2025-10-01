@@ -23,14 +23,19 @@ public class CustomScrollView : MonoBehaviour
 
     public void MoveHandle(float velocity)
     {
-        if(content.rect.height < myRectTransform.rect.height)
+        if (content.rect.height < myRectTransform.rect.height)
         {
             return;
         }
 
+        if (maxVelocity != 0)
+        {
+            velocity = Mathf.Clamp(velocity, -maxVelocity, maxVelocity);
+        }
+
         float newScrollHandlePosY = Mathf.Clamp(scrollbarHandle.localPosition.y + velocity, scrollbarBackground.rect.yMin + (scrollbarHandle.rect.height / 2f), scrollbarBackground.rect.yMax - (scrollbarHandle.rect.height / 2f));
         float changeAmount = newScrollHandlePosY - scrollbarHandle.localPosition.y;
-        
+
         scrollbarHandle.SetLocalPositionAndRotation(new Vector3(0, newScrollHandlePosY, 0), Quaternion.Euler(0, 0, 0));
 
         float amountThroughContent = 0.5f - (newScrollHandlePosY / ((scrollbarBackground.rect.yMax * 2) - scrollbarHandle.rect.height));
@@ -44,7 +49,7 @@ public class CustomScrollView : MonoBehaviour
     {
         float amountThroughContent = 0.5f - (scrollbarHandle.localPosition.y / ((scrollbarBackground.rect.yMax * 2) - scrollbarHandle.rect.height));
 
-        if(amountThroughContent > 0.9f)
+        if (amountThroughContent > 0.9f)
         {
             amountThroughContent = 1f;
             float newContentY = myRectTransform.rect.height + ((content.rect.height - myRectTransform.rect.height) * amountThroughContent);
@@ -71,4 +76,6 @@ public class CustomScrollView : MonoBehaviour
 
     [SerializeField] RectTransform scrollbarBackground;
     [SerializeField] RectTransform scrollbarHandle;
+
+    [SerializeField] float maxVelocity = 0;
 }

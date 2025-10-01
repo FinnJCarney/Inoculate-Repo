@@ -273,7 +273,7 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_ReverseArrangement: 1
 --- !u!114 &305385856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,6 +569,7 @@ MonoBehaviour:
   content: {fileID: 305385853}
   scrollbarBackground: {fileID: 1641344649}
   scrollbarHandle: {fileID: 1826116510}
+  maxVelocity: 5
 --- !u!65 &675143108
 BoxCollider:
   m_ObjectHideFlags: 0
