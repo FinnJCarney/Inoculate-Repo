@@ -48,7 +48,14 @@ public class ActionManager : MonoBehaviour
 
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
+            //Debug.Log("Current Action Timer = " + currentActions[i].timer + " / " + currentActions[i].timerMax);
             if (currentActions[i].faction != currentActions[i].actingNodeGroup.groupFaction)
+            {
+                DestroyCurrentAction(currentActions[i]);
+                continue;
+            }
+
+            if (currentActions[i].actingNodeGroup == currentActions[i].receivingNodeGroup)
             {
                 DestroyCurrentAction(currentActions[i]);
                 continue;
@@ -115,7 +122,7 @@ public class ActionManager : MonoBehaviour
             }
         }
 
-        TimeManager.tM.SetTimeScale(numOfPlayerActions > 0 ? 1f : 0f);
+        TimeManager.tM.SetTimeScale(numOfPlayerActions == NodeManager.nM.nodeFactions[LevelManager.lM.playerAllyFaction].Count ? 1f : 0f);
         RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
@@ -502,7 +509,8 @@ public class ActionManager : MonoBehaviour
         receivingNodeGroup.receivingActions++;
         newCurrentAction.receivingNodeGroup = receivingNodeGroup;
         newCurrentAction.actionLayer = LayerManager.lM.activeLayer;
-        newCurrentAction.timer = aT.timeToAct;
+        Debug.Log("Actor Pos = " +  actingNodeGroup.transform.position + "Receiver Pos = " +  receivingNodeGroup.transform.position + "Action Distance = " + Vector2.Distance(actingNodeGroup.transform.position, receivingNodeGroup.transform.position));
+        newCurrentAction.timer = aT.actionSpeed == 0f ? 1f : Vector3.Distance(actingNodeGroup.transform.position, receivingNodeGroup.transform.position) / aT.actionSpeed;
         newCurrentAction.timerMax = newCurrentAction.timer;
         newCurrentAction.faction = actingNodeGroup.groupFaction;
         newCurrentAction.actionLines = new ActionLine[aT.cost];

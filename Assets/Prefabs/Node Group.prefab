@@ -1936,7 +1936,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   relatedNode: {fileID: 0}
-  type: 6
   image: {fileID: 9029515612524636369}
   text: {fileID: 6672371210677534196}
   buttonEnabled: 0
@@ -10615,7 +10614,7 @@ SpriteRenderer:
   m_SortingOrder: -16
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
     type: 3}
-  m_Color: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 0.14117648}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.1764706}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -13008,7 +13007,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   relatedNode: {fileID: 0}
-  type: 1
   image: {fileID: 8273032841867974771}
   text: {fileID: 2594771578056463975}
   buttonEnabled: 0
@@ -13214,7 +13212,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   relatedNode: {fileID: 0}
-  type: 0
   image: {fileID: 5603553741863459062}
   text: {fileID: 296404243273684166}
   buttonEnabled: 0

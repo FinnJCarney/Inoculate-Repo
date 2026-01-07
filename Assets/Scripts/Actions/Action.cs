@@ -7,6 +7,7 @@ public abstract class Action : MonoBehaviour
 {
     [SerializeField] public int cost;
     [SerializeField] public float timeToAct;
+    [SerializeField] public float actionSpeed;
     [SerializeField] public ActionCostType costType;
 
     public virtual bool CheckNodeActionAvailability(NodeGroup applicableNodeGroup, int availableActions)

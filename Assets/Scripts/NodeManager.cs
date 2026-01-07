@@ -293,6 +293,12 @@ public class NodeManager : MonoBehaviour
         Sprite newSprite = faceSprites[Mathf.RoundToInt(Random.Range(0, faceSprites.Length - 1))];
         node.nodeVisual.sprite = newSprite;
         node.userInformation.NodeImage = newSprite;
+
+        if(!nodeFactions.ContainsKey(node.userInformation.faction))
+        {
+            NodeManager.nM.AddNewNodeFaction(node.userInformation.faction);
+        }
+
         nodeFactions[node.userInformation.faction].Add(node);
     }
 
@@ -675,6 +681,13 @@ public class NodeManager : MonoBehaviour
                 Debug.Log("Adding faction " + faction);
             }
         }
+    }
+
+    public void AddNewNodeFaction(Faction faction)
+    {
+        nodeFactions.Add(faction, null);
+        nodeFactions[faction] = new List<Node>();
+        Debug.Log("Adding faction " + faction);
     }
 
 

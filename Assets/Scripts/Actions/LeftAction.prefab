@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cost: 1
-  count: 0
   timeToAct: 7.5
+  actionSpeed: 2
   costType: 2
   movement: {x: -12, y: 0}

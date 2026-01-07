@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cost: 1
   timeToAct: 5
+  actionSpeed: 0
   costType: 3
   itemName: Rewind
   timeToRewind: 2

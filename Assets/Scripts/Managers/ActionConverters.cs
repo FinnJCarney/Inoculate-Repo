@@ -9,4 +9,10 @@ public static class ActionConverters
         newNodeGroupTarget.timeOfTarget = TimeManager.tM.gameTimeElapsed;
         return newNodeGroupTarget;
     }
+
+    public static Vector3 Vector2ToVector3(Vector2 inputVector)
+    {
+        return new Vector3(inputVector.x, 0f, inputVector.y);
+    }
+
 }

@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cost: 2
-  timeToAct: 5
+  timeToAct: 1
+  actionSpeed: 0
   costType: 0
   tagToAdd: Inoculate
   tagTimer: 10

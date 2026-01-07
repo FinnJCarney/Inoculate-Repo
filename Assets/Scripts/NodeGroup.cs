@@ -17,6 +17,8 @@ public class NodeGroup : MonoBehaviour
         nodeGroupColliderDefaultScale = nodeGroupCollider.transform.localScale;
         defaultAccessRingScale = accessRing.transform.localScale;
         defaultAllowanceRingScale = allowanceRing.transform.localScale;
+
+        ArrangeNodes();
     }
 
     public void AddNodeToGroup(Node_UserInformation newNode)

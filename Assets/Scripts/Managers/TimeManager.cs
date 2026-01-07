@@ -13,7 +13,7 @@ public class TimeManager : MonoBehaviour
         defaultTimeScale = 0.1f;
         desiredTimeScale = defaultTimeScale;
 
-        if(tM != null)
+        if (tM != null)
         {
             Destroy(this);
         }
@@ -39,12 +39,12 @@ public class TimeManager : MonoBehaviour
     {
         desiredTimeScale = timeScale + 0.025f;
 
-        if(desiredTimeScale == timeMultiplier)
+        if (desiredTimeScale == timeMultiplier)
         {
             return;
         }
 
-        if(timeScaleTween != null)
+        if (timeScaleTween != null)
         {
             timeScaleTween.Kill();
         }
