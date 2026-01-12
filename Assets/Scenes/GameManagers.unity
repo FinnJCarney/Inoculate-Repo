@@ -312,8 +312,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24f6571cae1a16042b24a516540f97fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  plannedActions: []
   currentActions: []
   pastActions: []
+  possiblePlayerActions: []
   previousNodes: []
   actionRing: {fileID: 1578964178344496048, guid: b0794392fe3169d4081b72159045f340,
     type: 3}
@@ -728,6 +730,7 @@ MonoBehaviour:
   gameOverCanvasLocalPos: {x: -0.55, y: -10, z: 10}
   LevelsToDisplay:
   - {fileID: 11400000, guid: a814f20f6a616424bb4e257118dc3d3f, type: 2}
+  - {fileID: 11400000, guid: 51d295e9e7d803643a76f91894c8a036, type: 2}
   gameState: 0
 --- !u!1 &1251637672
 GameObject:
@@ -1057,7 +1060,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 68ce105f1195280469e2633166ff9e2d, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 68ce105f1195280469e2633166ff9e2d, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.408

@@ -297,6 +297,7 @@ MonoBehaviour:
   content: {fileID: 641250836073728303}
   scrollbarBackground: {fileID: 8324866924470893102}
   scrollbarHandle: {fileID: 3269165553717860943}
+  maxVelocity: 0
 --- !u!222 &7718321185811948269
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -922,7 +923,7 @@ BoxCollider:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 2
+  m_LayerOverridePriority: -2
   m_IsTrigger: 0
   m_ProvidesContacts: 1
   m_Enabled: 1

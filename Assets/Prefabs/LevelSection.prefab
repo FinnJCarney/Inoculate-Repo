@@ -401,6 +401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonBack: {fileID: 8135217809019710614}
+  buttonIcon: {fileID: 0}
   reqMan: 0
   unhoveredColor: {r: 0.105882354, g: 0.1882353, b: 0.09411765, a: 1}
   hoverColor: {r: 0.20084994, g: 0.33962262, b: 0.18102525, a: 1}
@@ -471,12 +472,12 @@ BoxCollider:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: -2
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 275, y: 125, z: 1}
+  m_Size: {x: 275, y: 125, z: 62.61}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5582582909520908029
 GameObject:

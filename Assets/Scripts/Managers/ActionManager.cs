@@ -1,13 +1,7 @@
  using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using NUnit.Framework;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class ActionManager : MonoBehaviour
 {
@@ -48,6 +42,12 @@ public class ActionManager : MonoBehaviour
 
     private void Update()
     {
+    
+        if(StateManager.sM.gameState != GameState.Mission)
+        {
+            return;
+        }
+
         CalculatePossiblePlayerActions();
 
         numOfPlayerActions = 0;
@@ -138,7 +138,26 @@ public class ActionManager : MonoBehaviour
     public void PerfromGroupButtonAction(Action aT, NodeGroup receivingNodeGroup)
     {
         NodeGroup actingNodeGroup = null;
-        NodeGroup[] possibleActingNodeGroups = null;
+
+        foreach(PossiblePlayerAction possibleAction in possiblePlayerActions)
+        {
+            if(possibleAction.action == aT && possibleAction.receivingNode == receivingNodeGroup)
+            {
+                if (possibleAction.actingNode.possiblePerformingActions + possibleAction.action.cost <= possibleAction.actingNode.nodesInGroup.Count)
+                {
+                    actingNodeGroup = possibleAction.actingNode;
+                    break;
+                }
+            }
+        }
+
+        //Check if selectedActingNodeGroup can do action
+        //If cannot, swap for one that can? 
+        //Or, score actions based on ability to do actions
+        //I.e, the more *specific* an action it is, the higher it's score
+        //Lowest score wins???
+
+        /*
 
         if (aT.costType == Action.ActionCostType.InternalAction)
         {
@@ -155,6 +174,8 @@ public class ActionManager : MonoBehaviour
         }
 
         actingNodeGroup = GiveTheorheticalActingNode(possibleActingNodeGroups);
+
+        */
 
         if (actingNodeGroup == null)
         {
@@ -189,25 +210,6 @@ public class ActionManager : MonoBehaviour
         return possibleActingNodeGroup;
     }
 
-    private bool CheckPlannedActions(Action aT, NodeGroup possibleActingNodeGroup)
-    {
-        bool nodeCanPerformAction = true;
-
-        foreach (PlannedAction plannedAction in plannedActions)
-        {
-            if (possibleActingNodeGroup == plannedAction.curActingNodeGroup)
-            {
-                if (aT.cost > plannedAction.curActingNodeGroup.nodesInGroup.Count - plannedAction.curActingNodeGroup.possiblePerformingActions)
-                {
-                    //Return bool if can or can't find another node to do other actions
-                    //If true, re-calculate the possible action, exluding the node 
-                }
-                break;
-            }
-        }
-        return false;
-    }
-
     private void CalculatePossiblePlayerActions()
     {
         //While in Update
@@ -238,6 +240,8 @@ public class ActionManager : MonoBehaviour
                 }
             }
         }
+
+        List<PossiblePlayerAction> actionsToCheck = new List<PossiblePlayerAction>();
         
         foreach(NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
         {
@@ -247,28 +251,83 @@ public class ActionManager : MonoBehaviour
                 continue;
             }
 
-            if(highestInternalActionCost > 0)
+            foreach (Action playerAction in playerActions)
             {
-                for(int i = 0; i < nodeGroup.nodesInGroup.Count; i++)
+                if(playerAction.costType == Action.ActionCostType.InternalAction)
                 {
                     PossiblePlayerAction newPossiblePlayerAction = new PossiblePlayerAction();
+                    newPossiblePlayerAction.action = playerAction;
                     newPossiblePlayerAction.actingNode = nodeGroup;
                     newPossiblePlayerAction.receivingNode = nodeGroup;
-                    possiblePlayerActions.Add(newPossiblePlayerAction);
+
+                    if(nodeGroup.possiblePerformingActions + playerAction.cost > nodeGroup.nodesInGroup.Count)
+                    {
+                        actionsToCheck.Add(newPossiblePlayerAction);
+                    }
+                    else
+                    {
+                        possiblePlayerActions.Add(newPossiblePlayerAction);
+                    }
+                }
+                else
+                {
+                    foreach(NodeGroup connectedNodeGroup in nodeGroup.connectedNodes.Keys)
+                    {
+                        if (nodeGroup.connectedNodes[connectedNodeGroup].type == connectionType.influencedBy)
+                        {
+                            continue;
+                        }
+
+                        PossiblePlayerAction newPossiblePlayerAction = new PossiblePlayerAction();
+                        newPossiblePlayerAction.action = playerAction;
+                        newPossiblePlayerAction.actingNode = nodeGroup;
+                        newPossiblePlayerAction.receivingNode = connectedNodeGroup;
+
+                        if (nodeGroup.possiblePerformingActions + playerAction.cost > nodeGroup.nodesInGroup.Count)
+                        {
+                            actionsToCheck.Add(newPossiblePlayerAction);
+                        }
+                        else
+                        {
+                            possiblePlayerActions.Add(newPossiblePlayerAction);
+                        }
+                    }
                 }
             }
 
-            if (highestExternalGroupActionCost > 0)
+            foreach(PossiblePlayerAction actionToCheck in actionsToCheck)
             {
-                foreach (NodeGroup connectedNodeGroup in nodeGroup.connectedNodes.Keys)
+                if(actionToCheck.action.costType == Action.ActionCostType.InternalAction)
                 {
-                    PossiblePlayerAction newPossiblePlayerAction = new PossiblePlayerAction();
-                    newPossiblePlayerAction.actingNode = nodeGroup;
-                    newPossiblePlayerAction.receivingNode = connectedNodeGroup;
-                    possiblePlayerActions.Add(newPossiblePlayerAction);
+                    //Check all actions performed by acting Node
+                    //If they can be performed by others, add this to possible actions
+                }
+
+                if(CanOtherNodePerformAction(actionToCheck.action, actionToCheck.receivingNode))
+                {
+                    possiblePlayerActions.Add(actionToCheck);
                 }
             }
         }
+    }
+
+    private bool CanOtherNodePerformAction(Action actionToCheck, NodeGroup receivingNodeGroupToCheck)
+    {
+        foreach (PossiblePlayerAction possibleAction in possiblePlayerActions)
+        {
+            if(possibleAction.actingNode.possiblePerformingActions + actionToCheck.cost > possibleAction.actingNode.nodesInGroup.Count)
+            {
+                continue;
+            }
+
+            if(possibleAction.action == actionToCheck && possibleAction.receivingNode == receivingNodeGroupToCheck)
+            {
+                Debug.Log("Acting Node confirming action as possible has " + possibleAction.actingNode.possiblePerformingActions + " and nodes " + possibleAction.actingNode.nodesInGroup.Count);
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private void ReCalculatePlannedActions(PlannedAction pAction)
@@ -282,6 +341,7 @@ public class ActionManager : MonoBehaviour
         foreach(PlannedAction plannedAction in plannedActions)
         {
             MakeNewGroupAction(plannedAction.action, plannedAction.curActingNodeGroup, plannedAction.receivingNodeGroup);
+            plannedAction.curActingNodeGroup.possiblePerformingActions = 0;
         }
 
         plannedActions.Clear();
@@ -636,6 +696,7 @@ public struct CurrentAction
     public PastAction pastAction; 
 }
 
+[System.Serializable]
 public struct PlannedAction
 {
     public Action action;
@@ -676,6 +737,7 @@ public struct NodeGroupTarget
 [System.Serializable]
 public struct PossiblePlayerAction
 {
+    public Action action;
     public NodeGroup actingNode;
     public NodeGroup receivingNode;
 }
