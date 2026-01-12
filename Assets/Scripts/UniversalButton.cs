@@ -9,22 +9,14 @@ public class UniversalButton : MonoBehaviour
     {
         if (buttonEvent == null) { buttonEvent = new UnityEvent(); }
 
-        if (reqMan == RequestedManager.LayerManager)
-        {
-            if (LevelManager.lM.allowedLayers != connectionLayer.onlineOffline)
-            {
-                Destroy(this.gameObject);
-            }
-            else
-            {
-                LayerManager.lM.buttonImage = buttonIcon;
-                buttonEvent.AddListener(delegate { LayerManager.lM.ChangeLayer(); });
-            }
-        }
-
         if (reqMan == RequestedManager.NodeManager)
         {
             buttonEvent.AddListener(delegate { this.gameObject.GetComponent<UserIndicator>().node.ShowMenu(true); });
+        }
+
+        if(reqMan == RequestedManager.ActionManager)
+        {
+            buttonEvent.AddListener(ActionManager.aM.PerformPlannedActions);
         }
     }
 
@@ -32,6 +24,7 @@ public class UniversalButton : MonoBehaviour
     {
         if(buttonEvent != null)
         {
+            Debug.Log("Button hit");
             buttonEvent.Invoke();
         }
     }

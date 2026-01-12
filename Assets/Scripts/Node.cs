@@ -13,7 +13,7 @@ public class Node : MonoBehaviour
     {
         userInformation = GetComponent<Node_UserInformation>();
 
-        NodeManager.nM.AddNodeToList(this);
+        NodeManager.nM.AddNodeToList(userInformation);
         LevelManager.lM.nodeGroups[userInformation.beliefs].AddNodeToGroup(userInformation);
 
         audioSource = GetComponent<AudioSource>();
@@ -36,9 +36,15 @@ public class Node : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void UpdateNodeColour()
     {
         nodeVisual.color = Color.Lerp(LevelManager.lM.GiveAverageColor(userInformation.beliefs), Color.white, 0.5f);
+        accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
+    }
+
+    private void Update()
+    {
+        UpdateNodeColour();
 
         int theorheticalActions = 0;
         int possibleActions = 0;
@@ -50,30 +56,26 @@ public class Node : MonoBehaviour
 
         bool hasAllyNeighbourAvail = false;
 
-        foreach (Node connectedNode in userInformation.connectedNodes.Keys)
+        foreach (Node_UserInformation connectedNode in userInformation.connectedNodes.Keys)
         {
+            //Debug.Log("Checking for Node " + name + " connectedNode = " + connectedNode.name);
             if (connectedNode.isBanned)
             {
                 continue;
             }
 
-            if(userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+            if(userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.connectedNodes[userInformation].type == connectionType.influencedBy)
             {
                 continue;
             }
 
-            if(userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.userInformation.connectedNodes[this].type == connectionType.influencedBy)
-            {
-                continue;
-            }
-
-            if(connectedNode.performingAction)
+            if(connectedNode.nodeCore.performingAction)
             {
                 theorheticalActions++;
                 continue;
             }
 
-            if (connectedNode.userInformation.faction == LevelManager.lM.playerAllyFaction)
+            if (connectedNode.faction == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;
                 possibleActions ++;
@@ -171,8 +173,6 @@ public class Node : MonoBehaviour
             accessRing.color = Color.red;
             bannedCover.SetActive(isBanned);
         }
-
-        accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
     }
 
 
@@ -312,7 +312,6 @@ public class Node : MonoBehaviour
         //Buttons.SetActive(show);
     }
     [HideInInspector] public Node_UserInformation userInformation;
-    [HideInInspector] public Node_PoliticalAxes politicalAxes;
 
     public bool showMenu;
     public bool isBanned;

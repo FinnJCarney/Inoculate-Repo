@@ -42,6 +42,8 @@ public class InputManager : MonoBehaviour
             return;
         }
 
+        //Debug.Log(worldRaycastHitInfo.collider);
+
         if (worldRaycastHitInfo.collider.tag == "HUDScreen")
             {
                 if (HUDManager.hM == null)
@@ -162,7 +164,7 @@ public class InputManager : MonoBehaviour
                 }
             }
 
-        if (worldRaycastHitInfo.collider.tag == "BigScreen")
+        else if (worldRaycastHitInfo.collider.tag == "BigScreen")
         {
             CameraCursor camCursor = ScreenPlane.bigScreen.cameraCursor;
 
@@ -332,7 +334,7 @@ public class InputManager : MonoBehaviour
             prevWorldMousePos = curWorldMousePos;
         }
 
-        if(worldRaycastHitInfo.collider.tag == "PhoneScreen")
+        else if(worldRaycastHitInfo.collider.tag == "PhoneScreen")
         {
             CameraCursor camCursor = ScreenPlane.phoneScreen.cameraCursor;
 
@@ -346,7 +348,7 @@ public class InputManager : MonoBehaviour
 
             var screenRelativePos = worldRaycastHitInfo.transform.position - worldRaycastHitInfo.point;
             Vector3 screenBounds = worldRaycastHitInfo.collider.bounds.size / 2;
-            curPhoneScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 0.5f, -(screenRelativePos.y / screenBounds.y)); // x is times by 1 / 3 as the map screen has a 1 / 3 ratio
+            curPhoneScreenPos = new Vector3(screenRelativePos.x / screenBounds.x * 0.66f, -(screenRelativePos.y / screenBounds.y) * 1f); 
             Vector3 rayShootPos = Vector3.zero;
 
             if (camCursor.ortho)
@@ -364,7 +366,7 @@ public class InputManager : MonoBehaviour
             if (camCursor.ortho)
             {
                 Physics.Raycast(camCursor.cursor.transform.position, camCursor.camera.transform.forward, out ScreenRayCastHitInfo);
-                Debug.DrawRay(camCursor.cursor.transform.position, camCursor.camera.transform.forward, Color.red, 2f);
+                Debug.DrawRay(camCursor.cursor.transform.position, camCursor.camera.transform.forward * 100f, Color.red, 2f);
             }
             else
             {
@@ -398,13 +400,36 @@ public class InputManager : MonoBehaviour
                     universalButton.OnHover(false);
                 }
 
+                if (ScreenRayCastHitInfo.collider.gameObject.tag == "AbstractButton")
+                {
+                    if (prevScreenRayCastHitInfo.collider == null)
+                    {
+                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                    }
+                    else
+                    {
+                        if(prevScreenRayCastHitInfo.collider.gameObject.tag != "AbstractButton")
+                        {
+                            ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(true);
+                        }
+                    }
+                }
+
+                else if(prevScreenRayCastHitInfo.collider != null)
+                {
+                    if (prevScreenRayCastHitInfo.collider.gameObject.tag == "AbstractButton")
+                    {
+                        prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
+                    }
+                }
+
                 if (mouseButtonDown)
                 {
                     Debug.Log("Is this running?");
                     if (worldRaycastHitInfo.collider.gameObject.tag == "PhoneScreen")
                     {
                         Debug.Log("Hit phone");
-                        RoomManager.rM.LookAtPhone();
+                        //RoomManager.rM.LookAtPhone();
                     }
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "Button")
@@ -419,6 +444,11 @@ public class InputManager : MonoBehaviour
                         universalButton.PerformAction();
                     }
 
+                    if (ScreenRayCastHitInfo.collider.gameObject.tag == "AbstractButton")
+                    {
+                        ScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().PerformAction();
+                    }
+
                     //MAKE NEW BUTTON TYPE HERE FOR TRIGERRING THE CONTACT BUTTON, SO THAT IT CAN SEND THE INFO FROM ITSELF TO THE SECTION MANAGER AND THEN DISPLAY THE CHAT LOG
 
                     if (ScreenRayCastHitInfo.collider.gameObject.tag == "ScrollbarHandle")
@@ -426,6 +456,13 @@ public class InputManager : MonoBehaviour
                         interactingWithScrollBar = true;
                         currentCSV = ScreenRayCastHitInfo.collider.gameObject.GetComponent<CustomScrollHandle>().cSV;
                     }
+                }
+            }
+            else if (prevScreenRayCastHitInfo.collider != null)
+            {
+                if (prevScreenRayCastHitInfo.collider.gameObject.tag == "AbstractButton")
+                {
+                    prevScreenRayCastHitInfo.collider.gameObject.GetComponent<AbstractButtonClass>().OnHover(false);
                 }
             }
 
@@ -457,6 +494,10 @@ public class InputManager : MonoBehaviour
             }
 
             prevWorldMousePos = curWorldMousePos;
+        }
+        else
+        {
+            ClearCSV();
         }
     }
 

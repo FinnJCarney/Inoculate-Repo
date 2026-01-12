@@ -10,7 +10,7 @@ public class TimeManager : MonoBehaviour
 
     private void Awake()
     {
-        defaultTimeScale = 0.1f;
+        defaultTimeScale = 0.0f;
         desiredTimeScale = defaultTimeScale;
 
         if (tM != null)
@@ -30,14 +30,14 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        Time.timeScale = defaultTimeScale + timeMultiplier + 0.025f;
+        Time.timeScale = defaultTimeScale + timeMultiplier;
         realTimeElapsed += Time.unscaledDeltaTime;
         gameTimeElapsed += Time.deltaTime;
     }
 
     public void SetTimeScale(float timeScale)
     {
-        desiredTimeScale = timeScale + 0.025f;
+        desiredTimeScale = timeScale;
 
         if (desiredTimeScale == timeMultiplier)
         {

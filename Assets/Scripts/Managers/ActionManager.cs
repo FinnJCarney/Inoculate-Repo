@@ -1,7 +1,11 @@
-using System.Collections;
+ using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
 using TMPro;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
@@ -44,6 +48,8 @@ public class ActionManager : MonoBehaviour
 
     private void Update()
     {
+        CalculatePossiblePlayerActions();
+
         numOfPlayerActions = 0;
 
         for (int i = currentActions.Count - 1; i >= 0; i--)
@@ -55,7 +61,8 @@ public class ActionManager : MonoBehaviour
                 continue;
             }
 
-            if (currentActions[i].actingNodeGroup == currentActions[i].receivingNodeGroup)
+            //If action repivots to target itself, but isn't an internal action
+            if (currentActions[i].actingNodeGroup == currentActions[i].receivingNodeGroup && currentActions[i].action.costType == Action.ActionCostType.InternalAction)
             {
                 DestroyCurrentAction(currentActions[i]);
                 continue;
@@ -66,6 +73,8 @@ public class ActionManager : MonoBehaviour
                 var adjustedCurAction = currentActions[i];
                 adjustedCurAction.timer -= Time.deltaTime;
                 currentActions[i] = adjustedCurAction;
+
+                TimeManager.tM.SetTimeScale(numOfPlayerActions > 0 ? 3f : 0f);
             }
 
             //Old functionality
@@ -79,22 +88,10 @@ public class ActionManager : MonoBehaviour
             //    currentActions[i].actionLine.SyncLine(0, currentActions[i].actingNode.transform.position, currentActions[i].receivingNode.transform.position);
             //}
 
-     
-            if (LayerManager.lM.activeLayer == currentActions[i].actionLayer)
+            for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
             {
-                for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
-                {
-                    currentActions[i].actionLines[j].SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position, false);
-                }
+                currentActions[i].actionLines[j].SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position);
             }
-            else
-            {
-                for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
-                {
-                    currentActions[i].actionLines[j].SyncLine(1f - (currentActions[i].timer / currentActions[i].timerMax), currentActions[i].actingNodeGroup.transform.position, currentActions[i].receivingNodeGroup.transform.position, true);
-                }
-            }
-            
 
             SetActionRing(currentActions[i].actionRing, (currentActions[i].timerMax - currentActions[i].timer) / currentActions[i].timerMax, currentActions[i].faction, currentActions[i].receivingNodeGroup.transform.position);
             currentActions[i].receivingNodeGroup.SetActionAudio((currentActions[i].timerMax - currentActions[i].timer) / currentActions[i].timerMax);
@@ -103,7 +100,7 @@ public class ActionManager : MonoBehaviour
             {
                 currentActions[i].actingNodeGroup.performingActions -= currentActions[i].action.cost;
                 currentActions[i].receivingNodeGroup.receivingActions--;
-                currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].actionLayer, currentActions[i].bleat, currentActions[i].pastAction);
+                currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].bleat, currentActions[i].pastAction);
                 CallHitStun();
 
                 for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
@@ -122,7 +119,6 @@ public class ActionManager : MonoBehaviour
             }
         }
 
-        TimeManager.tM.SetTimeScale(numOfPlayerActions == NodeManager.nM.nodeFactions[LevelManager.lM.playerAllyFaction].Count ? 1f : 0f);
         RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
     }
 
@@ -142,45 +138,153 @@ public class ActionManager : MonoBehaviour
     public void PerfromGroupButtonAction(Action aT, NodeGroup receivingNodeGroup)
     {
         NodeGroup actingNodeGroup = null;
-        NodeGroup[] possibleActingNodeGroups = aT.ProvidePossibleActingNodes(receivingNodeGroup, LevelManager.lM.playerAllyFaction);
+        NodeGroup[] possibleActingNodeGroups = null;
+
+        if (aT.costType == Action.ActionCostType.InternalAction)
+        {
+            possibleActingNodeGroups[0] = receivingNodeGroup;
+        }
+        else
+        {
+            possibleActingNodeGroups = aT.ProvidePossibleActingNodes(receivingNodeGroup, LevelManager.lM.playerAllyFaction);
+        }
 
         foreach (NodeGroup nodeGroup in possibleActingNodeGroups)
         {
             nodeGroup.prio = aT.ProvideActionScore(nodeGroup, receivingNodeGroup, LevelManager.lM.playerAllyFaction);
         }
 
-        if (aT.costType == Action.ActionCostType.InternalAction)
-        {
-            MakeNewGroupAction(aT, LayerManager.lM.activeLayer, receivingNodeGroup, receivingNodeGroup);
-        }
-        else
-        {
-            foreach (NodeGroup nodeGroup in possibleActingNodeGroups)
-            {
-                if (nodeGroup.prio < 0)
-                {
-                    continue;
-                }
+        actingNodeGroup = GiveTheorheticalActingNode(possibleActingNodeGroups);
 
-                if (actingNodeGroup == null)
+        if (actingNodeGroup == null)
+        {
+            Debug.Log("Unable to find acting node group");
+            return;
+        }
+
+        MakeNewPlannedAction(aT, actingNodeGroup, receivingNodeGroup);
+    }
+
+    private NodeGroup GiveTheorheticalActingNode(NodeGroup[] nodeGroups)
+    {
+        NodeGroup possibleActingNodeGroup = null;
+
+        foreach (NodeGroup nodeGroup in nodeGroups)
+        {
+            if (nodeGroup.prio < 0)
+            {
+                continue;
+            }
+
+            if (possibleActingNodeGroup == null)
+            {
+                possibleActingNodeGroup = nodeGroup;
+            }
+            else if (possibleActingNodeGroup.prio < nodeGroup.prio)
+            {
+                possibleActingNodeGroup = nodeGroup;
+            }
+        }
+
+        return possibleActingNodeGroup;
+    }
+
+    private bool CheckPlannedActions(Action aT, NodeGroup possibleActingNodeGroup)
+    {
+        bool nodeCanPerformAction = true;
+
+        foreach (PlannedAction plannedAction in plannedActions)
+        {
+            if (possibleActingNodeGroup == plannedAction.curActingNodeGroup)
+            {
+                if (aT.cost > plannedAction.curActingNodeGroup.nodesInGroup.Count - plannedAction.curActingNodeGroup.possiblePerformingActions)
                 {
-                    actingNodeGroup = nodeGroup;
+                    //Return bool if can or can't find another node to do other actions
+                    //If true, re-calculate the possible action, exluding the node 
                 }
-                else if (actingNodeGroup.prio < nodeGroup.prio)
+                break;
+            }
+        }
+        return false;
+    }
+
+    private void CalculatePossiblePlayerActions()
+    {
+        //While in Update
+        possiblePlayerActions.Clear();
+
+        Faction playerAllyFaction = LevelManager.lM.playerAllyFaction;
+
+        List<Action> playerActions = LevelManager.lM.levelFactions[playerAllyFaction].availableActions;
+
+        int highestInternalActionCost = 0;
+        int highestExternalGroupActionCost = 0;
+
+        foreach(Action playerAction in playerActions)
+        {
+            if(playerAction.costType == Action.ActionCostType.InternalAction)
+            {
+                if(playerAction.cost > highestInternalActionCost)
                 {
-                    actingNodeGroup = nodeGroup;
+                    highestInternalActionCost = playerAction.cost;
                 }
             }
 
-            if (actingNodeGroup == null)
+            if(playerAction.costType == Action.ActionCostType.ExternalGroupAction)
             {
-                Debug.Log("Unable to find acting node group");
-                return;
+                if(playerAction.cost > highestExternalGroupActionCost)
+                {
+                    highestExternalGroupActionCost = playerAction.cost;
+                }
+            }
+        }
+        
+        foreach(NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
+        {
+            if(nodeGroup.groupFaction != playerAllyFaction || nodeGroup.nodesInGroup.Count == 0)
+            {
+                //I.e whatever should inherently disqualify a node from offering options
+                continue;
             }
 
-            MakeNewGroupAction(aT, LayerManager.lM.activeLayer, actingNodeGroup, receivingNodeGroup);
+            if(highestInternalActionCost > 0)
+            {
+                for(int i = 0; i < nodeGroup.nodesInGroup.Count; i++)
+                {
+                    PossiblePlayerAction newPossiblePlayerAction = new PossiblePlayerAction();
+                    newPossiblePlayerAction.actingNode = nodeGroup;
+                    newPossiblePlayerAction.receivingNode = nodeGroup;
+                    possiblePlayerActions.Add(newPossiblePlayerAction);
+                }
+            }
 
+            if (highestExternalGroupActionCost > 0)
+            {
+                foreach (NodeGroup connectedNodeGroup in nodeGroup.connectedNodes.Keys)
+                {
+                    PossiblePlayerAction newPossiblePlayerAction = new PossiblePlayerAction();
+                    newPossiblePlayerAction.actingNode = nodeGroup;
+                    newPossiblePlayerAction.receivingNode = connectedNodeGroup;
+                    possiblePlayerActions.Add(newPossiblePlayerAction);
+                }
+            }
         }
+    }
+
+    private void ReCalculatePlannedActions(PlannedAction pAction)
+    {
+        
+    }
+
+    public void PerformPlannedActions()
+    {
+        Debug.Log("Performing Planned Actions");
+        foreach(PlannedAction plannedAction in plannedActions)
+        {
+            MakeNewGroupAction(plannedAction.action, plannedAction.curActingNodeGroup, plannedAction.receivingNodeGroup);
+        }
+
+        plannedActions.Clear();
     }
 
     public void PerformAIAction(int NumOfActions, Faction faction)
@@ -190,7 +294,7 @@ public class ActionManager : MonoBehaviour
             Node[] actingNodes = new Node[NumOfActions];
 
             List<PossibleAction> possibleActions = new List<PossibleAction>();
-            List<Node> possibleActingNodes = null;
+            List<Node_UserInformation> possibleActingNodes = null;
 
             possibleActingNodes = NodeManager.nM.nodeFactions[faction];
 
@@ -223,194 +327,6 @@ public class ActionManager : MonoBehaviour
             {
                 Debug.Log("Failed to find receiving nodes");
             }
-
-            //Decision Making
-
-            //Vector2 averagePos = Vector2.zero;
-            //
-            //foreach (Node node in possibleActingNodes)
-            //{
-            //    averagePos += node.userInformation.beliefs;
-            //}
-            //
-            //averagePos /= possibleActingNodes.Count;
-            //float ideologicalDistance = 0;
-            //
-            //
-            //ideologicalDistance = Vector2.Distance(averagePos, LevelManager.lM.levelFactions[faction].mainPosition);
-
-            #region Old "Inoculate" decision code
-            ////Acting on "Inoculate"
-            //if (ideologicalDistance > 100) //Ignoring this for now
-            //{
-            //    Debug.Log("Performing Inoculate action for " + faction);
-            //    foreach (Node node in possibleActingNodes)
-            //    {
-            //        if (node.performingAction || node.userInformation.faction == LevelManager.lM.playerAllyFaction || node.isBanned)
-            //        {
-            //            continue;
-            //        }
-
-            //        foreach (Node connectedNode in node.userInformation.connectedNodes.Keys)
-            //        {
-            //            if (connectedNode.userInformation.faction != node.userInformation.faction)
-            //            {
-            //                continue;
-            //            }
-
-            //            float proximityValue = (0.1f / Vector2.Distance(node.userInformation.beliefs, connectedNode.userInformation.beliefs)) + 0.1f;
-            //            float strategicValue = 0;
-
-            //            if (node.userInformation.beliefs.y > connectedNode.userInformation.beliefs.y && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.up))
-            //            {
-            //                PossibleAction newPossibleAction = new PossibleAction();
-            //                newPossibleAction.actionType = ActionType.Up;
-            //                newPossibleAction.actingNode = node;
-            //                newPossibleAction.receivingNode = connectedNode;
-            //                newPossibleAction.score += proximityValue;
-
-            //                if (proximityValue < 1.5f)
-            //                {
-            //                    newPossibleAction.score += 2.5f;
-            //                }
-
-            //                foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
-            //                {
-            //                    if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
-            //                    {
-            //                        strategicValue += 2f;
-
-            //                        //if(Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, cNConnectedNode.userInformation.beliefs) < 1.1f)
-            //                        //{
-            //                        //    strategicValue -= 4f;
-            //                        //}
-            //                    }
-            //                }
-
-            //                //Temp version of "Value add for move also pulling node towards factions ideological center"
-            //                if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.up, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
-            //                {
-            //                    strategicValue += 2f;
-            //                }
-
-            //                newPossibleAction.score += strategicValue;
-            //                newPossibleAction.score += Random.Range(0f, 1f);
-            //                possibleActions.Add(newPossibleAction);
-            //            }
-
-            //            if (node.userInformation.beliefs.y < connectedNode.userInformation.beliefs.y && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.down))
-            //            {
-            //                PossibleAction newPossibleAction = new PossibleAction();
-            //                newPossibleAction.actionType = ActionType.Down;
-            //                newPossibleAction.actingNode = node;
-            //                newPossibleAction.receivingNode = connectedNode;
-            //                newPossibleAction.score += proximityValue;
-
-            //                if (proximityValue < 1.5f)
-            //                {
-            //                    newPossibleAction.score += 2.5f;
-            //                }
-
-            //                foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
-            //                {
-            //                    if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
-            //                    {
-            //                        strategicValue += 2f;
-
-            //                        //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, cNConnectedNode.userInformation.beliefs) < 1.1f)
-            //                        //{
-            //                        //    strategicValue -= 4f;
-            //                        //}
-            //                    }
-            //                }
-
-            //                //Temp version of "Value add for move also pulling node towards factions ideological center"
-            //                if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.down, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
-            //                {
-            //                    strategicValue += 2f;
-            //                }
-
-            //                newPossibleAction.score += strategicValue;
-            //                newPossibleAction.score += Random.Range(0f, 1f);
-            //                possibleActions.Add(newPossibleAction);
-            //            }
-
-            //            if (node.userInformation.beliefs.x > connectedNode.userInformation.beliefs.x && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.right))
-            //            {
-            //                PossibleAction newPossibleAction = new PossibleAction();
-            //                newPossibleAction.actionType = ActionType.Right;
-            //                newPossibleAction.actingNode = node;
-            //                newPossibleAction.receivingNode = connectedNode;
-            //                newPossibleAction.score += proximityValue;
-
-            //                if (proximityValue < 1.5f)
-            //                {
-            //                    newPossibleAction.score += 2.5f;
-            //                }
-
-            //                foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
-            //                {
-            //                    if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
-            //                    {
-            //                        strategicValue += 2f;
-
-            //                        //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, cNConnectedNode.userInformation.beliefs) < 1.1f)
-            //                        //{
-            //                        //    strategicValue -= 4f;
-            //                        //}
-            //                    }
-            //                }
-
-            //                if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.right, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
-            //                {
-            //                    strategicValue += 2f;
-            //                }
-
-            //                newPossibleAction.score += strategicValue;
-            //                newPossibleAction.score += Random.Range(0f, 1f);
-            //                possibleActions.Add(newPossibleAction);
-            //            }
-
-            //            if (node.userInformation.beliefs.x < connectedNode.userInformation.beliefs.x && LevelManager.lM.CheckValidSpace(connectedNode.userInformation.beliefs + Vector2.left))
-            //            {
-            //                PossibleAction newPossibleAction = new PossibleAction();
-            //                newPossibleAction.actionType = ActionType.Left;
-            //                newPossibleAction.actingNode = node;
-            //                newPossibleAction.receivingNode = connectedNode;
-            //                newPossibleAction.score += proximityValue;
-
-            //                if (proximityValue < 1.5f)
-            //                {
-            //                    newPossibleAction.score += 2.5f;
-            //                }
-
-            //                foreach (Node cNConnectedNode in connectedNode.userInformation.connectedNodes.Keys)
-            //                {
-            //                    if (cNConnectedNode.userInformation.faction != node.userInformation.faction)
-            //                    {
-            //                        strategicValue += 2f;
-
-            //                        //if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, cNConnectedNode.userInformation.beliefs) < 1.1f)
-            //                        //{
-            //                        //    strategicValue -= 4f;
-            //                        //}
-            //                    }
-            //                }
-
-            //                if (Vector2.Distance(connectedNode.userInformation.beliefs + Vector2.left, LevelManager.lM.levelFactions[faction].mainPosition) < Vector2.Distance(connectedNode.userInformation.beliefs, LevelManager.lM.levelFactions[faction].mainPosition))
-            //                {
-            //                    strategicValue += 2f;
-            //                }
-
-            //                newPossibleAction.score += strategicValue;
-            //                newPossibleAction.score += Random.Range(0f, 1f);
-            //                possibleActions.Add(newPossibleAction);
-            //            }
-
-            //        }
-            //    }
-            //} 
-            #endregion
 
             //Acting on "Expand"
             Debug.Log("Performing Expand action for " + faction);
@@ -470,7 +386,7 @@ public class ActionManager : MonoBehaviour
                 if (possibleAction.score == maxPossibleActionValue)
                 {
                     //Debug.Log("Performing " + possibleAction.actionType + " action for " + faction + " faction, with acting node " + possibleAction.actingNode);
-                    MakeNewGroupAction(possibleAction.action, possibleAction.actionLayer, possibleAction.actingNodeGroup, possibleAction.receivingNodeGroup);
+                    MakeNewGroupAction(possibleAction.action, possibleAction.actingNodeGroup, possibleAction.receivingNodeGroup);
                     break;
                 }
             }
@@ -500,7 +416,7 @@ public class ActionManager : MonoBehaviour
         //Debug.Log("Performing action type " + newActionType + " for faction " + newCurrentAction.faction + ", from " + actingNode + " to " + receivingNode);
     }
 
-    private CurrentAction MakeNewGroupAction(Action aT, connectionLayer actionLayer, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup)
+    private CurrentAction MakeNewGroupAction(Action aT, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup)
     {
         CurrentAction newCurrentAction;
         newCurrentAction.action = aT;
@@ -508,7 +424,6 @@ public class ActionManager : MonoBehaviour
         actingNodeGroup.performingActions += aT.cost;
         receivingNodeGroup.receivingActions++;
         newCurrentAction.receivingNodeGroup = receivingNodeGroup;
-        newCurrentAction.actionLayer = LayerManager.lM.activeLayer;
         Debug.Log("Actor Pos = " +  actingNodeGroup.transform.position + "Receiver Pos = " +  receivingNodeGroup.transform.position + "Action Distance = " + Vector2.Distance(actingNodeGroup.transform.position, receivingNodeGroup.transform.position));
         newCurrentAction.timer = aT.actionSpeed == 0f ? 1f : Vector3.Distance(actingNodeGroup.transform.position, receivingNodeGroup.transform.position) / aT.actionSpeed;
         newCurrentAction.timerMax = newCurrentAction.timer;
@@ -518,7 +433,7 @@ public class ActionManager : MonoBehaviour
         {
             newCurrentAction.actionLines[i] = Instantiate<GameObject>(LevelManager.lM.levelFactions[newCurrentAction.faction].actionLine, this.transform).GetComponent<ActionLine>();
             newCurrentAction.actionLines[i].transform.position = Vector3.Lerp(actingNodeGroup.transform.position, receivingNodeGroup.transform.position, 0.5f);
-            newCurrentAction.actionLines[i].SyncLine(0, actingNodeGroup.transform.position, receivingNodeGroup.transform.position, actionLayer != LayerManager.lM.activeLayer);
+            newCurrentAction.actionLines[i].SyncLine(0, actingNodeGroup.transform.position, receivingNodeGroup.transform.position);
         }
         newCurrentAction.actionRing = Instantiate<GameObject>(actionRing, this.transform);
         newCurrentAction.actionRing.transform.position = receivingNodeGroup.transform.position;
@@ -527,7 +442,20 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.pastAction = RegisterPastAction(aT, actingNodeGroup, receivingNodeGroup, null);
         currentActions.Add(newCurrentAction);
         return currentActions[currentActions.IndexOf(newCurrentAction)];
-        Debug.Log("Performing action type " + aT + " for faction " + newCurrentAction.faction + ", from " + actingNodeGroup + " to " + receivingNodeGroup);
+        //Debug.Log("Performing action type " + aT + " for faction " + newCurrentAction.faction + ", from " + actingNodeGroup + " to " + receivingNodeGroup);
+    }
+
+    private PlannedAction MakeNewPlannedAction(Action aT, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup)
+    {
+        PlannedAction newPlannedAction = new PlannedAction();
+        newPlannedAction.action = aT;
+        newPlannedAction.curActingNodeGroup = actingNodeGroup;
+        actingNodeGroup.possiblePerformingActions += aT.cost;
+        newPlannedAction.receivingNodeGroup = receivingNodeGroup;
+        newPlannedAction.timer = Vector3.Distance(actingNodeGroup.groupBelief, receivingNodeGroup.groupBelief) / aT.actionSpeed;
+        plannedActions.Add(newPlannedAction);
+        return newPlannedAction;
+        //Debug.Log("Performing action type " + aT + " for faction " + newCurrentAction.faction + ", from " + actingNodeGroup + " to " + receivingNodeGroup);
     }
 
     private PossibleAction MakePossibleGroupAction(Action action, NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction faction)
@@ -536,60 +464,10 @@ public class ActionManager : MonoBehaviour
         newPossibleAction.action = action;
         newPossibleAction.actingNodeGroup = actingNodeGroup;
         newPossibleAction.receivingNodeGroup = receivingNodeGroup;
-        newPossibleAction.actionLayer = connectionLayer.online;
         newPossibleAction.faction = faction;
 
         newPossibleAction.score = action.ProvideActionScore(actingNodeGroup, receivingNodeGroup, faction);
         return newPossibleAction;
-
-
-        //if (actionLayer == connectionLayer.offline)
-        //{
-        //    newPossibleAction.score -= 1f;
-
-        //    if (LevelManager.lM.CheckValidSpace(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
-        //    {
-        //        if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
-        //        {
-        //            newPossibleAction.score += 5f;
-        //        }
-
-        //        if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), factionPos) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, factionPos)) //If distance between receiving node and faction center is closer due to action
-        //        {
-        //            newPossibleAction.score += 3f;
-        //        }
-
-        //        if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < 12.1f)
-        //        {
-        //            newPossibleAction.score += 5f;
-        //        }
-
-        //        foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
-        //        {
-        //            if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), cNConnectedNode.userInformation.beliefs) < 12.1f)
-        //            {
-        //                if (cNConnectedNode.userInformation.faction == Faction.Neutral)
-        //                {
-        //                    newPossibleAction.score += 2f;
-        //                }
-        //                else
-        //                {
-        //                    newPossibleAction.score -= 2f;
-        //                }
-        //            }
-
-        //            if (cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
-        //            {
-        //                newPossibleAction.score += 2f;
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        newPossibleAction.score -= 10f;
-        //    }
-        //}
-        //else
 
     }
 
@@ -644,121 +522,13 @@ public class ActionManager : MonoBehaviour
     public void RecreatePastAction(PastAction pA, float timerVal)
     {
         Debug.Log("Past Action Acting Count = " + (pA.actingNodeGroups.Count - 1) + "Past Acting Receiving Count = " + (pA.receivingNodeGroups.Count - 1));
-        var recreatedAction = MakeNewGroupAction(pA.action, connectionLayer.online, pA.actingNodeGroups[pA.actingNodeGroups.Count - 1].nodeGroupTarget, pA.receivingNodeGroups[pA.receivingNodeGroups.Count - 1].nodeGroupTarget);
+        var recreatedAction = MakeNewGroupAction(pA.action, pA.actingNodeGroups[pA.actingNodeGroups.Count - 1].nodeGroupTarget, pA.receivingNodeGroups[pA.receivingNodeGroups.Count - 1].nodeGroupTarget);
         int actionIndex = currentActions.IndexOf(recreatedAction);
         pastActions.Remove(recreatedAction.pastAction);
         recreatedAction.timer = recreatedAction.timerMax - timerVal;
         recreatedAction.pastAction = pA;
         currentActions[actionIndex] = recreatedAction;
     }
-
-    //private PossibleAction MakePossibleAction(ActionType actionType, connectionLayer actionLayer, Node actingNode, Node receivingNode)
-    //{
-    //    PossibleAction newPossibleAction = new PossibleAction();
-    //    newPossibleAction.actionType = actionType;
-    //    newPossibleAction.actingNode = actingNode;
-    //    newPossibleAction.receivingNode = receivingNode;
-    //    newPossibleAction.actionLayer = actionLayer;
-
-    //    Vector2 factionPos = LevelManager.lM.levelFactions[actingNode.userInformation.faction].mainPosition;
-    //    factionPos.x = factionPos.x == 3 ? receivingNode.userInformation.beliefs.x : factionPos.x;
-    //    factionPos.y = factionPos.y == 3 ? receivingNode.userInformation.beliefs.y : factionPos.y;
-
-    //    newPossibleAction.score += actingNode.userInformation.faction == receivingNode.userInformation.faction ? 0f : 2.5f; //If node is in another faction, more valuable to grab
-
-    //    if (actionLayer == connectionLayer.offline)
-    //    {
-    //        newPossibleAction.score -= 1f;
-
-    //        if (LevelManager.lM.CheckValidSpace(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f)))
-    //        {
-    //            if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
-    //            {
-    //                newPossibleAction.score += 5f;
-    //            }
-
-    //            if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), factionPos) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, factionPos)) //If distance between receiving node and faction center is closer due to action
-    //            {
-    //                newPossibleAction.score += 3f;
-    //            }
-
-    //            if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), actingNode.userInformation.beliefs) < 12.1f)
-    //            {
-    //                newPossibleAction.score += 5f;
-    //            }
-
-    //            foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
-    //            {
-    //                if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition * 2f), cNConnectedNode.userInformation.beliefs) < 12.1f)
-    //                {
-    //                    if (cNConnectedNode.userInformation.faction == Faction.Neutral)
-    //                    {
-    //                        newPossibleAction.score += 2f;
-    //                    }
-    //                    else
-    //                    {
-    //                        newPossibleAction.score -= 2f;
-    //                    }
-    //                }
-
-    //                if (cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
-    //                {
-    //                    newPossibleAction.score += 2f;
-    //                }
-    //            }
-    //        }
-    //        else
-    //        {
-    //            newPossibleAction.score -= 10f;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, actingNode.userInformation.beliefs) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, actingNode.userInformation.beliefs)) //If distance between acting and receiving nodes is closer due to action
-    //        {
-    //            newPossibleAction.score += 4f;
-    //        }
-
-    //        if (MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs + actionInformation[actionType].actionPosition, factionPos) < MinDistanceBetweenTwoVector2sOnMap(receivingNode.userInformation.beliefs, factionPos)) //If distance between receiving node and faction center is closer due to action
-    //        {
-    //            newPossibleAction.score += 2f;
-    //        }
-
-    //        if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), actingNode.userInformation.beliefs) < 12.1f)
-    //        {
-    //            newPossibleAction.score += 4f;
-    //        }
-
-    //        foreach (Node cNConnectedNode in receivingNode.userInformation.connectedNodes.Keys)
-    //        {
-    //            if (Vector2.Distance(receivingNode.userInformation.beliefs + (actionInformation[actionType].actionPosition), cNConnectedNode.userInformation.beliefs) < 12.1f)
-    //            {
-    //                if (cNConnectedNode.userInformation.faction == Faction.Neutral)
-    //                {
-    //                    newPossibleAction.score += 2f;
-    //                }
-    //                else
-    //                {
-    //                    newPossibleAction.score -= 2f;
-    //                }
-    //            }
-
-    //            if (cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
-    //            {
-    //                newPossibleAction.score += 2f;
-
-
-    //                if (cNConnectedNode.userInformation.faction == receivingNode.userInformation.faction)
-    //                {
-    //                    newPossibleAction.score += 2f;
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    newPossibleAction.score += Random.Range(0f, 1f);
-    //    return newPossibleAction;
-    //}
 
     public void DestroyCurrentAction(CurrentAction currentAction)
     {
@@ -837,8 +607,10 @@ public class ActionManager : MonoBehaviour
 
     private int numOfPlayerActions = 0;
 
+    [SerializeField] public List<PlannedAction> plannedActions = new List<PlannedAction>();
     [SerializeField] public List<CurrentAction> currentActions = new List<CurrentAction>();
     [SerializeField] public List<PastAction> pastActions = new List<PastAction>();
+    [SerializeField] public List<PossiblePlayerAction> possiblePlayerActions = new List<PossiblePlayerAction>();
     [SerializeField] public List<Node> previousNodes = new List<Node>();
 
     [SerializeField] GameObject actionRing;
@@ -857,12 +629,20 @@ public struct CurrentAction
     public NodeGroup receivingNodeGroup;
     public float timer;
     public float timerMax;
-    public connectionLayer actionLayer;
     public ActionLine[] actionLines;
     public GameObject actionRing;
     public Faction faction;
     public Bleat bleat;
     public PastAction pastAction; 
+}
+
+public struct PlannedAction
+{
+    public Action action;
+    public NodeGroup curActingNodeGroup;
+    public NodeGroup receivingNodeGroup;
+    public float timer;
+    public Faction faction;
 }
 
 [System.Serializable]
@@ -872,7 +652,6 @@ public struct PossibleAction
     public NodeGroup actingNodeGroup;
     public NodeGroup receivingNodeGroup;
     public Faction faction;
-    public connectionLayer actionLayer;
     public float score;
 }
 
@@ -892,6 +671,13 @@ public struct NodeGroupTarget
 {
     public NodeGroup nodeGroupTarget;
     public float timeOfTarget;
+}
+
+[System.Serializable]
+public struct PossiblePlayerAction
+{
+    public NodeGroup actingNode;
+    public NodeGroup receivingNode;
 }
 
 

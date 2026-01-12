@@ -100,6 +100,11 @@ public class NodeGroup : MonoBehaviour
         UpdateNodeInfo();
         UpdatePlayerActions();
         UpdateVisuals();
+
+        if(performingActions > nodesInGroup.Count)
+        {
+            Debug.LogWarning("Performing more actions than should be able!");
+        }
     }
 
     public void ShowMenu(bool show)
@@ -124,9 +129,8 @@ public class NodeGroup : MonoBehaviour
 
         foreach(Node_UserInformation nodeUser in nodesInGroup)
         {
-            foreach(Node connectedNodeCore in nodeUser.connectedNodes.Keys) //Change to UserInformation when things are more implemented
+            foreach(Node_UserInformation connectedNode in nodeUser.connectedNodes.Keys) //Change to UserInformation when things are more implemented
             {
-                Node_UserInformation connectedNode = connectedNodeCore.userInformation; // Should be able to get rid of this line
                 NodeGroup connectedNodeGroup = LevelManager.lM.nodeGroups[connectedNode.beliefs];
 
                 if(connectedNodeGroup == this)
@@ -136,22 +140,21 @@ public class NodeGroup : MonoBehaviour
 
                 if (!connectedNodes.ContainsKey(connectedNodeGroup))
                 {
-                    connectedNodes.Add(connectedNodeGroup, nodeUser.connectedNodes[connectedNode.nodeCore]);
+                    connectedNodes.Add(connectedNodeGroup, nodeUser.connectedNodes[connectedNode]);
                 }
                 else
                 {
                     connectedNodeInfo connectedNodeInfo;
-                    connectedNodeInfo.layer = connectedNodes[connectedNodeGroup].layer;
                     connectedNodeInfo.type = connectedNodes[connectedNodeGroup].type;
 
-                    if (connectedNodes[connectedNodeGroup].type != nodeUser.connectedNodes[connectedNode.nodeCore].type)
+                    if (connectedNodes[connectedNodeGroup].type != nodeUser.connectedNodes[connectedNode].type)
                     {
-                        if(connectedNodes[connectedNodeGroup].type == connectionType.influencedBy && nodeUser.connectedNodes[connectedNode.nodeCore].type != connectionType.influencedBy)
+                        if(connectedNodes[connectedNodeGroup].type == connectionType.influencedBy && nodeUser.connectedNodes[connectedNode].type != connectionType.influencedBy)
                         {
-                            connectedNodeInfo.type = nodeUser.connectedNodes[connectedNode.nodeCore].type;
+                            connectedNodeInfo.type = nodeUser.connectedNodes[connectedNode].type;
                         }
 
-                        if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn && nodeUser.connectedNodes[connectedNode.nodeCore].type == connectionType.mutual)
+                        if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn && nodeUser.connectedNodes[connectedNode].type == connectionType.mutual)
                         {
                             connectedNodeInfo.type = connectionType.mutual;
                         }
@@ -178,17 +181,35 @@ public class NodeGroup : MonoBehaviour
             return;
         }
 
-        int internalPossibleActions = this.groupFaction == LevelManager.lM.playerAllyFaction ? nodesInGroup.Count - performingActions : 0;
+        int internalPossibleActions = 0;
         int externalPossibleActions = 0;
         int externalPossibleGroupActions = 0;
 
-        foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
+        foreach(PossiblePlayerAction ppA in ActionManager.aM.possiblePlayerActions)
         {
-            if (connectedNodes[connectedNodeGroup].layer != connectionLayer.onlineOffline && connectedNodes[connectedNodeGroup].layer != LayerManager.lM.activeLayer)
+            if(ppA.receivingNode != this)
             {
                 continue;
             }
-    
+
+            if(ppA.actingNode == this)
+            {
+                internalPossibleActions++;
+            }
+
+            if(ppA.actingNode != this)
+            {
+                externalPossibleActions++;
+                externalPossibleGroupActions++;
+            }
+        }
+
+        //Debug.Log("For NodeGroup " + gameObject.name + "internal actions available = " + internalPossibleActions);
+
+
+        /*
+        foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
+        {
             if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn)
             {
                 continue;
@@ -205,6 +226,7 @@ public class NodeGroup : MonoBehaviour
                 }
             }
         }
+        */
 
         if (menu.activeInHierarchy)
         {
@@ -258,11 +280,6 @@ public class NodeGroup : MonoBehaviour
 
         foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
         {
-            if (connectedNodes[connectedNodeGroup].layer != connectionLayer.onlineOffline && connectedNodes[connectedNodeGroup].layer != LayerManager.lM.activeLayer)
-            {
-                continue;
-            }
-
             if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn)
             {
                 continue;
@@ -283,7 +300,7 @@ public class NodeGroup : MonoBehaviour
         return new Vector3 (internalPossibleActions, externalPossibleActions, externalPossibleGroupActions);
     }
 
-    public void ActionResult(Action aT, Faction actingFaction, NodeGroup actingNodeGroup, connectionLayer actingLayer, Bleat bleat, PastAction pastAction)
+    public void ActionResult(Action aT, Faction actingFaction, NodeGroup actingNodeGroup, Bleat bleat, PastAction pastAction)
     {
         if (nodesInGroup.Count == 0)
         {
@@ -405,6 +422,7 @@ public class NodeGroup : MonoBehaviour
     public SerializableDictionary<NodeGroup, connectedNodeInfo> connectedNodes = new SerializableDictionary<NodeGroup, connectedNodeInfo>();
 
     public int prio;
+    public int possiblePerformingActions;
     public int performingActions;
     public int receivingActions;
 

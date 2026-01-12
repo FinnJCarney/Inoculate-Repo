@@ -61,7 +61,6 @@ public class LevelManager : MonoBehaviour
         NodeManager.nM.AddNodeFactions();
         //HUDManager.hM.SetMenuBounds(levelMap);
         InputManager.iM.SetMCC(mapCamera);
-        LayerManager.lM.SetLayer(startingLayer, allowedLayers);
     }
 
     private void OnDestroy()
@@ -433,9 +432,6 @@ public class LevelManager : MonoBehaviour
 
     public SerializableDictionary<Faction, levelFaction> levelFactions = new SerializableDictionary<Faction, levelFaction>();
     public SerializableDictionary<Action, TweetInfo> tweetsForActions = new SerializableDictionary<Action, TweetInfo>();
-
-    [SerializeField] public connectionLayer allowedLayers;
-    [SerializeField] connectionLayer startingLayer;
 
     [SerializeField] int numOfActionsPerTurn;
 

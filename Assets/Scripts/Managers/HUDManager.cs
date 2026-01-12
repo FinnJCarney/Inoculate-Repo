@@ -74,10 +74,9 @@ public class HUDManager : MonoBehaviour
 
     private void SyncNodeOptions()
     {
+        /*
         bannedCover.SetActive(selectedNode.isBanned);
         hiddenCover.SetActive(selectedNode.userInformation.userInfoHidden);
-
-
 
         int theorheticalActions = 0;
         int possibleActions = 0;
@@ -88,30 +87,25 @@ public class HUDManager : MonoBehaviour
         bool hasDownNeighbourAvail = false;
         bool hasAllyNeighbourAvail = false;
 
-        foreach (Node connectedNode in selectedNode.userInformation.connectedNodes.Keys)
+        foreach (Node_UserInformation connectedNode in selectedNode.userInformation.connectedNodes.Keys)
         {
-            if (connectedNode.isBanned || !connectedNode.userInformation.connectedNodes.Contains(selectedNode))
+            if (connectedNode.isBanned || !connectedNode.connectedNodes.Contains(selectedNode))
             {
                 continue;
             }
 
-            if (connectedNode.performingAction)
+            if (connectedNode.GetComponent<Node>().performingAction)
             {
                 theorheticalActions++;
                 continue;
-            }
+            } 
 
-            if (selectedNode.userInformation.connectedNodes[connectedNode].layer != connectionLayer.onlineOffline && selectedNode.userInformation.connectedNodes[connectedNode].layer != LayerManager.lM.activeLayer)
+            if (selectedNode.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.connectedNodes[selectedNode]. == connectionType.influencedBy)
             {
                 continue;
             }
 
-            if (selectedNode.userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.userInformation.connectedNodes[selectedNode].type == connectionType.influencedBy)
-            {
-                continue;
-            }
-
-            if (connectedNode.userInformation.faction == LevelManager.lM.playerAllyFaction)
+            if (connectedNode.faction == LevelManager.lM.playerAllyFaction)
             {
                 theorheticalActions++;
                 possibleActions++;
@@ -191,6 +185,7 @@ public class HUDManager : MonoBehaviour
                 userButton.EnableButton(false);
             }
         }
+        */
     }
 
     public void SyncMenu(Node node)
@@ -211,8 +206,6 @@ public class HUDManager : MonoBehaviour
             but_Up.EnableButton(false);
             but_Down.EnableButton(false);
             but_Connect.EnableButton(false);
-
-            politicalAxes.ClearAxes();
 
             selectedNode = null;
 
@@ -252,8 +245,6 @@ public class HUDManager : MonoBehaviour
     public static HUDManager hM;
 
     [SerializeField] private Node selectedNode;
-
-    [SerializeField] public Node_PoliticalAxes politicalAxes;
     [SerializeField] private GameObject SpaceCoverHolder;
     [SerializeField] private GameObject hiddenCover;
     [SerializeField] private GameObject bannedCover;

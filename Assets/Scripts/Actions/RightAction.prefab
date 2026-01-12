@@ -47,5 +47,5 @@ MonoBehaviour:
   cost: 1
   timeToAct: 7.5
   actionSpeed: 2
-  costType: 2
+  costType: 1
   movement: {x: 12, y: 0}

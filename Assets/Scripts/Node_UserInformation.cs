@@ -30,30 +30,24 @@ public class Node_UserInformation : MonoBehaviour
 
             nameTMP.text = NodeName;
 
-            foreach(Node connectedNode in connectedNodes.Keys)
+            foreach(Node_UserInformation connectedNode in connectedNodes.Keys)
             {
-                if (connectedNode.userInformation.connectedNodes.ContainsKey(this.GetComponent<Node>()))
+                if (connectedNode.connectedNodes.ContainsKey(this))
                 {
-                    if (connectedNode.userInformation.connectedNodes[this.GetComponent<Node>()].layer != connectedNodes[connectedNode].layer)
+                    if (connectedNode.connectedNodes[this].type != connectedNodes[connectedNode].type)
                     {
-                        connectedNode.userInformation.connectedNodes.Remove(this.GetComponent<Node>());
-                    }
-
-                    if (connectedNode.userInformation.connectedNodes[this.GetComponent<Node>()].type != connectedNodes[connectedNode].type)
-                    {
-                        if (connectedNode.userInformation.connectedNodes[this.GetComponent<Node>()].type == connectionType.influencedBy && connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.userInformation.connectedNodes[this.GetComponent<Node>()].type == connectionType.influenceOn && connectedNodes[connectedNode].type == connectionType.influencedBy)
+                        if (connectedNode.connectedNodes[this].type == connectionType.influencedBy && connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.connectedNodes[this].type == connectionType.influenceOn && connectedNodes[connectedNode].type == connectionType.influencedBy)
                         {
                             continue;
                         }
 
-                        connectedNode.userInformation.connectedNodes.Remove(this.GetComponent<Node>());
+                        connectedNode.connectedNodes.Remove(this.GetComponent<Node>());
                     }
                 }
 
-                if (!connectedNode.userInformation.connectedNodes.ContainsKey(this.GetComponent<Node>()))
+                if (!connectedNode.connectedNodes.ContainsKey(this))
                 {
                     connectedNodeInfo newConnectedNodeInfo = new connectedNodeInfo();
-                    newConnectedNodeInfo.layer = connectedNodes[connectedNode].layer;
                     newConnectedNodeInfo.type = connectionType.mutual;
 
                     if (connectedNodes[connectedNode].type == connectionType.influenceOn)
@@ -65,7 +59,7 @@ public class Node_UserInformation : MonoBehaviour
                         newConnectedNodeInfo.type = connectionType.influenceOn;
                     }
 
-                    connectedNode.userInformation.connectedNodes.Add(this.GetComponent<Node>(), newConnectedNodeInfo);
+                    connectedNode.connectedNodes.Add(this, newConnectedNodeInfo);
                 }
             }
 
@@ -83,6 +77,7 @@ public class Node_UserInformation : MonoBehaviour
     public bool userInfoHidden;
 
     public bool isPlayer;
+    public bool isBanned;
     public Faction faction;
     public Faction instigator;
 
@@ -95,7 +90,7 @@ public class Node_UserInformation : MonoBehaviour
 
     [SerializeField] private TextMeshPro nameTMP;
 
-    public SerializableDictionary<Node, connectedNodeInfo> connectedNodes = new SerializableDictionary<Node, connectedNodeInfo>();
+    public SerializableDictionary<Node_UserInformation, connectedNodeInfo> connectedNodes = new SerializableDictionary<Node_UserInformation, connectedNodeInfo>();
 
     private Tween movementTween;
 
@@ -120,15 +115,7 @@ public enum Faction
 [System.Serializable]
 public struct connectedNodeInfo
 {
-    public connectionLayer layer;
     public connectionType type;
-}
-
-public enum connectionLayer
-{
-    onlineOffline,
-    online,
-    offline
 }
 
 public enum connectionType

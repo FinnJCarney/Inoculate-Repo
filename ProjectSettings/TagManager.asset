@@ -16,6 +16,7 @@ TagManager:
   - PhoneScreen
   - NodeGroupButton
   - NodeGroup
+  - AbstractButton
   layers:
   - Default
   - TransparentFX
