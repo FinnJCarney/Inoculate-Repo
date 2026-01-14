@@ -350,21 +350,19 @@ public class NodeGroup : MonoBehaviour
 
     public void ReorientActions(NodeGroup newNodeGroup)
     {
-        if(nodesInGroup.Count == 0)
+        if (nodesInGroup.Count < performingActions)
         {
-            if(performingActions > 0)
-            {
-                ActionManager.aM.PivotAction_Performing(this, newNodeGroup);
-            }
+            ActionManager.aM.PivotAction_Performing(this, newNodeGroup);
+        }
 
-            if(receivingActions > 0)
-            {
-                ActionManager.aM.PivotAction_Receiving(this, newNodeGroup);
-            }
+        if (nodesInGroup.Count == 0 && receivingActions > 0)
+        {
+            ActionManager.aM.PivotAction_Receiving(this, newNodeGroup);
         }
     }
 
-    public void AddTag(string tag, float timer)
+
+public void AddTag(string tag, float timer)
     {
         tags.Add(tag, timer);
     }

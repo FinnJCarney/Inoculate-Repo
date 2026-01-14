@@ -118,6 +118,9 @@ public class Action_Movement : Action
             }
         }
 
+        float speedBonus = Mathf.Min(Vector2.Distance(actingNodeGroup.groupBelief, receivingNodeGroup.groupBelief), 64f) / 64f;
+        scoreToReturn += 12f - (speedBonus * 12f);
+
         return Mathf.RoundToInt(scoreToReturn);
     }
 

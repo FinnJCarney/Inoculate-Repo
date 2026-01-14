@@ -425,10 +425,8 @@ public class InputManager : MonoBehaviour
 
                 if (mouseButtonDown)
                 {
-                    Debug.Log("Is this running?");
                     if (worldRaycastHitInfo.collider.gameObject.tag == "PhoneScreen")
                     {
-                        Debug.Log("Hit phone");
                         //RoomManager.rM.LookAtPhone();
                     }
 

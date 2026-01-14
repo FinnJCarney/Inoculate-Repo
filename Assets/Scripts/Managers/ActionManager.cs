@@ -1,5 +1,6 @@
  using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.XR;
 using UnityEngine;
 using UnityEngine.Analytics;
 
@@ -74,7 +75,7 @@ public class ActionManager : MonoBehaviour
                 adjustedCurAction.timer -= Time.deltaTime;
                 currentActions[i] = adjustedCurAction;
 
-                TimeManager.tM.SetTimeScale(numOfPlayerActions > 0 ? 3f : 0f);
+                TimeManager.tM.SetTimeScale(currentActions.Count > 0 ? 3f : 0f);
             }
 
             //Old functionality
@@ -138,18 +139,22 @@ public class ActionManager : MonoBehaviour
     public void PerfromGroupButtonAction(Action aT, NodeGroup receivingNodeGroup)
     {
         NodeGroup actingNodeGroup = null;
+        List<NodeGroup> possibleActingNodeGroups = new List<NodeGroup>();
 
         foreach(PossiblePlayerAction possibleAction in possiblePlayerActions)
         {
             if(possibleAction.action == aT && possibleAction.receivingNode == receivingNodeGroup)
             {
-                if (possibleAction.actingNode.possiblePerformingActions + possibleAction.action.cost <= possibleAction.actingNode.nodesInGroup.Count)
-                {
-                    actingNodeGroup = possibleAction.actingNode;
-                    break;
-                }
+                possibleActingNodeGroups.Add(possibleAction.actingNode);
             }
         }
+
+        foreach (NodeGroup nodeGroup in possibleActingNodeGroups)
+        {
+            nodeGroup.prio = aT.ProvideActionScore(nodeGroup, receivingNodeGroup, LevelManager.lM.playerAllyFaction);
+        }
+
+        actingNodeGroup = GiveTheorheticalActingNode(possibleActingNodeGroups);
 
         //Check if selectedActingNodeGroup can do action
         //If cannot, swap for one that can? 
@@ -168,13 +173,6 @@ public class ActionManager : MonoBehaviour
             possibleActingNodeGroups = aT.ProvidePossibleActingNodes(receivingNodeGroup, LevelManager.lM.playerAllyFaction);
         }
 
-        foreach (NodeGroup nodeGroup in possibleActingNodeGroups)
-        {
-            nodeGroup.prio = aT.ProvideActionScore(nodeGroup, receivingNodeGroup, LevelManager.lM.playerAllyFaction);
-        }
-
-        actingNodeGroup = GiveTheorheticalActingNode(possibleActingNodeGroups);
-
         */
 
         if (actingNodeGroup == null)
@@ -183,10 +181,28 @@ public class ActionManager : MonoBehaviour
             return;
         }
 
+        if(!CanNodeGroupPerformAction(aT, actingNodeGroup))
+        {
+            if(!TryToPivotPlannedActions(actingNodeGroup))
+            {
+                Debug.LogWarning("Failed to Pivot Action!");
+                return;
+            }
+            else
+            {
+                Debug.Log("Oh my god it maybe worked");
+            }
+        }
+
         MakeNewPlannedAction(aT, actingNodeGroup, receivingNodeGroup);
     }
 
-    private NodeGroup GiveTheorheticalActingNode(NodeGroup[] nodeGroups)
+    private bool CanNodeGroupPerformAction(Action action, NodeGroup nodeToCheck)
+    {
+        return nodeToCheck.nodesInGroup.Count >= nodeToCheck.possiblePerformingActions + action.cost;
+    }
+
+    private NodeGroup GiveTheorheticalActingNode(List<NodeGroup> nodeGroups)
     {
         NodeGroup possibleActingNodeGroup = null;
 
@@ -218,28 +234,6 @@ public class ActionManager : MonoBehaviour
         Faction playerAllyFaction = LevelManager.lM.playerAllyFaction;
 
         List<Action> playerActions = LevelManager.lM.levelFactions[playerAllyFaction].availableActions;
-
-        int highestInternalActionCost = 0;
-        int highestExternalGroupActionCost = 0;
-
-        foreach(Action playerAction in playerActions)
-        {
-            if(playerAction.costType == Action.ActionCostType.InternalAction)
-            {
-                if(playerAction.cost > highestInternalActionCost)
-                {
-                    highestInternalActionCost = playerAction.cost;
-                }
-            }
-
-            if(playerAction.costType == Action.ActionCostType.ExternalGroupAction)
-            {
-                if(playerAction.cost > highestExternalGroupActionCost)
-                {
-                    highestExternalGroupActionCost = playerAction.cost;
-                }
-            }
-        }
 
         List<PossiblePlayerAction> actionsToCheck = new List<PossiblePlayerAction>();
         
@@ -297,13 +291,7 @@ public class ActionManager : MonoBehaviour
 
             foreach(PossiblePlayerAction actionToCheck in actionsToCheck)
             {
-                if(actionToCheck.action.costType == Action.ActionCostType.InternalAction)
-                {
-                    //Check all actions performed by acting Node
-                    //If they can be performed by others, add this to possible actions
-                }
-
-                if(CanOtherNodePerformAction(actionToCheck.action, actionToCheck.receivingNode))
+                if(CanNodePerformOtherActions(actionToCheck.actingNode))
                 {
                     possiblePlayerActions.Add(actionToCheck);
                 }
@@ -311,18 +299,48 @@ public class ActionManager : MonoBehaviour
         }
     }
 
-    private bool CanOtherNodePerformAction(Action actionToCheck, NodeGroup receivingNodeGroupToCheck)
+    private bool CanNodePerformOtherActions(NodeGroup nodeGroupToCheck)
+    {
+        List<PlannedAction> actionsPerformedByNode = ProvidePlannedActionsCurrentlyPerformedByNode(nodeGroupToCheck);
+
+        foreach(PlannedAction plannedAction in plannedActions)
+        {
+            if(CanOtherNodePerformAction(plannedAction))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private List<PlannedAction> ProvidePlannedActionsCurrentlyPerformedByNode(NodeGroup nodeGroupToCheck)
+    {
+        List<PlannedAction> actionsPerformedByNode = new List<PlannedAction>();
+
+        foreach(PlannedAction plannedAction in plannedActions)
+        {
+            if(plannedAction.curActingNodeGroup == nodeGroupToCheck)
+            {
+                actionsPerformedByNode.Add(plannedAction);
+            }
+        }
+
+        return actionsPerformedByNode;
+    }
+
+    private bool CanOtherNodePerformAction(PlannedAction plannedAction)
     {
         foreach (PossiblePlayerAction possibleAction in possiblePlayerActions)
         {
-            if(possibleAction.actingNode.possiblePerformingActions + actionToCheck.cost > possibleAction.actingNode.nodesInGroup.Count)
+            if(possibleAction.actingNode.possiblePerformingActions + plannedAction.action.cost > possibleAction.actingNode.nodesInGroup.Count)
             {
                 continue;
             }
 
-            if(possibleAction.action == actionToCheck && possibleAction.receivingNode == receivingNodeGroupToCheck)
+            if(possibleAction.action == plannedAction.action && possibleAction.receivingNode == plannedAction.receivingNodeGroup)
             {
-                Debug.Log("Acting Node confirming action as possible has " + possibleAction.actingNode.possiblePerformingActions + " and nodes " + possibleAction.actingNode.nodesInGroup.Count);
+                //Debug.Log("Acting Node confirming action as possible is " + possibleAction.actingNode + " with currentPlannedActions" + possibleAction.actingNode.possiblePerformingActions + " and nodes " + possibleAction.actingNode.nodesInGroup.Count);
                 return true;
             }
         }
@@ -330,9 +348,82 @@ public class ActionManager : MonoBehaviour
         return false;
     }
 
-    private void ReCalculatePlannedActions(PlannedAction pAction)
+    private List<PossiblePlayerAction> ProvideAlternativesToPlannedAction(PlannedAction plannedAction)
     {
+        List<PossiblePlayerAction> alternativeActions = new List<PossiblePlayerAction>();
+        foreach (PossiblePlayerAction possibleAction in possiblePlayerActions)
+        {
+            if(possibleAction.actingNode == plannedAction.curActingNodeGroup)
+            {
+                continue;
+            }
+
+            if(possibleAction.actingNode.possiblePerformingActions + plannedAction.action.cost > possibleAction.actingNode.nodesInGroup.Count)
+            {
+                continue;
+            }
+
+            if(possibleAction.action == plannedAction.action && possibleAction.receivingNode == plannedAction.receivingNodeGroup)
+            {
+                Debug.Log("Acting Node confirming action as possible is " + possibleAction.actingNode + " with currentPlannedActions" + possibleAction.actingNode.possiblePerformingActions + " and nodes " + possibleAction.actingNode.nodesInGroup.Count);
+                alternativeActions.Add(possibleAction);
+            }
+        }
         
+        return alternativeActions;
+    }
+
+    private bool TryToPivotPlannedActions(NodeGroup nodeGroupToCheck)
+    {
+        List<PlannedAction> plannedActionsPerformedByNG = new List<PlannedAction>();
+
+        foreach(PlannedAction plannedAction in plannedActions)
+        {
+            Debug.Log("Planned Action Node = " + plannedAction.curActingNodeGroup +  ", core Node Group we're checking is" + nodeGroupToCheck);
+            if(plannedAction.curActingNodeGroup == nodeGroupToCheck)
+            {
+                plannedActionsPerformedByNG.Add(plannedAction);
+            }
+        }
+
+        Dictionary<PlannedAction, List<PossiblePlayerAction>> alternativeActions = new Dictionary<PlannedAction, List<PossiblePlayerAction>>();
+
+        foreach(PlannedAction plannedAction in plannedActionsPerformedByNG)
+        {
+            if(alternativeActions.ContainsKey(plannedAction))
+            {
+                continue;
+            }
+            alternativeActions.Add(plannedAction, ProvideAlternativesToPlannedAction(plannedAction));
+        }
+
+        int curHighestActionScore = 0;
+        PlannedAction actionToSwapOut = new PlannedAction();
+        PossiblePlayerAction actionToSwapIn = new PossiblePlayerAction();
+
+        foreach(PlannedAction plannedAction in alternativeActions.Keys)
+        {
+            foreach(PossiblePlayerAction possibleAction in alternativeActions[plannedAction])
+            {
+                int actionScore =  possibleAction.action.ProvideActionScore(possibleAction.actingNode, possibleAction.receivingNode, possibleAction.actingNode.groupFaction);
+
+                if(actionScore > curHighestActionScore)
+                {
+                    curHighestActionScore = actionScore;
+                    actionToSwapOut = plannedAction;
+                    actionToSwapIn = possibleAction;
+                }
+            }
+        }
+
+        if(curHighestActionScore > 0)
+        {
+            plannedActions.Remove(actionToSwapOut);
+            MakeNewPlannedAction(actionToSwapIn.action, actionToSwapIn.actingNode, actionToSwapIn.receivingNode);
+            return true;
+        }
+
+        return false;
     }
 
     public void PerformPlannedActions()
@@ -607,21 +698,53 @@ public class ActionManager : MonoBehaviour
 
     public void PivotAction_Performing(NodeGroup ogActingNodeGroup, NodeGroup newActingNodeGroup)
     {
+        List<int> currentActionsByOGActingNode = new List<int>();
+
         for (int i = currentActions.Count - 1; i >= 0; i--)
         {
-            var adjustedCurAction = currentActions[i];
-
-            if(adjustedCurAction.actingNodeGroup == ogActingNodeGroup)
+            if (currentActions[i].actingNodeGroup == ogActingNodeGroup)
             {
-                adjustedCurAction.actingNodeGroup = newActingNodeGroup;
-                ogActingNodeGroup.performingActions--;
-                newActingNodeGroup.performingActions++;
-                PivotPastAction(pastActions[pastActions.IndexOf(currentActions[i].pastAction)], newActingNodeGroup, true);
+                currentActionsByOGActingNode.Add(i);
             }
+        }
 
-            currentActions[i] = adjustedCurAction;
+        float lowestAmountThrough = Mathf.Infinity;
+        int actionToPivot = -1;
+
+        foreach(int curActionInt in currentActionsByOGActingNode)
+        {
+            var curAction = currentActions[curActionInt];
+            float amountThrough = 1f - (curAction.timer / curAction.timerMax);
+
+            if(amountThrough < lowestAmountThrough)
+            {
+                actionToPivot = curActionInt;
+                lowestAmountThrough = amountThrough;
+            }
+        }
+
+        if(actionToPivot == -1)
+        {
+            Debug.LogWarning("Failed to Pivot");
+            return;
+        }
+
+        if(newActingNodeGroup.groupFaction == ogActingNodeGroup.groupFaction)
+        {
+            var adjustedCurAction = currentActions[actionToPivot];
+            adjustedCurAction.actingNodeGroup = newActingNodeGroup;
+            ogActingNodeGroup.performingActions--;
+            newActingNodeGroup.performingActions++;
+            //PivotPastAction(pastActions[pastActions.IndexOf(currentActions[currentActionsByOGActingNode[actionToPivot]].pastAction)], newActingNodeGroup, true);
+            currentActions[actionToPivot] = adjustedCurAction;
+        }
+        else
+        {
+            ogActingNodeGroup.performingActions--;
+            currentActions.RemoveAt(actionToPivot);
         }
     }
+
 
     public void PivotAction_Receiving(NodeGroup ogReceivingNodeGroup, NodeGroup newReceivingNodeGroup)
     {
