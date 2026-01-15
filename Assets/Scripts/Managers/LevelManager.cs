@@ -72,7 +72,9 @@ public class LevelManager : MonoBehaviour
     {
         CheckFactionSpaces();
         UpdateFactionGrid();
-
+        
+        //Old Timer functionality
+        /*
         for (int i = 0; i < factionTimers.Count; i++)
         {
             if (!NodeManager.nM.nodeFactions.ContainsKey(factionTimers[i].faction))
@@ -96,7 +98,7 @@ public class LevelManager : MonoBehaviour
             if (adjustedFactionTimer.timer < 0f)
             {
                 ActionManager.aM.PerformAIAction(numOfActionsPerTurn, factionTimers[i].faction);
-
+ 
                 bool specificTimerFound = false;
 
                 foreach (var specificFactionSetting in specificFactionSettings)
@@ -116,6 +118,7 @@ public class LevelManager : MonoBehaviour
 
             factionTimers[i] = adjustedFactionTimer;
         }
+        */
     }
 
     public Color GiveAverageColor(Vector2 pos)
@@ -204,7 +207,7 @@ public class LevelManager : MonoBehaviour
                         continue;
                     }
 
-                    if(Vector2.Distance(factionPositions, factionGridMarkerPos) < 13.5f)
+                    if(Vector2.Distance(factionPositions, factionGridMarkerPos) < 17.5f)
                     {
                         possibleAlliedFaction.Add(faction);
                     }
@@ -276,6 +279,9 @@ public class LevelManager : MonoBehaviour
 
     public bool CheckIfFactionSpaceConnectedToInstigator(Faction faction, Vector2 position)
     {
+        //Trialing no instigator version
+        return true;
+
         List<Vector2> positionsToCheck = new List<Vector2>();
 
         List<Vector2> positionsChecked = new List<Vector2>();

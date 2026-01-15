@@ -2166,8 +2166,8 @@ Transform:
   m_GameObject: {fileID: 1963519936703608422}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000988745, y: 0.7071068, z: 0.7071068, w: 0.0000009834766}
-  m_LocalPosition: {x: 0, y: -0.3, z: 0}
-  m_LocalScale: {x: 0.40037397, y: 0.40037397, z: 0.40037397}
+  m_LocalPosition: {x: -0, y: -0.3, z: 7e-15}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7455011171548444003}
@@ -2215,8 +2215,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -16
-  m_Sprite: {fileID: 21300000, guid: aaa05df8c57af3341a1921586d022824, type: 3}
+  m_SortingOrder: -32
+  m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
+    type: 3}
   m_Color: {r: 0, g: 0.42514968, b: 1, a: 0.7372549}
   m_FlipX: 0
   m_FlipY: 0
@@ -12639,8 +12640,8 @@ Transform:
   m_GameObject: {fileID: 7559115712013899185}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
+  m_LocalPosition: {x: 0, y: -0.94439, z: 0.83411}
+  m_LocalScale: {x: 1.5544814, y: 1.5544814, z: 1.5544814}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7228904372560634036}
@@ -12675,6 +12676,7 @@ MonoBehaviour:
     m_keys: []
     m_values: []
   prio: 0
+  possiblePerformingActions: 0
   performingActions: 0
   receivingActions: 0
   backgroundRing: {fileID: 6151573517677949859}
@@ -12698,8 +12700,10 @@ MonoBehaviour:
   bannedCover: {fileID: 0}
   actionComplete: {fileID: 8300000, guid: 4c0ef513725cd794384a86cccc2e361b, type: 3}
   actionReady: {fileID: 8300000, guid: e19c202df163788418eccfeeeee20c27, type: 3}
-  bigRing: {fileID: 21300000, guid: aaa05df8c57af3341a1921586d022824, type: 3}
-  smallRing: {fileID: 21300000, guid: c7465fbb0e8228e41ba4e1b71dcf6fee, type: 3}
+  bigRing: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
+    type: 3}
+  smallRing: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847,
+    type: 3}
 --- !u!82 &6874938852227235901
 AudioSource:
   m_ObjectHideFlags: 0
@@ -13059,8 +13063,8 @@ Transform:
   m_GameObject: {fileID: 8861490437613947432}
   serializedVersion: 2
   m_LocalRotation: {x: -0.000000988745, y: 0.7071068, z: 0.7071068, w: 0.0000009834766}
-  m_LocalPosition: {x: 0, y: -0.3, z: 0}
-  m_LocalScale: {x: 0.5697533, y: 0.5697533, z: 0.5697533}
+  m_LocalPosition: {x: 0, y: -0.3, z: 0.000000044107}
+  m_LocalScale: {x: 1.1624529, y: 1.1624529, z: 1.1624529}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7455011171548444003}

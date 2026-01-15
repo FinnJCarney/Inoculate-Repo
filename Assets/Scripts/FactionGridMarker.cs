@@ -20,7 +20,7 @@ public class FactionGridMarker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float timeValue = Time.time * 0.5f;
+        float timeValue = Time.realtimeSinceStartup * 0.5f;
         if(faction == Faction.Clashing)
         {
             timeValue *= 2f;
@@ -62,26 +62,26 @@ public class FactionGridMarker : MonoBehaviour
             newColor = LevelManager.lM.levelFactions[faction].color;
 
             float distanceModifier = 4f - Mathf.Pow(Vector2.Distance(new Vector2(this.transform.position.x, this.transform.position.z), LevelManager.lM.levelFactions[faction].mainPosition) / 9f, 3f);
-            distanceModifier = Mathf.Clamp(distanceModifier, 1f, 3f);        
+            distanceModifier = Mathf.Clamp(distanceModifier, 2.5f, 3f);        
             newColor.a = defaultAlpha * distanceModifier;
         }
 
-        for (float time = 0f; time < 0.5f; time += Time.deltaTime)
+        for (float time = 0f; time < 0.5f; time += Time.unscaledDeltaTime)
         {
             if(time < 0.1f)
             {
-                adjustmentOffset -= (30f * Time.deltaTime);
+                adjustmentOffset -= (30f * Time.unscaledDeltaTime);
             }
             else
             {
-                adjustmentOffset += (7.5f * Time.deltaTime);
+                adjustmentOffset += (7.5f * Time.unscaledDeltaTime);
             }
             baseColor = Color.Lerp(baseColor, newColor, time / 0.5f);
             yield return null;
         }
 
         adjustmentOffset = 0f;
-    }
+    }z
 
     public Faction faction;
 

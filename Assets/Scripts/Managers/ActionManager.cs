@@ -74,8 +74,6 @@ public class ActionManager : MonoBehaviour
                 var adjustedCurAction = currentActions[i];
                 adjustedCurAction.timer -= Time.deltaTime;
                 currentActions[i] = adjustedCurAction;
-
-                TimeManager.tM.SetTimeScale(currentActions.Count > 0 ? 3f : 0f);
             }
 
             //Old functionality
@@ -118,6 +116,11 @@ public class ActionManager : MonoBehaviour
             {
                 numOfPlayerActions++;
             }
+        }
+
+        if (!hitStun)
+        {
+            TimeManager.tM.SetTimeScale(currentActions.Count > 0 ? 5f : 0f);
         }
 
         RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
@@ -436,8 +439,19 @@ public class ActionManager : MonoBehaviour
         }
 
         plannedActions.Clear();
+
+        foreach(Faction faction in LevelManager.lM.levelFactions.Keys)
+        {
+            if(faction == LevelManager.lM.playerAllyFaction || faction == Faction.Neutral)
+            {
+                continue;
+            }
+
+            PerformAIAction(LevelManager.lM.levelFactions[faction].positions.Count, faction);
+        }
     }
 
+        //Rework this to incorperate the idea of highest cost actions //Shouldn't be that hard now that actions have their own internal scoring? 
     public void PerformAIAction(int NumOfActions, Faction faction)
     {
         for (int i = 0; i < NumOfActions; i++)
@@ -740,8 +754,7 @@ public class ActionManager : MonoBehaviour
         }
         else
         {
-            ogActingNodeGroup.performingActions--;
-            currentActions.RemoveAt(actionToPivot);
+            DestroyCurrentAction(currentActions[actionToPivot]);
         }
     }
 

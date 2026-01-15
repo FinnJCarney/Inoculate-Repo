@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca2703c5fe7b755438034cb421da775f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeMultiplier: 0
+  timeMultiplier: 1
   realTimeElapsed: 0
   gameTimeElapsed: 0
 --- !u!4 &418542473

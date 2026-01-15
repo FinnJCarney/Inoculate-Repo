@@ -102,4 +102,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   faction: 4
-  clashingCol: {r: 0.9056604, g: 0.754717, b: 0.6792453, a: 0.7176471}
+  clashingCol: {r: 0.9056604, g: 0.754717, b: 0.6792453, a: 1}

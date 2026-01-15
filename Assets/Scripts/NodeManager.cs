@@ -62,11 +62,14 @@ public class NodeManager : MonoBehaviour
             return;
         }
 
+        //Removing instigator check
+        /*
         if (Vector2.Distance(LevelManager.lM.playerNode.userInformation.beliefs, LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].mainPosition) > 12f)
         {
             StateManager.sM.GameOver(false);
             return;
         }
+        */
 
         if (LevelManager.lM.gameMode == GameMode.MisinformerHunt)
         {

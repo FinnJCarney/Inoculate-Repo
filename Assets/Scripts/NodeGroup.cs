@@ -268,8 +268,15 @@ public class NodeGroup : MonoBehaviour
         {
             allowanceRing.color = Color.clear;
         }
-    
-        accessRing.color = LevelManager.lM.levelFactions[groupFaction].color;
+
+        if (groupFaction == Faction.Neutral)
+        {
+            accessRing.color = Color.gray;
+        }
+        else
+        {
+            accessRing.color = LevelManager.lM.levelFactions[groupFaction].color;
+        }
     }
 
     public Vector3 CheckAvailableActions(Faction faction)
