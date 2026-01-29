@@ -58,7 +58,7 @@ public class NodeGroup : MonoBehaviour
         {
             nodesInGroup[0].transform.DOMove(new Vector3(groupBelief.x, 0, groupBelief.y), 0.5f);
             accessRing.sprite = bigRing;
-            allowanceRing.sprite = bigRing;
+            //allowanceRing.sprite = bigRing;
             nodeGroupCollider.transform.DOScale(nodeGroupColliderDefaultScale, 0.5f);
             accessRing.transform.DOScale(defaultAccessRingScale, 0.5f);
             allowanceRing.transform.DOScale(defaultAllowanceRingScale, 0.5f);
@@ -82,7 +82,7 @@ public class NodeGroup : MonoBehaviour
             }
 
             accessRing.sprite = smallRing;
-            allowanceRing.sprite = smallRing;
+            //allowanceRing.sprite = smallRing;
             accessRing.transform.DOScale(defaultAccessRingScale * radius * 2 / 3, 0.5f);
             allowanceRing.transform.DOScale(defaultAllowanceRingScale * radius * 5 / 6, 0.5f);
         }
@@ -189,6 +189,8 @@ public class NodeGroup : MonoBehaviour
                 continue;
             }
 
+            actionsPossible = true;
+
             foreach (NodeGroupButton nGB in buttonList)
             {
                 Action action = nGB.action;
@@ -197,12 +199,8 @@ public class NodeGroup : MonoBehaviour
                 {
                     nGB.gameObject.SetActive(true);
                 }
-
-                actionsPossible = true;
             }
         }
-
-        Debug.Log("ActionsPossible = " + actionsPossible);
 
         if (actionsPossible == true)
         {
@@ -350,7 +348,32 @@ public void AddTag(string tag, float timer)
 
     private void UpdateVisuals()
     {
-        if(tags.ContainsKey("Inoculate"))
+        bool playerActionAvailable = false; 
+        foreach (PossiblePlayerAction ppA in ActionManager.aM.possiblePlayerActions)
+        {
+            if (ppA.receivingNode != this)
+            {
+                continue;
+            }
+
+            playerActionAvailable = true;
+        }
+
+        if (playerActionAvailable == true)
+        {
+            var factionColor = LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color;
+            float amountThrough = Mathf.Sqrt(Time.unscaledTime % 2f);
+            allowanceRing.color = Color.Lerp(factionColor, Color.clear, amountThrough);
+            allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
+            allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
+        }
+
+        else
+        {
+            allowanceRing.color = Color.clear;
+        }
+
+        if (tags.ContainsKey("Inoculate"))
         {
             for (int i = 0; i < inoculationSpheres.Length; i++)
             {
@@ -375,7 +398,7 @@ public void AddTag(string tag, float timer)
     [SerializeField] public List<Node_UserInformation> nodesInGroup = new List<Node_UserInformation>();
     public SerializableDictionary<NodeGroup, connectedNodeInfo> connectedNodes = new SerializableDictionary<NodeGroup, connectedNodeInfo>();
 
-    public int prio;
+    public float prio;
     public int possiblePerformingActions;
     public int performingActions;
     public int receivingActions;

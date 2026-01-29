@@ -422,20 +422,23 @@ public class NodeManager : MonoBehaviour
             nodeFactions[faction].Clear();
         }
 
-        foreach (NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
+        for (int i = 0; i < 3; i++)
         {
-            List<Faction> possibleAlliedFactions = new List<Faction>();
-            bool instigatorInGroup = false;
+            Dictionary<NodeGroup, List<Faction>> possibleAlliedFactionsPerNode = new Dictionary<NodeGroup, List<Faction>>();
 
-            if(nodeGroup.nodesInGroup.Count == 0)
+            foreach (NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
             {
-                nodeGroup.groupFaction = Faction.Neutral;
-                AddNodePosition(Faction.Neutral, nodeGroup.groupBelief);
-                continue;
-            }
+                if (nodeGroup.nodesInGroup.Count == 0)
+                {
+                    nodeGroup.groupFaction = Faction.Neutral;
+                    AddNodePosition(Faction.Neutral, nodeGroup.groupBelief);
+                    continue;
+                }
 
-            if (!instigatorInGroup)
-            {
+                List<NodeGroup> neighbouringNodeGroups = LevelManager.lM.ProvideNeighbouringNodeGroups(nodeGroup.groupBelief);
+
+                List<Faction> possibleFactions = new List<Faction>();
+
                 foreach (Faction lFac in LevelManager.lM.levelFactions.Keys)
                 {
                     if (lFac == Faction.Neutral)
@@ -443,41 +446,58 @@ public class NodeManager : MonoBehaviour
                         continue;
                     }
 
-                    foreach (Vector2 factionPosition in LevelManager.lM.levelFactions[lFac].positions)
+                    if (Vector2.Distance(nodeGroup.groupBelief, LevelManager.lM.levelFactions[lFac].mainPosition) < 13f)
                     {
-                        if (Vector2.Distance(nodeGroup.groupBelief, factionPosition) < 12.1f)
+                        if (!possibleFactions.Contains(lFac))
                         {
-                            possibleAlliedFactions.Add(lFac);
-                            break;
+                            possibleFactions.Add(lFac);
+                        }
+                        possibleAlliedFactionsPerNode.Add(nodeGroup, possibleFactions);
+                        break;
+                    }
+
+                    else
+                    {
+
+                        foreach (NodeGroup neighbouringNodeGroup in neighbouringNodeGroups)
+                        {
+                            if (neighbouringNodeGroup.groupFaction == lFac)
+                            {
+                                possibleFactions.Add(lFac);
+                                break;
+                            }
                         }
                     }
                 }
             }
 
-            Faction possibleAlliedFaction = Faction.Neutral;
-
-            if (possibleAlliedFactions.Count == 1)
+            foreach (NodeGroup nodeGroup in possibleAlliedFactionsPerNode.Keys)
             {
-                possibleAlliedFaction = possibleAlliedFactions[0];
-            }
-        
+                Faction possibleAlliedFaction = Faction.Neutral;
 
-            if (nodeGroup.groupFaction != possibleAlliedFaction)
-            {
-                RemoveNodePosition(nodeGroup.groupFaction, nodeGroup.groupBelief);
-            }
+                if (possibleAlliedFactionsPerNode[nodeGroup].Count == 1)
+                {
+                    possibleAlliedFaction = possibleAlliedFactionsPerNode[nodeGroup].ToArray()[0];
+                }
 
-            nodeGroup.groupFaction = possibleAlliedFaction;
-            AddNodePosition(possibleAlliedFaction, nodeGroup.groupBelief);
+                if (nodeGroup.groupFaction != possibleAlliedFaction)
+                {
+                    RemoveNodePosition(nodeGroup.groupFaction, nodeGroup.groupBelief);
+                }
 
-            foreach(Node_UserInformation node in nodeGroup.nodesInGroup)
-            {
-                node.faction = possibleAlliedFaction;
-                nodeFactions[possibleAlliedFaction].Add(node);
+                nodeGroup.groupFaction = possibleAlliedFaction;
+                AddNodePosition(possibleAlliedFaction, nodeGroup.groupBelief);
+
+                foreach (Node_UserInformation node in nodeGroup.nodesInGroup)
+                {
+                    node.faction = possibleAlliedFaction;
+                    nodeFactions[possibleAlliedFaction].Add(node);
+                }
             }
         }
-            
     }
+            
+    
 
     public void DrawNodeGroupConnectionLines()
     {

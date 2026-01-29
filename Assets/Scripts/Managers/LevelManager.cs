@@ -377,6 +377,30 @@ public class LevelManager : MonoBehaviour
         return possiblePaths[endingPos].Count;
     }
 
+    public List<NodeGroup> ProvideNeighbouringNodeGroups(Vector2 nodePos)
+    {
+        List<NodeGroup> neighbouringNodeGroups = new List<NodeGroup>();
+
+        if (LevelManager.lM.CheckValidSpace(nodePos + new Vector2(0f, 12f)))
+        {
+            neighbouringNodeGroups.Add(LevelManager.lM.nodeGroups[nodePos + new Vector2(0f, 12f)]);
+        }
+        if (LevelManager.lM.CheckValidSpace(nodePos + new Vector2(0f, -12f)))
+        {
+            neighbouringNodeGroups.Add(LevelManager.lM.nodeGroups[nodePos + new Vector2(0f, -12f)]);
+        }
+        if (LevelManager.lM.CheckValidSpace(nodePos + new Vector2(12f, 0f)))
+        {
+            neighbouringNodeGroups.Add(LevelManager.lM.nodeGroups[nodePos + new Vector2(12f, 0f)]);
+        }
+        if (LevelManager.lM.CheckValidSpace(nodePos + new Vector2(-12f, 0f)))
+        {
+            neighbouringNodeGroups.Add(LevelManager.lM.nodeGroups[nodePos + new Vector2(-12f, 0f)]);
+        }
+
+        return neighbouringNodeGroups;
+    }
+
     [SerializeField] public LevelInfo levelInfo;
 
     public Node playerNode;

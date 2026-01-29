@@ -20,9 +20,9 @@ public abstract class Action : MonoBehaviour
         return null;
     }
 
-    public virtual int ProvideActionScore(NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction actingFaction)
+    public virtual float ProvideActionScore(NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction actingFaction)
     {
-        return -1000;
+        return -1000f;
     }
 
     public virtual bool PerformActionOnNode(Node_UserInformation nodeToActOn)

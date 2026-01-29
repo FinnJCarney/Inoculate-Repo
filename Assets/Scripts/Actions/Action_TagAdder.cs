@@ -42,7 +42,7 @@ public class Action_TagAdder : Action
         return nodeGroupToReturn;
     }
 
-    public override int ProvideActionScore(NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction actingFaction)
+    public override float ProvideActionScore(NodeGroup actingNodeGroup, NodeGroup receivingNodeGroup, Faction actingFaction)
     {
         float scoreToReturn = 0;
         

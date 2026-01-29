@@ -1,5 +1,6 @@
  using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.XR;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -97,24 +98,25 @@ public class ActionManager : MonoBehaviour
 
             if (currentActions[i].timer < 0f)
             {
-                currentActions[i].actingNodeGroup.performingActions -= currentActions[i].action.cost;
-                currentActions[i].receivingNodeGroup.receivingActions--;
                 currentActions[i].receivingNodeGroup.ActionResult(currentActions[i].action, currentActions[i].actingNodeGroup.groupFaction, currentActions[i].actingNodeGroup, currentActions[i].bleat, currentActions[i].pastAction);
                 CallHitStun();
 
-                for (int j = currentActions[i].actionLines.Length - (1); j >= 0; j--)
-                {
-                    Destroy(currentActions[i].actionLines[j].gameObject);
-                }
-
-                Destroy(currentActions[i].actionRing);
-                currentActions.Remove(currentActions[i]);
-                continue;
+                var adjustedCurAction = currentActions[i];
+                adjustedCurAction.markedForDelete = true;
+                currentActions[i] = adjustedCurAction;
             }
 
             if(currentActions[i].faction == LevelManager.lM.playerAllyFaction)
             {
                 numOfPlayerActions++;
+            }
+        }
+
+        for (int i = currentActions.Count - 1; i >= 0; i--)
+        {
+            if(currentActions[i].markedForDelete == true)
+            {
+                DestroyCurrentAction(currentActions[i]);
             }
         }
 
@@ -400,7 +402,7 @@ public class ActionManager : MonoBehaviour
             alternativeActions.Add(plannedAction, ProvideAlternativesToPlannedAction(plannedAction));
         }
 
-        int curHighestActionScore = 0;
+        float curHighestActionScore = 0;
         PlannedAction actionToSwapOut = new PlannedAction();
         PossiblePlayerAction actionToSwapIn = new PossiblePlayerAction();
 
@@ -408,7 +410,7 @@ public class ActionManager : MonoBehaviour
         {
             foreach(PossiblePlayerAction possibleAction in alternativeActions[plannedAction])
             {
-                int actionScore =  possibleAction.action.ProvideActionScore(possibleAction.actingNode, possibleAction.receivingNode, possibleAction.actingNode.groupFaction);
+                float actionScore =  possibleAction.action.ProvideActionScore(possibleAction.actingNode, possibleAction.receivingNode, possibleAction.actingNode.groupFaction);
 
                 if(actionScore > curHighestActionScore)
                 {
@@ -447,7 +449,14 @@ public class ActionManager : MonoBehaviour
                 continue;
             }
 
-            PerformAIAction(LevelManager.lM.levelFactions[faction].positions.Count, faction);
+            int numOfActionsAvailForFaction = 0;
+
+            foreach(Vector2 position in LevelManager.lM.levelFactions[faction].positions)
+            {
+                numOfActionsAvailForFaction += LevelManager.lM.nodeGroups[position].nodesInGroup.Count;
+            }
+
+            PerformAIAction(numOfActionsAvailForFaction, faction);
         }
     }
 
@@ -462,29 +471,31 @@ public class ActionManager : MonoBehaviour
             List<Node_UserInformation> possibleActingNodes = null;
 
             possibleActingNodes = NodeManager.nM.nodeFactions[faction];
+            List<NodeGroup> possibleActingNodeGroups = new List<NodeGroup>();
+
+            foreach(Node_UserInformation possibleActingNode in possibleActingNodes)
+            {
+                if(!possibleActingNodeGroups.Contains(LevelManager.lM.nodeGroups[possibleActingNode.beliefs]))
+                {
+                    possibleActingNodeGroups.Add(LevelManager.lM.nodeGroups[possibleActingNode.beliefs]);
+                }
+            }
 
             List<NodeGroup> possibleReceivingNodeGroups = new List<NodeGroup>();
 
-            foreach(NodeGroup nodeGroup in LevelManager.lM.nodeGroups.Values)
+            foreach(NodeGroup possibleActingNodeGroup in possibleActingNodeGroups)
             {
-                if(possibleReceivingNodeGroups.Contains(nodeGroup) || nodeGroup.nodesInGroup.Count == 0)
+                if (!possibleActingNodeGroups.Contains(possibleActingNodeGroup))
                 {
-                    continue;
+                    possibleReceivingNodeGroups.Add(possibleActingNodeGroup);
                 }
 
-                if(nodeGroup.groupFaction == faction)
+                foreach(NodeGroup connectedNodeGroup in possibleActingNodeGroup.connectedNodes.Keys)
                 {
-                    possibleReceivingNodeGroups.Add(nodeGroup);
-
-                    foreach (NodeGroup connectedNodeGroup in nodeGroup.connectedNodes.Keys)
+                    if (!possibleActingNodeGroups.Contains(connectedNodeGroup))
                     {
-                        if (!possibleReceivingNodeGroups.Contains(connectedNodeGroup))
-                        {
-                            possibleReceivingNodeGroups.Add(connectedNodeGroup);
-                        }
+                        possibleReceivingNodeGroups.Add(connectedNodeGroup);
                     }
-
-                    continue;
                 }
             }
 
@@ -528,7 +539,10 @@ public class ActionManager : MonoBehaviour
                         {
                             foreach (NodeGroup possibleActingNodeGroup in possibleAction.ProvidePossibleActingNodes(nodeGroup, faction))
                             {
-                                possibleActions.Add(MakePossibleGroupAction(possibleAction, possibleActingNodeGroup, nodeGroup, faction));
+                                if (possibleActingNodeGroup.nodesInGroup.Count - possibleActingNodeGroup.performingActions >= possibleAction.cost)
+                                {
+                                    possibleActions.Add(MakePossibleGroupAction(possibleAction, possibleActingNodeGroup, nodeGroup, faction));
+                                }
                             }
                         }
                     }
@@ -605,6 +619,7 @@ public class ActionManager : MonoBehaviour
         newCurrentAction.bleat = TweetManager.tM.PublishTweet(LevelManager.lM.tweetsForActions[aT], actingNodeGroup.nodesInGroup[Random.Range(0, actingNodeGroup.nodesInGroup.Count - 1)], receivingNodeGroup.nodesInGroup[Random.Range(0, receivingNodeGroup.nodesInGroup.Count - 1)], newCurrentAction.faction);
         SetActionRing(newCurrentAction.actionRing, 0f, newCurrentAction.faction, receivingNodeGroup.transform.position);
         newCurrentAction.pastAction = RegisterPastAction(aT, actingNodeGroup, receivingNodeGroup, null);
+        newCurrentAction.markedForDelete = false;
         currentActions.Add(newCurrentAction);
         return currentActions[currentActions.IndexOf(newCurrentAction)];
         //Debug.Log("Performing action type " + aT + " for faction " + newCurrentAction.faction + ", from " + actingNodeGroup + " to " + receivingNodeGroup);
@@ -678,6 +693,11 @@ public class ActionManager : MonoBehaviour
 
     public void CompletePastAction(PastAction pA, Node_UserInformation receivingNode, bool completed)
     {
+        int pAIndex = pastActions.IndexOf(pA);
+        if(pAIndex > pastActions.Count)
+        {
+            return;
+        }
         PastAction adjustedPastAction = pastActions[pastActions.IndexOf(pA)];
         adjustedPastAction.timeCompleted = completed ? TimeManager.tM.gameTimeElapsed : -999f;
         adjustedPastAction.receivingNode = completed ? receivingNode : null;
@@ -754,7 +774,9 @@ public class ActionManager : MonoBehaviour
         }
         else
         {
-            DestroyCurrentAction(currentActions[actionToPivot]);
+            var adjustedCurAction = currentActions[actionToPivot];
+            adjustedCurAction.markedForDelete = true;
+            currentActions[actionToPivot] = adjustedCurAction;
         }
     }
 
@@ -830,6 +852,7 @@ public struct CurrentAction
     public Faction faction;
     public Bleat bleat;
     public PastAction pastAction; 
+    public bool markedForDelete;
 }
 
 [System.Serializable]
