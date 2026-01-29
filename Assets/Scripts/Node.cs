@@ -46,106 +46,7 @@ public class Node : MonoBehaviour
     {
         UpdateNodeColour();
 
-        int theorheticalActions = 0;
-        int possibleActions = 0;
-
-        bool hasLeftNeighbourAvail = false;
-        bool hasRightNeighbourAvail = false;
-        bool hasUpNeighbourAvail = false;
-        bool hasDownNeighbourAvail = false;
-
-        bool hasAllyNeighbourAvail = false;
-
-        foreach (Node_UserInformation connectedNode in userInformation.connectedNodes.Keys)
-        {
-            //Debug.Log("Checking for Node " + name + " connectedNode = " + connectedNode.name);
-            if (connectedNode.isBanned)
-            {
-                continue;
-            }
-
-            if(userInformation.connectedNodes[connectedNode].type == connectionType.influenceOn || connectedNode.connectedNodes[userInformation].type == connectionType.influencedBy)
-            {
-                continue;
-            }
-
-            if(connectedNode.nodeCore.performingAction)
-            {
-                theorheticalActions++;
-                continue;
-            }
-
-            if (connectedNode.faction == LevelManager.lM.playerAllyFaction)
-            {
-                theorheticalActions++;
-                possibleActions ++;
-                hasAllyNeighbourAvail = true;
-
-                //if (connectedNode.userInformation.beliefs.x == this.userInformation.beliefs.x)
-                //{
-                //    hasLeftNeighbourAvail = true;
-                //    hasRightNeighbourAvail = true;
-                //}
-                //else if (connectedNode.userInformation.beliefs.x > this.userInformation.beliefs.x)
-                //{
-                //    hasRightNeighbourAvail = true;
-                //}
-                //else if (connectedNode.userInformation.beliefs.x < this.userInformation.beliefs.x)
-                //{
-                //    hasLeftNeighbourAvail = true;
-                //}
-                //
-                //if (connectedNode.userInformation.beliefs.y == this.userInformation.beliefs.y)
-                //{
-                //    hasUpNeighbourAvail = true;
-                //    hasDownNeighbourAvail = true;
-                //}
-                //else if (connectedNode.userInformation.beliefs.y > this.userInformation.beliefs.y)
-                //{
-                //    hasUpNeighbourAvail = true;
-                //}
-                //else if (connectedNode.userInformation.beliefs.y < this.userInformation.beliefs.y)
-                //{
-                //    hasDownNeighbourAvail = true;
-                //}
-            }
-        }
-
-        if (hasAllyNeighbourAvail)
-        {
-            Vector2 movement = new Vector2(12f, 12f);
-            hasUpNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0, 12f));
-
-            hasDownNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + new Vector2(0, -12f));
-
-            hasRightNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + (Vector2.right * movement));
-
-            hasLeftNeighbourAvail = LevelManager.lM.CheckValidSpace(userInformation.beliefs + (Vector2.left * movement));
-        }
-
-        but_DM.EnableButton(userInformation.userInfoHidden && hasAllyNeighbourAvail);
-        but_Accuse.EnableButton(!userInformation.userInfoHidden && hasAllyNeighbourAvail);
-        
-        but_Left.EnableButton(hasLeftNeighbourAvail && !userInformation.userInfoHidden);
-        but_Right.EnableButton(hasRightNeighbourAvail && !userInformation.userInfoHidden);
-        but_Up.EnableButton(hasUpNeighbourAvail && !userInformation.userInfoHidden);
-        but_Down.EnableButton(hasDownNeighbourAvail && !userInformation.userInfoHidden);
-
-        bool connectActionAvailable = false;
-
-        if(!userInformation.userInfoHidden && NodeManager.nM.centristNodes.Count > 0)
-        {
-            foreach(Node centristNode in NodeManager.nM.centristNodes)
-            {
-                if(!userInformation.connectedNodes.Contains(centristNode) && centristNode != this)
-                {
-                    connectActionAvailable = true;
-                }
-            }
-        }
-
-        but_Connect.EnableButton(connectActionAvailable);
-
+        /*
         if (theorheticalActions > 0)
         {
             var factionColor = LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color;
@@ -173,6 +74,7 @@ public class Node : MonoBehaviour
             accessRing.color = Color.red;
             bannedCover.SetActive(isBanned);
         }
+        */
     }
 
 
@@ -327,15 +229,6 @@ public class Node : MonoBehaviour
     private string nodeHandle;
     [SerializeField] TextMeshPro handleText;
     [SerializeField] GameObject bannedCover;
-
-    [SerializeField] public UserButton but_DM;
-    [SerializeField] public UserButton but_Accuse;
-    [SerializeField] public UserButton but_Left;
-    [SerializeField] public UserButton but_Right;
-    [SerializeField] public UserButton but_Up;
-    [SerializeField] public UserButton but_Down;
-    [SerializeField] public UserButton but_Connect;
-
     [SerializeField] ParticleSystem playerPS;
     [SerializeField] ParticleSystem aIPs;
 
@@ -347,5 +240,4 @@ public class Node : MonoBehaviour
     [SerializeField] public SpriteRenderer nodeVisual;
 
     [SerializeField] private SpriteRenderer accessRing;
-    [SerializeField] private SpriteRenderer allowanceRing;
 }

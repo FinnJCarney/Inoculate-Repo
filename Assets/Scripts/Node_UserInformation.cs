@@ -79,7 +79,6 @@ public class Node_UserInformation : MonoBehaviour
     public bool isPlayer;
     public bool isBanned;
     public Faction faction;
-    public Faction instigator;
 
     public levelFaction levelFaction;
 

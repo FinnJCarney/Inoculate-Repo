@@ -345,22 +345,6 @@ public class NodeManager : MonoBehaviour
 
         foreach (Node_UserInformation node in nodes)
         {
-            if (node.instigator != Faction.None && nodeFactions.ContainsKey(node.instigator))
-            {
-                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[node.instigator].mainPosition;
-                factionBeliefCheck.x = factionBeliefCheck.x == 3 ? node.beliefs.x : factionBeliefCheck.x;
-                factionBeliefCheck.y = factionBeliefCheck.y == 3 ? node.beliefs.y : factionBeliefCheck.y;
-
-                if (Vector2.Distance(node.beliefs, factionBeliefCheck) > 0.9f)
-                {
-                    //node.userInformation.instigator = Faction.None;
-                }
-                else
-                {
-                    node.faction = node.instigator;
-                }
-            }
-
             if (node.isBanned)
             {
                 node.faction = Faction.Neutral;
@@ -450,26 +434,6 @@ public class NodeManager : MonoBehaviour
                 continue;
             }
 
-            foreach (Node_UserInformation node in nodeGroup.nodesInGroup)
-            {
-                if (node.instigator != Faction.None && nodeFactions.ContainsKey(node.instigator))
-                {
-                    instigatorInGroup = true;
-                    Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[node.instigator].mainPosition;
-                    factionBeliefCheck.x = factionBeliefCheck.x == 3 ? node.beliefs.x : factionBeliefCheck.x;
-                    factionBeliefCheck.y = factionBeliefCheck.y == 3 ? node.beliefs.y : factionBeliefCheck.y;
-
-                    if (Vector2.Distance(node.beliefs, factionBeliefCheck) > 12f)
-                    {
-                        node.instigator = Faction.None;
-                    }
-                    else
-                    {
-                        possibleAlliedFactions.Add(node.instigator);
-                    }
-                }
-            }
-
             if (!instigatorInGroup)
             {
                 foreach (Faction lFac in LevelManager.lM.levelFactions.Keys)
@@ -495,15 +459,6 @@ public class NodeManager : MonoBehaviour
             if (possibleAlliedFactions.Count == 1)
             {
                 possibleAlliedFaction = possibleAlliedFactions[0];
-            }
-
-
-            if (possibleAlliedFaction != Faction.Neutral)
-            {
-                if (!LevelManager.lM.CheckIfFactionSpaceConnectedToInstigator(possibleAlliedFaction, nodeGroup.groupBelief))
-                {
-                    possibleAlliedFaction = Faction.Neutral;
-                }
             }
         
 
@@ -607,63 +562,6 @@ public class NodeManager : MonoBehaviour
             LevelManager.lM.CheckFactionSpaces();
             LevelManager.lM.UpdateFactionGrid();
         }
-    }
-    public bool CheckIfConnectedToInstigator(Node node, Faction faction)
-    {
-        List<Node> nodesToCheck = new List<Node>();
-
-        List<Node> nodesChecked = new List<Node>();
-
-        nodesToCheck.Add(node);
-
-        foreach(Node_UserInformation connectedNode in node.userInformation.connectedNodes.Keys)
-        {
-            if (node.userInformation.connectedNodes[connectedNode].type == connectionType.influencedBy)
-            {
-                continue;
-            }
-
-            if (Vector2.Distance(node.userInformation.beliefs, connectedNode.beliefs) < 12.1f)
-            {
-                nodesToCheck.Add(connectedNode.nodeCore);
-            }
-        }
-
-        for (int i = 0; i < nodesToCheck.Count; i++)
-        {
-            if (nodesToCheck[i].userInformation.faction != faction)
-            {
-                continue;
-            }
-
-            if(nodesToCheck[i].userInformation.instigator == faction)
-            {
-                Vector2 factionBeliefCheck = LevelManager.lM.levelFactions[nodesToCheck[i].userInformation.instigator].mainPosition;
-                factionBeliefCheck.x = factionBeliefCheck.x == 3 ? nodesToCheck[i].userInformation.beliefs.x : factionBeliefCheck.x;
-                factionBeliefCheck.y = factionBeliefCheck.y == 3 ? nodesToCheck[i].userInformation.beliefs.y : factionBeliefCheck.y;
-
-                if (Vector2.Distance(nodesToCheck[i].userInformation.beliefs, factionBeliefCheck) > 12f)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-
-            nodesChecked.Add(nodesToCheck[i]);
-
-            foreach(Node_UserInformation nodeToAdd in nodesToCheck[i].userInformation.connectedNodes.Keys)
-            {
-                if(!nodesChecked.Contains(nodeToAdd.nodeCore) && Vector2.Distance(nodesToCheck[i].userInformation.beliefs, nodeToAdd.beliefs) < 12.1f)
-                {
-                    nodesToCheck.Add(nodeToAdd.nodeCore);
-                }
-            }
-        }
-
-        return false;
     }
 
     public void AddNodeFactions()

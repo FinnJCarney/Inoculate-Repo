@@ -72,12 +72,6 @@ public class NodeGroup : MonoBehaviour
 
             foreach (Node_UserInformation node in nodesInGroup)
             {
-                if (node.instigator != Faction.Neutral && node.instigator == groupFaction)
-                {
-                    node.transform.DOMove(new Vector3(groupBelief.x, 0, groupBelief.y), 0.5f);
-                    continue;
-                }
-
                 int i = nodesInGroup.IndexOf(node);
                 float angleInRadians = ((360f / nodesInGroup.Count) * i) * Mathf.Deg2Rad;
                 float x = radius * Mathf.Cos(angleInRadians);
@@ -168,22 +162,25 @@ public class NodeGroup : MonoBehaviour
 
     public void UpdatePlayerActions()
     {
-        if (nodesInGroup.Count == 0)
+        accessRing.color = Color.clear;
+        allowanceRing.color = Color.clear;
+
+        if(nodesInGroup.Count == 0)
         {
-            accessRing.color = Color.clear;
-            allowanceRing.color = Color.clear;
+            menu.SetActive(false);
+        }
 
-            foreach (NodeGroupButton nGB in buttonList)
-            {
-                nGB.gameObject.SetActive(false);
-            }
-
+        if (!menu.activeInHierarchy)
+        {
             return;
         }
 
-        int internalPossibleActions = 0;
-        int externalPossibleActions = 0;
-        int externalPossibleGroupActions = 0;
+        foreach (NodeGroupButton nGB in buttonList)
+        {           
+            nGB.gameObject.SetActive(false);
+        }
+
+        bool actionsPossible = false; 
 
         foreach(PossiblePlayerAction ppA in ActionManager.aM.possiblePlayerActions)
         {
@@ -192,70 +189,22 @@ public class NodeGroup : MonoBehaviour
                 continue;
             }
 
-            if(ppA.actingNode == this)
-            {
-                internalPossibleActions++;
-            }
-
-            if(ppA.actingNode != this)
-            {
-                externalPossibleActions++;
-                externalPossibleGroupActions++;
-            }
-        }
-
-        //Debug.Log("For NodeGroup " + gameObject.name + "internal actions available = " + internalPossibleActions);
-
-
-        /*
-        foreach (NodeGroup connectedNodeGroup in connectedNodes.Keys)
-        {
-            if (connectedNodes[connectedNodeGroup].type == connectionType.influenceOn)
-            {
-                continue;
-            }
-    
-            if (connectedNodeGroup.groupFaction == LevelManager.lM.playerAllyFaction)
-            {
-                int availableGroupActions = (connectedNodeGroup.nodesInGroup.Count - connectedNodeGroup.performingActions);
-                externalPossibleActions += availableGroupActions;
-                
-                if(availableGroupActions > externalPossibleGroupActions)
-                {
-                    externalPossibleGroupActions = availableGroupActions;
-                }
-            }
-        }
-        */
-
-        if (menu.activeInHierarchy)
-        {
             foreach (NodeGroupButton nGB in buttonList)
             {
                 Action action = nGB.action;
 
-                if (!LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].availableActions.Contains(action))
+                if(ppA.action == action)
                 {
-                    nGB.gameObject.SetActive(false);
-                    continue;
+                    nGB.gameObject.SetActive(true);
                 }
 
-                if (action.costType == Action.ActionCostType.InternalAction)
-                {
-                    nGB.gameObject.SetActive(action.CheckNodeActionAvailability(this, internalPossibleActions));
-                }
-                else if(action.costType == Action.ActionCostType.ExternalAction)
-                {
-                    nGB.gameObject.SetActive(action.CheckNodeActionAvailability(this, externalPossibleActions));
-                }
-                else if (action.costType == Action.ActionCostType.ExternalGroupAction)
-                {
-                    nGB.gameObject.SetActive(action.CheckNodeActionAvailability(this, externalPossibleGroupActions));
-                }
+                actionsPossible = true;
             }
         }
 
-        if (externalPossibleActions > 0 || (internalPossibleActions > 0 && groupFaction == LevelManager.lM.playerAllyFaction))
+        Debug.Log("ActionsPossible = " + actionsPossible);
+
+        if (actionsPossible == true)
         {
             var factionColor = LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color;
             float amountThrough = Mathf.Sqrt(Time.unscaledTime % 2f);

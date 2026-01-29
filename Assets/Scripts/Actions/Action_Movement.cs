@@ -95,14 +95,6 @@ public class Action_Movement : Action
             scoreToReturn += 6f;
         }
 
-        foreach(Node_UserInformation node in receivingNodeGroup.nodesInGroup)
-        {
-            if(node.instigator != Faction.None && actingFaction != node.instigator)
-            {
-                scoreToReturn += 10f;
-            }
-        }
-
         foreach (NodeGroup cNConnectedNode in receivingNodeGroup.connectedNodes.Keys)
         {
             if (Vector2.Distance(receivingNodeGroup.groupBelief + movement, cNConnectedNode.groupBelief) < 12.1f)

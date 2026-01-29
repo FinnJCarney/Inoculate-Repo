@@ -120,7 +120,7 @@ public class ActionManager : MonoBehaviour
 
         if (!hitStun)
         {
-            TimeManager.tM.SetTimeScale(currentActions.Count > 0 ? 5f : 0f);
+            TimeManager.tM.SetTimeScale(currentActions.Count > 0 ? 5f : 0.25f);
         }
 
         RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);

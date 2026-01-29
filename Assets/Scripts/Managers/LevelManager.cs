@@ -207,7 +207,7 @@ public class LevelManager : MonoBehaviour
                         continue;
                     }
 
-                    if(Vector2.Distance(factionPositions, factionGridMarkerPos) < 17.5f)
+                    if(Vector2.Distance(factionPositions, factionGridMarkerPos) < 13.5f)
                     {
                         possibleAlliedFaction.Add(faction);
                     }
@@ -263,7 +263,7 @@ public class LevelManager : MonoBehaviour
                         continue;
                     }
 
-                    if (levelFactions[faction].positions[i] == nodeGroup.groupBelief && CheckIfFactionSpaceConnectedToInstigator(faction, levelFactions[faction].positions[i]))
+                    if (levelFactions[faction].positions[i] == nodeGroup.groupBelief)
                     {
                         hasCorrespondingAllliedNode = true;
                     }
@@ -275,57 +275,6 @@ public class LevelManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    public bool CheckIfFactionSpaceConnectedToInstigator(Faction faction, Vector2 position)
-    {
-        //Trialing no instigator version
-        return true;
-
-        List<Vector2> positionsToCheck = new List<Vector2>();
-
-        List<Vector2> positionsChecked = new List<Vector2>();
-
-        positionsToCheck.Add(position);
-
-        Vector2 movement = new Vector2(12f, 12f);
-
-        for (int i = 0; i < positionsToCheck.Count; i++)
-        {
-            if (positionsToCheck[i] == levelFactions[faction].mainPosition)
-            {
-                return true;
-            }
-
-            if(positionsChecked.Contains(positionsToCheck[i]))
-            {
-                continue;
-            }
-
-            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.up)))
-            {
-                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.up));
-            }
-
-            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.right)))
-            {
-                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.right));
-            }
-
-            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.left)))
-            {
-                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.left));
-            }
-
-            if (levelFactions[faction].positions.Contains(positionsToCheck[i] + (movement * Vector2.down)))
-            {
-                positionsToCheck.Add(positionsToCheck[i] + (movement * Vector2.down));
-            }
-
-            positionsChecked.Add(positionsToCheck[i]);
-        }
-
-        return false;
     }
 
     public float MinDistanceBetweenTwoVector2sOnMap(Vector2 startingPos, Vector2 endingPos) //Move to LevelManager
@@ -456,7 +405,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private GameObject factionGridMarker;
 
     public SerializableDictionary<Vector2, NodeGroup> nodeGroups = new SerializableDictionary<Vector2, NodeGroup>();
-    private Dictionary<Vector2, FactionGridMarker> factionGridMarkers = new Dictionary<Vector2, FactionGridMarker>();
+    public Dictionary<Vector2, FactionGridMarker> factionGridMarkers = new Dictionary<Vector2, FactionGridMarker>();
 
     public static LevelManager lM;
 
