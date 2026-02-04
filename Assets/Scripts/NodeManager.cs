@@ -452,7 +452,6 @@ public class NodeManager : MonoBehaviour
                         {
                             possibleFactions.Add(lFac);
                         }
-                        possibleAlliedFactionsPerNode.Add(nodeGroup, possibleFactions);
                         break;
                     }
 
@@ -469,6 +468,9 @@ public class NodeManager : MonoBehaviour
                         }
                     }
                 }
+
+                possibleAlliedFactionsPerNode.Add(nodeGroup, possibleFactions);
+                
             }
 
             foreach (NodeGroup nodeGroup in possibleAlliedFactionsPerNode.Keys)

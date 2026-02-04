@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.UI;
+
 
 public class LevelManager : MonoBehaviour
 {
@@ -121,22 +118,98 @@ public class LevelManager : MonoBehaviour
         */
     }
 
-    public Color GiveAverageColor(Vector2 pos)
+    public Color GiveAverageColor(Vector2 pos, Color defaultColor)
     {
-        Color outputColor = Color.white;
+        Color outputColor = defaultColor;
 
-        foreach (levelFaction lvlFaction in levelFactions.Values)
+        Dictionary<Faction, float> nearestFactionPos = new Dictionary<Faction, float>();
+
+        foreach (Faction faction in levelFactions.Keys)
         {
-            if(lvlFaction.mainPosition == Vector2.zero)
+            if (faction == Faction.Neutral)
             {
                 continue;
             }
 
-            outputColor = Color.Lerp(lvlFaction.color, outputColor, (Vector2.Distance(pos, lvlFaction.mainPosition) / 5f));
+            foreach (Vector2 factionPosition in levelFactions[faction].positions)
+            {
+                float distance = Vector2.Distance(pos, factionPosition);
+
+                if (distance < 15f)
+                {
+                    if (nearestFactionPos.ContainsKey(faction))
+                    {
+
+                        nearestFactionPos[faction] = distance < nearestFactionPos[faction] ? distance : nearestFactionPos[faction];
+                    }
+                    else
+                    {
+                        nearestFactionPos.Add(faction, distance);
+                    }
+
+                }
+            }
+        }
+
+        Dictionary<Faction, float> factionsByDistance = new Dictionary<Faction, float>();
+
+        while(factionsByDistance.Keys.Count < nearestFactionPos.Keys.Count)
+        {
+            Faction currentFactionToAdd = Faction.Neutral;
+            float furthestDistance = 0f;
+
+            foreach(Faction nearbyFaction in nearestFactionPos.Keys)
+            {
+                if(factionsByDistance.ContainsKey(nearbyFaction))
+                {
+                    continue;
+                }
+
+                if(nearestFactionPos[nearbyFaction] > furthestDistance)
+                {
+                    furthestDistance = nearestFactionPos[nearbyFaction];
+                    currentFactionToAdd = nearbyFaction;
+                }
+            }
+
+            factionsByDistance.Add(currentFactionToAdd, furthestDistance);
+
+            if(currentFactionToAdd == Faction.Neutral)
+            {
+                break;
+            }
+        }
+
+        foreach(Faction nearbyFaction in factionsByDistance.Keys)
+        {
+            float proximity = 1f - (factionsByDistance[nearbyFaction] / 15f);
+            outputColor = Color.Lerp(outputColor, levelFactions[nearbyFaction].color, proximity);
+        }
+
+        if(nearestFactionPos.Keys.Count > 1)
+        {
+            float maxClashDistance = 0f;
+            foreach(Faction nearbyFaction in factionsByDistance.Keys)
+            {
+                foreach(Faction otherNearbyFaction in factionsByDistance.Keys)
+                {
+                    float distance = Mathf.Abs(factionsByDistance[nearbyFaction] - factionsByDistance[otherNearbyFaction]);
+                    if(distance > maxClashDistance)
+                    {
+                        maxClashDistance = distance;
+                    }
+                }
+            }
+
+            maxClashDistance =  Mathf.Pow((maxClashDistance / 15f), 0.5f);
+            outputColor = Color.Lerp(Color.lightGoldenRodYellow, outputColor, maxClashDistance);
         }
 
         return outputColor;
     }
+
+
+
 
     public Material GiveLineMaterial(Faction faction)
     {
@@ -167,8 +240,8 @@ public class LevelManager : MonoBehaviour
         {
             for (int i = 0; i < 225; i++)
             {
-                float zVal = validSpace.y + (((Mathf.Floor(i / 15f) - 7f)) * 3f);
-                float xVal = validSpace.x + ((i - ((Mathf.Floor(i / 15f) * 15f) + 7f)) * 3f);
+                float zVal = validSpace.y + (((Mathf.Floor(i / 30f) - 7f)) * 1.5f) - 0.75f;
+                float xVal = validSpace.x + ((i - ((Mathf.Floor(i / 30f) * 30f) + 7f)) * 1.5f) - 0.75f;
                 Vector2 possiblePosition = new Vector2(xVal, zVal);
 
                 if (Vector2.Distance(possiblePosition, validSpace) > 24f)
@@ -182,7 +255,7 @@ public class LevelManager : MonoBehaviour
                     factionGridMarkers.Add(possiblePosition, newFacGridMarker.GetComponent<FactionGridMarker>());
                     factionGridMarkers[possiblePosition].SetFaction(Faction.Neutral);
                 }
-            }
+            } //For og layout,  1/15f .... * 3f, get rid of - 1.5f
         }
 
     }
@@ -200,22 +273,29 @@ public class LevelManager : MonoBehaviour
                     continue;
                 }
 
-                foreach(Vector2 factionPositions in levelFactions[faction].positions)
+  
+                if(Vector2.Distance(levelFactions[faction].mainPosition, factionGridMarkerPos) < 15f)
                 {
-                    if(possibleAlliedFaction.Contains(faction))
+                    possibleAlliedFaction.Add(faction);
+                    break;
+                }
+
+                foreach (Vector2 factionPositions in levelFactions[faction].positions)
+                {
+                    if (possibleAlliedFaction.Contains(faction))
                     {
                         continue;
                     }
 
-                    if(Vector2.Distance(factionPositions, factionGridMarkerPos) < 13.5f)
+                    if (Vector2.Distance(factionPositions, factionGridMarkerPos) < 15f)
                     {
                         possibleAlliedFaction.Add(faction);
                     }
-                    //Use distance to control speed?
                 }
+
             }
 
-            if(possibleAlliedFaction.Count == 1)
+            if (possibleAlliedFaction.Count == 1)
             {
                 factionGridMarkers[factionGridMarkerPos].SetFaction(possibleAlliedFaction[0]);
             }

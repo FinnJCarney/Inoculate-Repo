@@ -38,7 +38,7 @@ public class Node : MonoBehaviour
 
     public void UpdateNodeColour()
     {
-        nodeVisual.color = Color.Lerp(LevelManager.lM.GiveAverageColor(userInformation.beliefs), Color.white, 0.5f);
+        nodeVisual.color = Color.Lerp(LevelManager.lM.GiveAverageColor(userInformation.beliefs, Color.white), Color.white, 0.5f);
         accessRing.color = LevelManager.lM.levelFactions[userInformation.faction].color;
     }
 

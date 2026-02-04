@@ -55,7 +55,7 @@ public class FactionGridMarker : MonoBehaviour
         }
         else if (faction == Faction.Clashing)
         {
-            newColor = clashingCol;
+            newColor = LevelManager.lM.GiveAverageColor(new Vector2(defaultPos.x, defaultPos.z), neutralColor);
         }
         else
         {
@@ -67,8 +67,6 @@ public class FactionGridMarker : MonoBehaviour
             {
                 distanceModifier = 5f;
             }
-
-            //LevelManager.lM.Fac
                 
             newColor.a = defaultAlpha * distanceModifier;
         }
