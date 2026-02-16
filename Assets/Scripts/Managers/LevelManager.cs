@@ -21,6 +21,8 @@ public class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        currentState = LevelState.Planning;
+
         for (int i = 0; i < factionTimers.Count; i++)
         {
             factionTimer adjustedFactionTimer;
@@ -481,7 +483,14 @@ public class LevelManager : MonoBehaviour
         return neighbouringNodeGroups;
     }
 
+    private void OnExecute()
+    {
+        currentState = LevelState.Executing;
+    }
+
     [SerializeField] public LevelInfo levelInfo;
+
+    public LevelState currentState;
 
     public Node playerNode;
     public Faction playerAllyFaction;
@@ -552,5 +561,11 @@ public enum GameMode
     MapControl,
     FactionElimination,
     None
+}
+
+public enum LevelState
+{
+    Planning, 
+    Executing
 }
 

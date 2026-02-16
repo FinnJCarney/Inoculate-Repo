@@ -361,10 +361,13 @@ public void AddTag(string tag, float timer)
 
         if (playerActionAvailable == true)
         {
-            var factionColor = LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color;
-            float amountThrough = Mathf.Sqrt(Time.unscaledTime % 2f);
-            allowanceRing.color = Color.Lerp(factionColor, Color.clear, amountThrough);
-            allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position, accessRing.transform.position + Vector3.up, amountThrough);
+            var factionColor = Color.Lerp(LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color, Color.white, 0.5f);
+            var clearFactionColor = new Color(factionColor.r, factionColor.g, factionColor.b, 0.66f);
+            float amountThrough = Mathf.Pow((Mathf.Sin(Time.unscaledTime * 5f) + 1f) / 2f, 0.25f);
+            allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position - (Vector3.up * 0.5f), accessRing.transform.position + (Vector3.up * 0.25f), amountThrough);
+            amountThrough = Mathf.Pow(amountThrough, 3f);
+            allowanceRing.color = Color.Lerp(clearFactionColor, factionColor, amountThrough);
+            allowanceRing.transform.localScale = Vector3.Lerp(defaultAllowanceRingScale * 1.25f, defaultAllowanceRingScale * 1.5f, amountThrough);
             allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
         }
 

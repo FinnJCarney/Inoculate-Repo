@@ -19,6 +19,8 @@ public class ActionManager : MonoBehaviour
         {
             aM = this;
         }
+
+        EventManager.ExecuteEvent += PerformPlannedActions;
     }
 
     private void OnDestroy()
