@@ -60,6 +60,8 @@ public class LevelManager : MonoBehaviour
         NodeManager.nM.AddNodeFactions();
         //HUDManager.hM.SetMenuBounds(levelMap);
         InputManager.iM.SetMCC(mapCamera);
+
+        EventManager.ChangeStateEvent += ChangeState;
     }
 
     private void OnDestroy()
@@ -483,9 +485,9 @@ public class LevelManager : MonoBehaviour
         return neighbouringNodeGroups;
     }
 
-    private void OnExecute()
+    private void ChangeState(LevelState newState)
     {
-        currentState = LevelState.Executing;
+        currentState = newState;
     }
 
     [SerializeField] public LevelInfo levelInfo;

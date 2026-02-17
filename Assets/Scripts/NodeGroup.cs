@@ -1,4 +1,5 @@
 using DG.Tweening;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -103,7 +104,7 @@ public class NodeGroup : MonoBehaviour
 
     public void ShowMenu(bool show)
     {
-        if (nodesInGroup.Count == 0)
+        if (nodesInGroup.Count == 0 || LevelManager.lM.currentState == LevelState.Executing)
         {
             menu.SetActive(false);
         }
@@ -120,7 +121,45 @@ public class NodeGroup : MonoBehaviour
     public void UpdateNodeInfo()
     {
         connectedNodes.Clear();
+        var newConnectedNodeInfo = new connectedNodeInfo();
+        newConnectedNodeInfo.type = connectionType.mutual;
 
+        NodeGroup nodeGroupToAdd = null;
+
+        nodeGroupToAdd = FindNodeGroupInDirection(Vector2.up);
+        if(nodeGroupToAdd != this)
+        {
+            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
+        }
+        
+        nodeGroupToAdd = FindNodeGroupInDirection(Vector2.down);
+        if(nodeGroupToAdd != this)
+        {
+            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
+        }
+        nodeGroupToAdd = FindNodeGroupInDirection(Vector2.right);
+
+        if(nodeGroupToAdd != this)
+        {
+            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
+        }
+        
+        nodeGroupToAdd = FindNodeGroupInDirection(Vector2.left);
+        if(nodeGroupToAdd != this)
+        {
+            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
+        }
+
+        foreach(NodeGroup nodeGroup in NodeGroupsInProximity(groupBelief, 24f))
+        {
+            if(nodeGroup == this || connectedNodes.Contains(nodeGroup))
+            {
+                connectedNodes.Add(nodeGroup, newConnectedNodeInfo);
+            }
+        }
+
+        //Old connected Nodes implementation
+        /* 
         foreach(Node_UserInformation nodeUser in nodesInGroup)
         {
             foreach(Node_UserInformation connectedNode in nodeUser.connectedNodes.Keys) //Change to UserInformation when things are more implemented
@@ -158,6 +197,44 @@ public class NodeGroup : MonoBehaviour
                 }
             }
         }
+        */
+    }
+
+    private NodeGroup FindNodeGroupInDirection(Vector2 dir)
+    {
+        float step = 12f;
+        int index = 1;
+        NodeGroup nodeGroupToCheck = null;
+
+        while(LevelManager.lM.nodeGroups.TryGetValue(groupBelief += dir * step * index, out nodeGroupToCheck))
+        {
+            Debug.Log(LevelManager.lM.nodeGroups[groupBelief += dir * step * index] );
+            if(LevelManager.lM.nodeGroups[groupBelief += dir * step * index].nodesInGroup.Count > 0)
+            {
+                Debug.Log("Confirmed:" + LevelManager.lM.nodeGroups[groupBelief += dir * step * index]);
+                return LevelManager.lM.nodeGroups[groupBelief += dir * step * index];
+            }
+
+            index++;
+        }
+
+        return this;
+    }
+
+    private List<NodeGroup> NodeGroupsInProximity(Vector2 pos, float distance)
+    {
+        List<NodeGroup> nearbyNodeGroups = new List<NodeGroup>();
+
+        foreach(Vector2 nodeGroupPos in LevelManager.lM.nodeGroups.Keys)
+        {
+            if(Vector2.Distance(pos, nodeGroupPos) < distance)
+            {
+                nearbyNodeGroups.Add(LevelManager.lM.nodeGroups[nodeGroupPos]);
+            }
+        }
+
+
+        return nearbyNodeGroups;
     }
 
     public void UpdatePlayerActions()
@@ -348,32 +425,36 @@ public void AddTag(string tag, float timer)
 
     private void UpdateVisuals()
     {
-        bool playerActionAvailable = false; 
-        foreach (PossiblePlayerAction ppA in ActionManager.aM.possiblePlayerActions)
+        bool playerActionAvailable = false;
+
+        if (LevelManager.lM.currentState == LevelState.Planning)
         {
-            if (ppA.receivingNode != this)
+            foreach (PossiblePlayerAction ppA in ActionManager.aM.possiblePlayerActions)
             {
-                continue;
+                if (ppA.receivingNode != this)
+                {
+                    continue;
+                }
+
+                playerActionAvailable = true;
             }
 
-            playerActionAvailable = true;
-        }
+            if (playerActionAvailable == true)
+            {
+                var factionColor = Color.Lerp(LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color, Color.white, 0.5f);
+                var clearFactionColor = new Color(factionColor.r, factionColor.g, factionColor.b, 0.66f);
+                float amountThrough = Mathf.Pow((Mathf.Sin(Time.unscaledTime * 5f) + 1f) / 2f, 0.25f);
+                allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position - (Vector3.up * 0.5f), accessRing.transform.position + (Vector3.up * 0.25f), amountThrough);
+                amountThrough = Mathf.Pow(amountThrough, 3f);
+                allowanceRing.color = Color.Lerp(clearFactionColor, factionColor, amountThrough);
+                allowanceRing.transform.localScale = Vector3.Lerp(defaultAllowanceRingScale * 1.25f, defaultAllowanceRingScale * 1.5f, amountThrough);
+                allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
+            }
 
-        if (playerActionAvailable == true)
-        {
-            var factionColor = Color.Lerp(LevelManager.lM.levelFactions[LevelManager.lM.playerAllyFaction].color, Color.white, 0.5f);
-            var clearFactionColor = new Color(factionColor.r, factionColor.g, factionColor.b, 0.66f);
-            float amountThrough = Mathf.Pow((Mathf.Sin(Time.unscaledTime * 5f) + 1f) / 2f, 0.25f);
-            allowanceRing.transform.position = Vector3.Lerp(accessRing.transform.position - (Vector3.up * 0.5f), accessRing.transform.position + (Vector3.up * 0.25f), amountThrough);
-            amountThrough = Mathf.Pow(amountThrough, 3f);
-            allowanceRing.color = Color.Lerp(clearFactionColor, factionColor, amountThrough);
-            allowanceRing.transform.localScale = Vector3.Lerp(defaultAllowanceRingScale * 1.25f, defaultAllowanceRingScale * 1.5f, amountThrough);
-            allowanceRing.transform.eulerAngles = new Vector3(-90, 0, 0);
-        }
-
-        else
-        {
-            allowanceRing.color = Color.clear;
+            else
+            {
+                allowanceRing.color = Color.clear;
+            }
         }
 
         if (tags.ContainsKey("Inoculate"))

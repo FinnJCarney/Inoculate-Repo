@@ -13,11 +13,6 @@ public class UniversalButton : MonoBehaviour
         {
             buttonEvent.AddListener(delegate { this.gameObject.GetComponent<UserIndicator>().node.ShowMenu(true); });
         }
-
-        if(reqMan == RequestedManager.ActionManager)
-        {
-            buttonEvent.AddListener(ActionManager.aM.PerformPlannedActions);
-        }
     }
 
     public void PerformAction()

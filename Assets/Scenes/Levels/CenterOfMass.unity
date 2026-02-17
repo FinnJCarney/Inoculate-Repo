@@ -299,6 +299,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelInfo: {fileID: 11400000, guid: 51d295e9e7d803643a76f91894c8a036, type: 2}
+  currentState: 0
   playerNode: {fileID: 264201882}
   playerAllyFaction: 0
   gameMode: 2
@@ -332,7 +333,7 @@ MonoBehaviour:
       actionLine: {fileID: 5016487758517115089, guid: 0da88e1391f64814086f8e6edd5c9192,
         type: 3}
     - name: Fascist
-      color: {r: 0.6037736, g: 0.06629671, b: 0, a: 1}
+      color: {r: 0.8301887, g: 0.091644205, b: 0, a: 1}
       mainPosition: {x: 36, y: 0}
       positions: []
       availableActions: []
@@ -347,7 +348,7 @@ MonoBehaviour:
       actionLine: {fileID: 5016487758517115089, guid: d466a94b7561bf3408849bd99d3c8b2f,
         type: 3}
     - name: Anarchist
-      color: {r: 0.017462078, g: 0.5566038, b: 0, a: 1}
+      color: {r: 0.022056887, g: 0.7830189, b: 0, a: 1}
       mainPosition: {x: -36, y: 0}
       positions: []
       availableActions: []
@@ -362,7 +363,7 @@ MonoBehaviour:
       actionLine: {fileID: 5016487758517115089, guid: 4170e74c60173d147ac2a070e8ca282e,
         type: 3}
     - name: Captalist
-      color: {r: 0, g: 0.07192013, b: 0.6792453, a: 1}
+      color: {r: 0, g: 0.089322805, b: 0.8584906, a: 1}
       mainPosition: {x: 0, y: 48}
       positions: []
       availableActions: []
@@ -377,7 +378,7 @@ MonoBehaviour:
       actionLine: {fileID: 5016487758517115089, guid: e04e3a711e86f29409f924e664d9f4aa,
         type: 3}
     - name: Communist
-      color: {r: 0.6320754, g: 0.61720306, b: 0, a: 1}
+      color: {r: 0.8490566, g: 0.827962, b: 0, a: 1}
       mainPosition: {x: 0, y: -48}
       positions: []
       availableActions: []

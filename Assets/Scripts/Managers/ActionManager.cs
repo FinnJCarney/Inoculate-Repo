@@ -20,7 +20,7 @@ public class ActionManager : MonoBehaviour
             aM = this;
         }
 
-        EventManager.ExecuteEvent += PerformPlannedActions;
+        EventManager.ChangeStateEvent += PerformPlannedActions;
     }
 
     private void OnDestroy()
@@ -46,13 +46,32 @@ public class ActionManager : MonoBehaviour
 
     private void Update()
     {
-    
         if(StateManager.sM.gameState != GameState.Mission)
         {
             return;
         }
 
         CalculatePossiblePlayerActions();
+
+        if (!hitStun)
+        {
+            TimeManager.tM.SetTimeScale(LevelManager.lM.currentState == LevelState.Executing ? 4f : 0.25f);
+        }
+        else
+        {
+            TimeManager.tM.SetTimeScale(1f);
+        }
+
+        if(LevelManager.lM.currentState == LevelState.Planning)
+        {
+            return;
+        }
+
+        if(currentActions.Count == 0)
+        {
+            EventManager.ChangeStateEvent.Invoke(LevelState.Planning);
+            return;
+        }
 
         numOfPlayerActions = 0;
 
@@ -120,11 +139,6 @@ public class ActionManager : MonoBehaviour
             {
                 DestroyCurrentAction(currentActions[i]);
             }
-        }
-
-        if (!hitStun)
-        {
-            TimeManager.tM.SetTimeScale(currentActions.Count > 0 ? 5f : 0.25f);
         }
 
         RoomManager.rM.AdjustDonutHolder(numOfPlayerActions);
@@ -433,8 +447,13 @@ public class ActionManager : MonoBehaviour
         return false;
     }
 
-    public void PerformPlannedActions()
+    public void PerformPlannedActions(LevelState newState)
     {
+        if(newState != LevelState.Executing)
+        {
+            return;
+        }
+
         Debug.Log("Performing Planned Actions");
         foreach(PlannedAction plannedAction in plannedActions)
         {
