@@ -20,6 +20,17 @@ public class NodeGroup : MonoBehaviour
         defaultAllowanceRingScale = allowanceRing.transform.localScale;
 
         ArrangeNodes();
+        UpdateNodeInfo();
+
+        EventManager.ChangeStateEvent += ChangeStateEvent;
+    }
+
+    private void ChangeStateEvent(LevelState curState)
+    {
+        if(curState == LevelState.Planning)
+        {
+            UpdateNodeInfo();
+        }
     }
 
     public void AddNodeToGroup(Node_UserInformation newNode)
@@ -92,7 +103,7 @@ public class NodeGroup : MonoBehaviour
     private void Update()
     {
         UpdataTags();
-        UpdateNodeInfo();
+        //UpdateNodeInfo();
         UpdatePlayerActions();
         UpdateVisuals();
 
@@ -121,41 +132,24 @@ public class NodeGroup : MonoBehaviour
     public void UpdateNodeInfo()
     {
         connectedNodes.Clear();
-        var newConnectedNodeInfo = new connectedNodeInfo();
-        newConnectedNodeInfo.type = connectionType.mutual;
 
         NodeGroup nodeGroupToAdd = null;
 
         nodeGroupToAdd = FindNodeGroupInDirection(Vector2.up);
-        if(nodeGroupToAdd != this)
-        {
-            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
-        }
+        AddNodeGroupToConnectedNodeGroups(nodeGroupToAdd);
         
         nodeGroupToAdd = FindNodeGroupInDirection(Vector2.down);
-        if(nodeGroupToAdd != this)
-        {
-            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
-        }
-        nodeGroupToAdd = FindNodeGroupInDirection(Vector2.right);
+        AddNodeGroupToConnectedNodeGroups(nodeGroupToAdd);
 
-        if(nodeGroupToAdd != this)
-        {
-            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
-        }
+        nodeGroupToAdd = FindNodeGroupInDirection(Vector2.right);
+        AddNodeGroupToConnectedNodeGroups(nodeGroupToAdd);
         
         nodeGroupToAdd = FindNodeGroupInDirection(Vector2.left);
-        if(nodeGroupToAdd != this)
-        {
-            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
-        }
+        AddNodeGroupToConnectedNodeGroups(nodeGroupToAdd);
 
-        foreach(NodeGroup nodeGroup in NodeGroupsInProximity(groupBelief, 24f))
+        foreach(NodeGroup nodeGroup in NodeGroupsInProximity(24f))
         {
-            if(nodeGroup == this || connectedNodes.Contains(nodeGroup))
-            {
-                connectedNodes.Add(nodeGroup, newConnectedNodeInfo);
-            }
+            AddNodeGroupToConnectedNodeGroups(nodeGroup);
         }
 
         //Old connected Nodes implementation
@@ -200,19 +194,29 @@ public class NodeGroup : MonoBehaviour
         */
     }
 
+    private bool IsNodeOnCardinal(NodeGroup nodeGroupToCheck)
+    {
+        var dir = (nodeGroupToCheck.groupBelief - groupBelief).normalized;
+
+        if(dir.x == 0 || dir.y == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private NodeGroup FindNodeGroupInDirection(Vector2 dir)
     {
         float step = 12f;
         int index = 1;
         NodeGroup nodeGroupToCheck = null;
 
-        while(LevelManager.lM.nodeGroups.TryGetValue(groupBelief += dir * step * index, out nodeGroupToCheck))
+        while(LevelManager.lM.nodeGroups.TryGetValue(groupBelief + (dir * step * index), out nodeGroupToCheck))
         {
-            Debug.Log(LevelManager.lM.nodeGroups[groupBelief += dir * step * index] );
-            if(LevelManager.lM.nodeGroups[groupBelief += dir * step * index].nodesInGroup.Count > 0)
+            if(nodeGroupToCheck.nodesInGroup.Count > 0)
             {
-                Debug.Log("Confirmed:" + LevelManager.lM.nodeGroups[groupBelief += dir * step * index]);
-                return LevelManager.lM.nodeGroups[groupBelief += dir * step * index];
+                return nodeGroupToCheck;
             }
 
             index++;
@@ -221,20 +225,30 @@ public class NodeGroup : MonoBehaviour
         return this;
     }
 
-    private List<NodeGroup> NodeGroupsInProximity(Vector2 pos, float distance)
+    private List<NodeGroup> NodeGroupsInProximity(float distance)
     {
         List<NodeGroup> nearbyNodeGroups = new List<NodeGroup>();
 
         foreach(Vector2 nodeGroupPos in LevelManager.lM.nodeGroups.Keys)
         {
-            if(Vector2.Distance(pos, nodeGroupPos) < distance)
+            if(Vector2.Distance(groupBelief, nodeGroupPos) < distance && LevelManager.lM.nodeGroups[nodeGroupPos].nodesInGroup.Count > 0 && !IsNodeOnCardinal(LevelManager.lM.nodeGroups[nodeGroupPos]))
             {
                 nearbyNodeGroups.Add(LevelManager.lM.nodeGroups[nodeGroupPos]);
             }
         }
 
-
         return nearbyNodeGroups;
+    }
+
+    private void AddNodeGroupToConnectedNodeGroups(NodeGroup nodeGroupToAdd)
+    {
+        Debug.Log("Trying to add nearby NodeGroup" + nodeGroupToAdd.name);
+        if(nodeGroupToAdd != this && !connectedNodes.ContainsKey(nodeGroupToAdd))
+        {
+            var newConnectedNodeInfo = new connectedNodeInfo();
+            newConnectedNodeInfo.type = connectionType.mutual;
+            connectedNodes.Add(nodeGroupToAdd, newConnectedNodeInfo);
+        }
     }
 
     public void UpdatePlayerActions()

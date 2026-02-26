@@ -732,7 +732,7 @@ MonoBehaviour:
   LevelsToDisplay:
   - {fileID: 11400000, guid: a814f20f6a616424bb4e257118dc3d3f, type: 2}
   - {fileID: 11400000, guid: 51d295e9e7d803643a76f91894c8a036, type: 2}
-  gameState: 0
+  gameState: 1
 --- !u!1 &1251637672
 GameObject:
   m_ObjectHideFlags: 0
